@@ -26,6 +26,20 @@ public class User {
 
     public String getFacebookURL() { return facebookURL; }
 
+    public void setFirstName(String firstName) { this.firstName = firstName; }
+
+    public void setLastName(String lastName) { this.lastName = lastName; }
+
+    public void setOrganization(String organization) { this.organization = organization; }
+
+    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+
+    public void setEmail(String email) { this.email = email; }
+
+    public void setAddress(String address) { this.address = address; }
+
+    public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
+
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
         user.firstName = json.getString("firstName");
@@ -38,6 +52,12 @@ public class User {
         return user;
 
     }
+
+    /**
+    public static User toJson(String firstName, String lastName, String organization, String email, String address, String facebookURL){
+
+    }
+     **/
 
 
 }
