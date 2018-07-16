@@ -10,7 +10,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.Models.User;
 
 public class ProfileActivity extends AppCompatActivity{
 
