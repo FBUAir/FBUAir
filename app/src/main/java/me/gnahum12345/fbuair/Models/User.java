@@ -1,5 +1,7 @@
 package me.gnahum12345.fbuair.Models;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,8 +55,7 @@ public class User {
 
     }
 
-    public static JSONObject toJson() throws JSONException{
-        User user = new User();
+    public static JSONObject toJson(User user) throws JSONException{
         String firstName = user.getFirstName();
         String lastName = user.getLastName();
         String organization = user.getOrganization();
@@ -70,7 +71,7 @@ public class User {
         json.put("address", address);
         json.put("facebookURL", facebookURL);
 
-        System.out.print(json);
+        Log.d("toJson", json.toString());
         return json;
 
     }

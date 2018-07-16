@@ -10,6 +10,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import me.gnahum12345.fbuair.Models.User;
 
 public class ProfileActivity extends AppCompatActivity{
@@ -48,8 +50,13 @@ public class ProfileActivity extends AppCompatActivity{
                 final String email = etEmail.getText().toString();
                 final String address = etAddress.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
-                createProfile(firstName, lastName, organization, email, address, facebookURL);
-                Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                try {
+                    createProfile(firstName, lastName, organization, email, address, facebookURL);
+                    Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
 
             }
@@ -57,7 +64,7 @@ public class ProfileActivity extends AppCompatActivity{
 
     }
 
-    private void createProfile(String firstName, String lastName, String organization, String email, String address, String facebookURL){
+    private void createProfile(String firstName, String lastName, String organization, String email, String address, String facebookURL) throws JSONException {
         User user = new User();
         user.setFirstName(firstName);
         user.setLastName(lastName);
@@ -65,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity{
         user.setEmail(email);
         user.setAddress(address);
         user.setFacebookURL(facebookURL);
+        user.toJson(user);
 
     }
 }
