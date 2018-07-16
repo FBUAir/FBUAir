@@ -13,7 +13,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.MainActivity">
         </activity>
-        <activity android:name=".DiscoverActivity">
+        <activity android:name=".Activities.DiscoverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".Activities.AddContactActivity">
+        </activity>
+        <activity android:name=".ProfileActivity">
         </activity>
     </application>
 
