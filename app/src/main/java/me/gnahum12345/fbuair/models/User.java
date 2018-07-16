@@ -7,7 +7,7 @@ public class User {
     public String firstName;
     public String lastName;
     public String organization;
-    public String phoneNumber;
+    public String phone;
     public String email;
     public String address;
     public String facebookURL;
@@ -18,7 +18,7 @@ public class User {
 
     public String getOrganization() { return organization; }
 
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhone() { return phone; }
 
     public String getEmail() { return email; }
 
@@ -32,7 +32,7 @@ public class User {
 
     public void setOrganization(String organization) { this.organization = organization; }
 
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setPhone(String phoneNumber) { this.phone = phoneNumber; }
 
     public void setEmail(String email) { this.email = email; }
 
@@ -45,7 +45,7 @@ public class User {
         user.firstName = json.getString("firstName");
         user.lastName = json.getString("lastName");
         user.organization = json.getString("organization");
-        user.phoneNumber = json.getString("phoneNumber");
+        user.phone = json.getString("phoneNumber");
         user.email = json.getString("email");
         user.address = json.getString("address");
         user.facebookURL = json.getString("facebookURL");
