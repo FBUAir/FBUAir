@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair;
+package me.gnahum12345.fbuair.Activities;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import me.gnahum12345.fbuair.R;
 
 public class ProfileActivity extends AppCompatActivity{
 
