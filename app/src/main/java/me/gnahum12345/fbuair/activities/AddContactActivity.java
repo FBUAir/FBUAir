@@ -1,9 +1,11 @@
-package me.gnahum12345.fbuair.Activities;
+package me.gnahum12345.fbuair.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -14,7 +16,6 @@ public class AddContactActivity extends AppCompatActivity {
 
     // placeholder user to add
     JSONObject jsonUser;
-
     {
         try {
             // populate fields
@@ -28,10 +29,26 @@ public class AddContactActivity extends AppCompatActivity {
         }
     }
 
+    // views
+    Button btAddContact;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_contact);
+        // get references to views
+        btAddContact = findViewById(R.id.btAddContact);
+        // add new contact when button is clicked
+        btAddContact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    AddContact(jsonUser);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     void AddContact(JSONObject user) throws JSONException {
@@ -53,5 +70,8 @@ public class AddContactActivity extends AppCompatActivity {
                 // insert email and phone types
                 .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
                 .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_HOME);
+
+        // send the intent
+        startActivity(intent);
     }
 }

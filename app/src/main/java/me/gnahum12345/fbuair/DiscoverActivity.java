@@ -7,7 +7,7 @@ import android.support.v7.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-import me.gnahum12345.fbuair.Adapaters.DiscoverAdapter;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 
 public class DiscoverActivity extends AppCompatActivity {
 
