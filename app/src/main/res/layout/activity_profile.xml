@@ -20,7 +20,7 @@
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="27dp"
+        android:layout_marginTop="26dp"
         app:srcCompat="@android:color/black" />
 
     <EditText
@@ -34,34 +34,24 @@
         android:inputType="phone" />
 
     <EditText
-        android:id="@+id/etFirstName"
+        android:id="@+id/etName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/ivProfileImage"
         android:ems="10"
-        android:hint="First Name"
+        android:hint="Name"
         android:inputType="textPersonName" />
-
-    <EditText
-        android:id="@+id/etLastName"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etFirstName"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Last Name" />
 
     <EditText
         android:id="@+id/etOrganization"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/etLastName"
+        android:layout_below="@+id/etName"
         android:ems="10"
-        android:inputType="textPersonName"
-        android:hint="Organization" />
+        android:hint="Organization"
+        android:inputType="textPersonName" />
 
     <EditText
         android:id="@+id/etEmail"
@@ -70,8 +60,8 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etPhone"
         android:ems="10"
-        android:inputType="textEmailAddress"
-        android:hint="Email" />
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
 
     <EditText
         android:id="@+id/etAddress"
@@ -80,8 +70,8 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etEmail"
         android:ems="10"
-        android:inputType="textPostalAddress"
-        android:hint="Address" />
+        android:hint="Address"
+        android:inputType="textPostalAddress" />
 
     <EditText
         android:id="@+id/etFacebookURL"

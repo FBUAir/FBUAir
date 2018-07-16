@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.activities;
+package me.gnahum12345.fbuair.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
