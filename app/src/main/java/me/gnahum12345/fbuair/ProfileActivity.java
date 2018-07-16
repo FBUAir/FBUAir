@@ -4,9 +4,12 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+
+import me.gnahum12345.fbuair.model.User;
 
 public class ProfileActivity extends AppCompatActivity{
 
@@ -34,6 +37,31 @@ public class ProfileActivity extends AppCompatActivity{
         etAddress = (EditText) findViewById(R.id.etAddress);
         etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
         btnCheck = (Button) findViewById(R.id.btnCheck);
+
+        btnCheck.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                final String firstName = etFirstName.getText().toString();
+                final String lastName = etLastName.getText().toString();
+                final String organization = etOrganization.getText().toString();
+                final String email = etEmail.getText().toString();
+                final String address = etAddress.getText().toString();
+                final String facebookURL = etFacebookURL.getText().toString();
+                createProfile(firstName, lastName, organization, email, address, facebookURL);
+
+            }
+        });
+
+    }
+
+    private void createProfile(String firstName, String lastName, String organization, String email, String address, String facebookURL){
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setOrganization(organization);
+        user.setEmail(email);
+        user.setAddress(address);
+        user.setFacebookURL(facebookURL);
 
     }
 }
