@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.activities;
+package me.gnahum12345.fbuair.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;

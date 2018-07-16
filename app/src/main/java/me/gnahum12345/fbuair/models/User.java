@@ -1,20 +1,19 @@
 package me.gnahum12345.fbuair.Models;
 
+import android.util.Log;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 public class User {
-    public String firstName;
-    public String lastName;
+    public String Name;
     public String organization;
     public String phoneNumber;
     public String email;
     public String address;
     public String facebookURL;
 
-    public String getFirstName() { return firstName; }
-
-    public String getLastName() { return lastName; }
+    public String getName() { return Name; }
 
     public String getOrganization() { return organization; }
 
@@ -26,9 +25,7 @@ public class User {
 
     public String getFacebookURL() { return facebookURL; }
 
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public void setName(String firstName) { this.Name = Name; }
 
     public void setOrganization(String organization) { this.organization = organization; }
 
@@ -42,8 +39,7 @@ public class User {
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
-        user.firstName = json.getString("firstName");
-        user.lastName = json.getString("lastName");
+        user.Name = json.getString("Name");
         user.organization = json.getString("organization");
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
@@ -53,24 +49,23 @@ public class User {
 
     }
 
-    public static JSONObject toJson() throws JSONException{
-        User user = new User();
-        String firstName = user.getFirstName();
-        String lastName = user.getLastName();
+    public static JSONObject toJson(User user) throws JSONException{
+        String Name = user.getName();
         String organization = user.getOrganization();
+        String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
         String address = user.getAddress();
         String facebookURL = user.getFacebookURL();
 
         JSONObject json = new JSONObject();
-        json.put("firstName", firstName);
-        json.put("lastName", lastName);
+        json.put("Name", Name);
         json.put("organization", organization);
+        json.put("phoneNumber", phoneNumber);
         json.put("email", email);
         json.put("address", address);
         json.put("facebookURL", facebookURL);
 
-        System.out.print(json);
+        Log.d("toJson", json.toString());
         return json;
 
     }
