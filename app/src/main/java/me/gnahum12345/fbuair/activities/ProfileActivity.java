@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import me.gnahum12345.fbuair.models.User;
 
@@ -48,6 +49,8 @@ public class ProfileActivity extends AppCompatActivity{
                 final String address = etAddress.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 createProfile(firstName, lastName, organization, email, address, facebookURL);
+                Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+
 
             }
         });

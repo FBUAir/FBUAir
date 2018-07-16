@@ -53,11 +53,28 @@ public class User {
 
     }
 
-    /**
-    public static User toJson(String firstName, String lastName, String organization, String email, String address, String facebookURL){
+    public static JSONObject toJson() throws JSONException{
+        User user = new User();
+        String firstName = user.getFirstName();
+        String lastName = user.getLastName();
+        String organization = user.getOrganization();
+        String email = user.getEmail();
+        String address = user.getAddress();
+        String facebookURL = user.getFacebookURL();
+
+        JSONObject json = new JSONObject();
+        json.put("firstName", firstName);
+        json.put("lastName", lastName);
+        json.put("organization", organization);
+        json.put("email", email);
+        json.put("address", address);
+        json.put("facebookURL", facebookURL);
+
+        System.out.print(json);
+        return json;
 
     }
-     **/
+
 
 
 }

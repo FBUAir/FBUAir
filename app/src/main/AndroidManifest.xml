@@ -12,16 +12,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.MainActivity">
+        <activity android:name=".Activities.MainActivity">
         </activity>
-        <activity android:name=".DiscoverActivity">
-        </activity>
-        <activity android:name=".activities.AddContactActivity">
+        <activity android:name=".Activities.DiscoverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity android:name=".Activities.AddContactActivity">
+        </activity>
+        <activity android:name=".ProfileActivity">
         </activity>
     </application>
 
