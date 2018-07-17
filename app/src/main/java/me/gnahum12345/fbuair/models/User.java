@@ -6,14 +6,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class User {
-    public String Name;
+    public String name;
     public String organization;
     public String phoneNumber;
     public String email;
     public String address;
     public String facebookURL;
 
-    public String getName() { return Name; }
+    public String getName() { return name; }
 
     public String getOrganization() { return organization; }
 
@@ -25,7 +25,7 @@ public class User {
 
     public String getFacebookURL() { return facebookURL; }
 
-    public void setName(String firstName) { this.Name = Name; }
+    public void setName(String Name) { this.name = name; }
 
     public void setOrganization(String organization) { this.organization = organization; }
 
@@ -39,7 +39,7 @@ public class User {
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
-        user.Name = json.getString("Name");
+        user.name = json.getString("name");
         user.organization = json.getString("organization");
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
@@ -50,7 +50,7 @@ public class User {
     }
 
     public static JSONObject toJson(User user) throws JSONException{
-        String Name = user.getName();
+        String name = user.getName();
         String organization = user.getOrganization();
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
@@ -58,7 +58,7 @@ public class User {
         String facebookURL = user.getFacebookURL();
 
         JSONObject json = new JSONObject();
-        json.put("Name", Name);
+        json.put("name", name);
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);

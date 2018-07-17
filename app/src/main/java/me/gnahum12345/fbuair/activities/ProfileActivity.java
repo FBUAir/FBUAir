@@ -2,10 +2,12 @@ package me.gnahum12345.fbuair.Activities;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,6 +31,9 @@ public class ProfileActivity extends AppCompatActivity{
     Context context;
     Button btnCheck;
 
+    SharedPreferences sharedpreferences;
+    String MyPREFERENCES = "MyPrefs";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,18 +49,20 @@ public class ProfileActivity extends AppCompatActivity{
         etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
         btnCheck = (Button) findViewById(R.id.btnCheck);
 
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String Name = etName.getText().toString();
+                final String name = etName.getText().toString();
                 final String organization = etOrganization.getText().toString();
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 final String address = etAddress.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 try {
-                    createProfile(Name, organization, phoneNumber, email, address, facebookURL);
-                    addProfile(Name, organization, phoneNumber, email, address, facebookURL);
+                    createProfile(name, organization, phoneNumber, email, address, facebookURL);
+                    addContact(name, organization, phoneNumber, email, address, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -64,25 +71,34 @@ public class ProfileActivity extends AppCompatActivity{
             }
         });
 
+        String current_user = sharedpreferences.getString("current_user", null);
+
+        if(current_user != null) {
+            Toast.makeText(ProfileActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
+            Log.d("MadeUser", current_user);
+            Intent intent = new Intent(ProfileActivity.this, DiscoverActivity.class);
+            startActivity(intent);
+        }
+
     }
 
-    private void createProfile(String Name, String organization, String phoneNumber, String email, String address, String facebookURL) throws JSONException {
+    private void createProfile(String name, String organization, String phoneNumber, String email, String address, String facebookURL) throws JSONException {
         User user = new User();
-        user.setName(Name);
+        user.setName(name);
         user.setOrganization(organization);
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setAddress(address);
         user.setFacebookURL(facebookURL);
-        user.toJson(user);
-
+        saveUserTwo(user);
     }
-    private void addProfile(String Name, String organization, String phoneNumber, String email, String address, String facebookURL){
+    
+    private void addContact(String name, String organization, String phoneNumber, String email, String address, String facebookURL){
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         // Sets the MIME type to match the Contacts Provider
         intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
         // insert user's info into intent
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, Name)
+        intent.putExtra(ContactsContract.Intents.Insert.NAME, name)
                 .putExtra(ContactsContract.Intents.Insert.COMPANY, organization)
                 .putExtra(ContactsContract.Intents.Insert.EMAIL, email)
                 .putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber)
@@ -95,5 +111,12 @@ public class ProfileActivity extends AppCompatActivity{
 
         // send the intent
         startActivity(intent);
+    }
+
+
+    private void saveUserTwo(User user) throws JSONException {
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("current_user", user.toJson(user).toString());
+        editor.commit();
     }
 }
