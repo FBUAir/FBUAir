@@ -25,7 +25,7 @@ public class User {
 
     public String getFacebookURL() { return facebookURL; }
 
-    public void setName(String Name) { this.name = name; }
+    public void setName(String name) { this.name = name; }
 
     public void setOrganization(String organization) { this.organization = organization; }
 
