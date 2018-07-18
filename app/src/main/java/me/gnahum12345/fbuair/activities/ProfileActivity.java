@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -38,7 +37,6 @@ import me.gnahum12345.fbuair.models.User;
 
 public class ProfileActivity extends AppCompatActivity{
 
-    ImageView ivProfileImage;
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
@@ -63,7 +61,6 @@ public class ProfileActivity extends AppCompatActivity{
         context = this;
 
 
-        ivProfileImage = (ImageView) findViewById(R.id.ivFacebookIcon);
         etName = (EditText) findViewById(R.id.etName);
         etOrganization = (EditText) findViewById(R.id.etOrganization);
         etPhoneNumber = (EditText) findViewById(R.id.etPhone);
@@ -71,13 +68,6 @@ public class ProfileActivity extends AppCompatActivity{
         etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
         btnCheck = (Button) findViewById(R.id.btnCheck);
         btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
-
-        ivProfileImage = findViewById(R.id.ivFacebookIcon);
-        etName = findViewById(R.id.etName);
-        etOrganization = findViewById(R.id.etOrganization);
-        etPhoneNumber = findViewById(R.id.etPhone);
-        etEmail = findViewById(R.id.etEmail);
-        etFacebookURL = findViewById(R.id.etFacebookURL);
 
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -95,15 +85,8 @@ public class ProfileActivity extends AppCompatActivity{
                 final String facebookURL = etFacebookURL.getText().toString();
                 final Bitmap ivProfileImage = profileImage;
                 try {
-<<<<<<< HEAD
-                    createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
-=======
-<<<<<<< HEAD
-                    // check for valid profile before submitting (method shows error messages if false)
-=======
 
-                    createProfile(name, organization, phoneNumber, email, facebookURL);
->>>>>>> 0c1bcc17884efcaad1fe0dd3974d099420190cbf
+                    createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                     addContact(name, organization, phoneNumber, email, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     /**
@@ -230,7 +213,6 @@ public class ProfileActivity extends AppCompatActivity{
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // set image icon to newly selected image
-                ivProfileImage.setImageBitmap(bitmap);
                 btnProfileImage.setImageBitmap(bitmap);
                 profileImage = bitmap;
 
@@ -239,7 +221,6 @@ public class ProfileActivity extends AppCompatActivity{
                         data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                ivProfileImage.setImageBitmap(bitmap);
                 profileImage = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
 
