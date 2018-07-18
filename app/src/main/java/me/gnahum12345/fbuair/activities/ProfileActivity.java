@@ -95,11 +95,20 @@ public class ProfileActivity extends AppCompatActivity{
                 final String facebookURL = etFacebookURL.getText().toString();
                 final Bitmap ivProfileImage = profileImage;
                 try {
+<<<<<<< HEAD
                     createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
+=======
+<<<<<<< HEAD
+                    // check for valid profile before submitting (method shows error messages if false)
+=======
+
+                    createProfile(name, organization, phoneNumber, email, facebookURL);
+>>>>>>> 0c1bcc17884efcaad1fe0dd3974d099420190cbf
                     addContact(name, organization, phoneNumber, email, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     /**
                     // check for valid profile before submitting
+>>>>>>> e15e590b4e928b884bb920a6e8cdb8e3cdeb0c1e
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         addContact(name, organization, phoneNumber, email, facebookURL);
