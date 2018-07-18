@@ -13,8 +13,8 @@
         android:layout_alignStart="@+id/etPhone"
         android:layout_alignTop="@+id/ivFacebook"
         android:ems="10"
-        android:hint="Phone Number"
-        android:inputType="phone" />
+        android:hint="Facebook Profile URL"
+        android:inputType="textUri" />
 
     <EditText
         android:id="@+id/etEmail"
@@ -23,8 +23,8 @@
         android:layout_alignStart="@+id/etPhone"
         android:layout_alignTop="@+id/ivEmail"
         android:ems="10"
-        android:hint="Phone Number"
-        android:inputType="phone" />
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
 
     <ImageView
         android:id="@+id/ivProfileImage"
@@ -41,9 +41,9 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@id/ivProfileImage"
-        android:text="TextView"
-        android:textSize="12sp"
-        tools:text="error message" />
+        android:text=""
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12sp"/>
 
     <TextView
         android:id="@+id/tvPhoneError"
@@ -52,9 +52,9 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etOrganization"
         android:layout_marginTop="10dp"
-        android:text="TextView"
         android:textSize="12sp"
-        tools:text="error message" />
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="" />
 
     <TextView
         android:id="@+id/tvEmailError"
@@ -63,9 +63,10 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etPhone"
         android:layout_marginTop="10dp"
-        android:text="TextView"
+        android:text=""
         android:textSize="12sp"
-        tools:text="error message" />
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="" />
 
     <TextView
         android:id="@+id/tvFacebookError"
@@ -74,9 +75,10 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/ivEmail"
         android:layout_marginTop="10dp"
-        android:text="TextView"
+        android:text=""
         android:textSize="12sp"
-        tools:text="error message" />
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="" />
 
     <EditText
         android:id="@+id/etPhone"
@@ -109,7 +111,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/etName"
-        android:layout_marginTop="-10dp"
         android:ems="10"
         android:hint="Organization"
         android:inputType="textPersonName"
@@ -117,7 +118,7 @@
         android:textColor="@android:color/darker_gray" />
 
     <Button
-        android:id="@+id/btnCheck"
+        android:id="@+id/btSubmit"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -154,7 +155,6 @@
         android:layout_height="wrap_content"
         android:layout_alignTop="@+id/etPhone"
         android:layout_toEndOf="@+id/etPhone"
-        android:text="TextView"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="@android:color/holo_red_dark"
         tools:text="*" />
@@ -165,7 +165,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignTop="@+id/etName"
-        android:text="TextView"
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="@android:color/holo_red_dark"
         tools:text="*" />
