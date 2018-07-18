@@ -14,20 +14,35 @@ import android.provider.MediaStore;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.PhoneNumberUtils;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 
+<<<<<<< HEAD
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
+=======
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
+
+import me.gnahum12345.fbuair.models.User;
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
@@ -56,6 +71,7 @@ public class ProfileActivity extends AppCompatActivity{
         setContentView(R.layout.activity_profile);
         context = this;
 
+<<<<<<< HEAD
         ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
         etName = (EditText) findViewById(R.id.etName);
         etOrganization = (EditText) findViewById(R.id.etOrganization);
@@ -64,8 +80,20 @@ public class ProfileActivity extends AppCompatActivity{
         etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
         btnCheck = (Button) findViewById(R.id.btnCheck);
         btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
+=======
+        ivProfileImage = findViewById(R.id.ivProfileImage);
+        etName = findViewById(R.id.etName);
+        etOrganization = findViewById(R.id.etOrganization);
+        etPhoneNumber = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
+        etFacebookURL = findViewById(R.id.etFacebookURL);
+        btnCheck = findViewById(R.id.btnCheck);
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        // add formatter to phone number field
+        etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -76,9 +104,17 @@ public class ProfileActivity extends AppCompatActivity{
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 try {
+<<<<<<< HEAD
                     createProfile(name, organization, phoneNumber, email, facebookURL);
                     addContact(name, organization, phoneNumber, email, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+=======
+                    // check for valid profile before submitting
+                    if (isValidProfile(name, phoneNumber, email, facebookURL)) {
+                        createProfile(name, organization, phoneNumber, email, facebookURL);
+                        Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                    }
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -105,6 +141,53 @@ public class ProfileActivity extends AppCompatActivity{
 
     }
 
+<<<<<<< HEAD
+=======
+    // checks if profile is valid before submitting. if not, sets invalid fields red
+    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+        boolean valid = true;
+        if (name.isEmpty()) {
+            etName.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!email.isEmpty() && !isValidEmail(email)) {
+            etEmail.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!isValidPhoneNumber(phone)) {
+            etPhoneNumber.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
+            etFacebookURL.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        return valid;
+    }
+
+    // validity checkers
+    public static boolean isValidEmail(CharSequence email) {
+        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+    }
+
+    public static boolean isValidPhoneNumber(String number) {
+        return android.util.Patterns.PHONE.matcher(number).matches();
+    }
+
+    public static boolean isValidFacebookUrl(String facebookUrlString) {
+        URL facebookUrl;
+        try {
+            facebookUrl = new URL(facebookUrlString);
+            if (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrl.getHost().contains("facebook")) {
+                return true;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
     private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL) throws JSONException {
         User user = new User();
         user.setName(name);
@@ -114,6 +197,7 @@ public class ProfileActivity extends AppCompatActivity{
         user.setFacebookURL(facebookURL);
         saveUserTwo(user);
     }
+<<<<<<< HEAD
     
     private void addContact(String name, String organization, String phoneNumber, String email, String facebookURL){
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
@@ -134,6 +218,8 @@ public class ProfileActivity extends AppCompatActivity{
         startActivity(intent);
     }
 
+=======
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
 
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();

@@ -52,12 +52,6 @@ public class DetailsActivity extends AppCompatActivity {
 
     // current profile whose details are being views
     JSONObject user;
-    // todo - is this necessary?
-    String name;
-    String organization;
-    String phone;
-    String email;
-    String facebookUrl;
 
     // user contact IDs
     String contactId;
@@ -75,7 +69,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         // set user (would be from intent or something, but placeholder for now)
         FakeUsers fakeUsers = new FakeUsers();
-        user = fakeUsers.jsonUser0;
+        user = fakeUsers.jsonUser8;
 
         // get references to views
         ivImage = findViewById(R.id.ivImage);
@@ -132,22 +126,16 @@ public class DetailsActivity extends AppCompatActivity {
         });
     }
 
-    // sets class variables to user's info and sets views to display this info
+    // sets views to display user info
     void setInfo() throws JSONException {
-        // set class vars
-        name = user.getString("name");
-        organization = user.getString("organization");
-        phone = user.getString("phone");
-        email = user.getString("email");
-        facebookUrl = user.getString("facebookURL");
-
         // set views
-        tvName.setText(name);
-        tvOrganization.setText(organization);
-        tvPhone.setText(phone);
-        tvEmail.setText(email);
+        tvName.setText(user.getString("name"));
+        tvOrganization.setText(user.getString("organization"));
+        tvPhone.setText(user.getString("phone"));
+        tvEmail.setText(user.getString("email"));
 
         // set  'add on fb button' to redirect to fb url on click
+        final String facebookUrl = user.getString("facebookURL");
         btFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -307,7 +295,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    // creates intent to view newly added contact
+    // creates intent to view given contact
     void viewContact(String contactId) {
         Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
         Intent intent = new Intent(Intent.ACTION_VIEW);

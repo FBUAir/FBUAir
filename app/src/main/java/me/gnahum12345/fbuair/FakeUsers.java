@@ -5,52 +5,39 @@ import org.json.JSONObject;
 
 public class FakeUsers {
     // placeholder users to add
-    public static JSONObject jsonUser0;
-    {
-        try {
-            // populate fields
-            jsonUser0 = new JSONObject()
-                    .put("name", "Mariam Diallo")
-                    .put("phone", "2938472633")
-                    .put("email", "mariam@gmail.com")
-                    .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static JSONObject jsonUser1;
+    public JSONObject jsonUser1;
     {
         try {
             // populate fields
             jsonUser1 = new JSONObject()
-                    .put("name", "Foo Bar")
+                    .put("name", "Reese Jones")
                     .put("phone", "5478392306")
-                    .put("email", "foobar@gmail.com")
-                    .put("organization", "");
+                    .put("email", "r2345@yahoo.com")
+                    .put("organization", "Pinterest")
+                    .put("facebookURL", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     // duplicate name
-    public static JSONObject jsonUser2;
+    public JSONObject jsonUser2;
     {
         try {
             // populate fields
             jsonUser2 = new JSONObject()
-                    .put("name", "Foo Bar")
+                    .put("name", "Reese Jones")
                     .put("phone", "7482034937")
                     .put("email", "")
-                    .put("organization", "Google");
+                    .put("organization", "Google")
+                    .put("facebookURL", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     // duplicate number
-    public static JSONObject jsonUser3;
+    public JSONObject jsonUser3;
     {
         try {
             // populate fields
@@ -58,61 +45,82 @@ public class FakeUsers {
                     .put("name", "Mary Smith")
                     .put("phone", "5478392306")
                     .put("email", "mary@gmail.com")
-                    .put("organization", "");
+                    .put("organization", "")
+                    .put("facebookURL", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
 
     // duplicate email
-    public static JSONObject jsonUser4;
+    public JSONObject jsonUser4;
     {
         try {
             // populate fields
             jsonUser4 = new JSONObject()
-                    .put("name", "James Smith")
+                    .put("name", "Ryan Smith")
                     .put("phone", "4958203748")
-                    .put("email", "foobar@gmail.com")
-                    .put("organization", "Airbnb");
+                    .put("email", "r2345@yahoo.com")
+                    .put("organization", "Airbnb")
+                    .put("facebookURL", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    public static JSONObject jsonUser5;
+    public JSONObject jsonUser5;
     {
         try {
             // populate fields
             jsonUser5 = new JSONObject()
-                    .put("name", "James Smith")
+                    .put("name", "Gaby Nahum")
                     .put("phone", "2039481726")
-                    .put("email", "")
-                    .put("organization", "");
+                    .put("email", "gabyn@yahoo.com")
+                    .put("organization", "Facebook")
+                    .put("facebookURL", "https://www.facebook.com/gnahum12345");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    public static JSONObject jsonUser6;
+    // has +1 in number
+    public JSONObject jsonUser6;
     {
         try {
             // populate fields
             jsonUser6 = new JSONObject()
-                    .put("name", "James")
-                    .put("phone", "2039481726")
-                    .put("email", "")
-                    .put("organization", "Amazon");
+                    .put("name", "Gaby Garcia")
+                    .put("phone", "19283742837")
+                    .put("email", "gabyg@gmail.com")
+                    .put("organization", "Facebook")
+                    .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406");
         } catch (JSONException e) {
             e.printStackTrace();
         }
     }
-    public static JSONObject jsonUser7;
+    // no last name
+    public JSONObject jsonUser7;
     {
         try {
             // populate fields
             jsonUser7 = new JSONObject()
-                    .put("name", "Lo")
+                    .put("name", "Mike")
                     .put("phone", "2938401927")
-                    .put("email", "")
-                    .put("organization", "");
+                    .put("email", "mike@fb.com")
+                    .put("organization", "Facebook")
+                    .put("facebookURL", "https://www.facebook.com/mikecole20");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    public JSONObject jsonUser8;
+    {
+        try {
+            // populate fields
+            jsonUser8 = new JSONObject()
+                    .put("name", "Mariam Diallo")
+                    .put("phone", "2938472633")
+                    .put("email", "mariam@gmail.com")
+                    .put("organization", "Facebook")
+                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9");
         } catch (JSONException e) {
             e.printStackTrace();
         }

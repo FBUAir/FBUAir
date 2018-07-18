@@ -27,7 +27,10 @@ public class User {
 
     public String getEmail() { return email; }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
     public String getFacebookURL() { return facebookURL; }
 
     //public Date getCreatedAt() { return createdAt; }
