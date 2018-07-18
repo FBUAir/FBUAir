@@ -36,7 +36,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser1 = new JSONObject()
                     .put("name", "Foo Bar")
                     .put("phone", "5478392306")
-                    .put("email", "foobar@gmail.com");
+                    .put("email", "foobar@gmail.com")
+                    .put("organization", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -50,7 +51,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser2 = new JSONObject()
                     .put("name", "Foo Bar")
                     .put("phone", "7482034937")
-                    .put("email", "");
+                    .put("email", "")
+                    .put("organization", "Google");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -64,7 +66,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser3 = new JSONObject()
                     .put("name", "Mary Smith")
                     .put("phone", "5478392306")
-                    .put("email", "mary@gmail.com");
+                    .put("email", "mary@gmail.com")
+                    .put("organization", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -78,7 +81,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser4 = new JSONObject()
                     .put("name", "James Smith")
                     .put("phone", "4958203748")
-                    .put("email", "foobar@gmail.com");
+                    .put("email", "foobar@gmail.com")
+                    .put("organization", "Airbnb");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -90,7 +94,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser5 = new JSONObject()
                     .put("name", "James Smith")
                     .put("phone", "2039481726")
-                    .put("email", "");
+                    .put("email", "")
+                    .put("organization", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -102,7 +107,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser6 = new JSONObject()
                     .put("name", "James")
                     .put("phone", "2039481726")
-                    .put("email", "");
+                    .put("email", "")
+                    .put("organization", "Amazon");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -114,7 +120,8 @@ public class AddContactActivity extends AppCompatActivity {
             jsonUser7 = new JSONObject()
                     .put("name", "Lo")
                     .put("phone", "2938401927")
-                    .put("email", "");
+                    .put("email", "")
+                    .put("organization", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -160,8 +167,8 @@ public class AddContactActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (noConflict(jsonUser3)) {
-                        addContact(jsonUser3);
+                    if (noConflict(jsonUser2)) {
+                        addContact(jsonUser2);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -191,6 +198,7 @@ public class AddContactActivity extends AppCompatActivity {
         String name = user.getString("name");
         String phone = user.getString("phone");
         String email = user.getString("email");
+        String organization = user.getString("organization");
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -206,6 +214,13 @@ public class AddContactActivity extends AppCompatActivity {
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                .build());
+        // add organization
+        ops.add(ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                .withValue(CommonDataKinds.Organization.TITLE, organization)
                 .build());
         // add number
         ops.add(ContentProviderOperation
