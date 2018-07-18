@@ -195,26 +195,6 @@ public class ProfileActivity extends AppCompatActivity{
         saveUserTwo(user);
     }
 
-    private void addContact(String name, String organization, String phoneNumber, String email, String facebookURL){
-        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-        // Sets the MIME type to match the Contacts Provider
-        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-        // insert user's info into intent
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, name)
-                .putExtra(ContactsContract.Intents.Insert.COMPANY, organization)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL, email)
-                .putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber)
-                .putExtra(ContactsContract.Intents.Insert.NOTES, facebookURL)
-
-                // insert email and phone types
-                .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_HOME);
-
-        // send the intent
-        startActivity(intent);
-    }
-
-
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("current_user", user.toJson(user).toString());
