@@ -15,7 +15,6 @@ public class User {
     public String organization;
     public String phoneNumber;
     public String email;
-    public String address;
     public String facebookURL;
     public Bitmap ivProfileImage;
     //public Date createdAt;
@@ -28,7 +27,6 @@ public class User {
 
     public String getEmail() { return email; }
 
-    public String getAddress() { return address; }
 
     public String getFacebookURL() { return facebookURL; }
 
@@ -49,8 +47,6 @@ public class User {
 
     public void setEmail(String email) { this.email = email; }
 
-    public void setAddress(String address) { this.address = address; }
-
     public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
 
     public static User fromJson(JSONObject json) throws JSONException {
@@ -59,7 +55,6 @@ public class User {
         user.organization = json.getString("organization");
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
-        user.address = json.getString("address");
         user.facebookURL = json.getString("facebookURL");
         String profileImage = json.getString("ivProfileImage");
         user.ivProfileImage = toBitMap(profileImage);
@@ -72,7 +67,6 @@ public class User {
         String organization = user.getOrganization();
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
-        String address = user.getAddress();
         String facebookURL = user.getFacebookURL();
         Bitmap profileImage = user.getIvProfileImage();
         String ivProfileInage = toBitMapString(profileImage);
@@ -82,7 +76,6 @@ public class User {
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);
-        json.put("address", address);
         json.put("facebookURL", facebookURL);
         json.put("ivProfileImage", ivProfileInage);
 

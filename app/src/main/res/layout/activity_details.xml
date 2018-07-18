@@ -64,21 +64,11 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/etAddress"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etEmail"
-            android:ems="10"
-            android:hint="Address"
-            android:inputType="textPostalAddress" />
-
-        <EditText
             android:id="@+id/etFacebookURL"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etAddress"
+            android:layout_below="@+id/etEmail"
             android:ems="10"
             android:hint="Facebook URL"
             android:inputType="textUri" />
@@ -102,18 +92,10 @@
             app:srcCompat="@drawable/email_icon" />
 
         <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_below="@+id/etEmail"
-            app:srcCompat="@drawable/home_icon" />
-
-        <ImageView
             android:id="@+id/imageView4"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_below="@+id/etAddress"
+            android:layout_below="@+id/etEmail"
             android:layout_toStartOf="@+id/etPhone"
             app:srcCompat="@drawable/facebook_icon" />
 

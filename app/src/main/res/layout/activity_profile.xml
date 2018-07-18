@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content">
-
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -16,16 +10,16 @@
             android:id="@+id/ivProfileImage"
             android:layout_width="100dp"
             android:layout_height="100dp"
+            android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
             app:srcCompat="@android:color/black" />
 
         <EditText
             android:id="@+id/etPhone"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView"
+            android:layout_alignStart="@+id/btnProfileIImage"
+            android:layout_below="@+id/etOrganization"
             android:ems="10"
             android:hint="Phone Number"
             android:inputType="phone" />
@@ -35,7 +29,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/ivProfileImage"
+            android:layout_below="@+id/btnProfileIImage"
             android:ems="10"
             android:hint="Name"
             android:inputType="textPersonName"
@@ -65,21 +59,11 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/etAddress"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etEmail"
-            android:ems="10"
-            android:hint="Address"
-            android:inputType="textPostalAddress" />
-
-        <EditText
             android:id="@+id/etFacebookURL"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etAddress"
+            android:layout_below="@+id/etEmail"
             android:ems="10"
             android:hint="Facebook URL"
             android:inputType="textUri" />
@@ -93,38 +77,36 @@
             android:text="Create Profile" />
 
         <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="226dp"
-            app:srcCompat="@drawable/phone_icon" />
-
-        <ImageView
             android:id="@+id/imageView2"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
             android:layout_below="@+id/etPhone"
+            android:layout_toStartOf="@+id/etPhone"
             app:srcCompat="@drawable/email_icon" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_below="@+id/etEmail"
-            app:srcCompat="@drawable/home_icon" />
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_below="@+id/etAddress"
+            android:layout_below="@+id/etEmail"
             android:layout_toStartOf="@+id/etPhone"
             app:srcCompat="@drawable/facebook_icon" />
 
+        <ImageButton
+            android:id="@+id/btnProfileIImage"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@drawable/ic_launcher_round_grey"
+            android:scaleType="centerCrop" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignBottom="@+id/etPhone"
+            android:layout_toStartOf="@+id/etPhone"
+            app:srcCompat="@drawable/phone_icon" />
+
     </RelativeLayout>
-</android.support.v7.widget.CardView>
