@@ -6,101 +6,168 @@
         android:layout_height="match_parent"
         android:foreground="?android:attr/selectableItemBackground">
 
-        <ImageView
-            android:id="@+id/ivProfileImage"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true"
-            app:srcCompat="@android:color/black" />
+    <EditText
+        android:id="@+id/etFacebookURL"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etPhone"
+        android:layout_alignTop="@+id/ivFacebook"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="phone" />
 
-        <EditText
-            android:id="@+id/etPhone"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView"
-            android:ems="10"
-            android:hint="Phone Number"
-            android:inputType="phone" />
-
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/ivProfileImage"
-            android:ems="10"
-            android:hint="Name"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:focusedByDefault="true"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/etOrganization"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/etName"
-            android:ems="10"
-            android:hint="Organization"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textColor="@android:color/darker_gray" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etPhone"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
-
-        <EditText
-            android:id="@+id/etFacebookURL"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etEmail"
-            android:ems="10"
-            android:hint="Facebook URL"
-            android:inputType="textUri" />
-
-        <Button
-            android:id="@+id/btnCheck"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:text="Create Profile" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="226dp"
-            app:srcCompat="@drawable/phone_icon" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_below="@+id/etPhone"
-            app:srcCompat="@drawable/email_icon" />
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etPhone"
+        android:layout_alignTop="@+id/ivEmail"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="phone" />
 
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/ivProfileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@android:color/black" />
+
+
+    <TextView
+        android:id="@+id/tvNameError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/ivProfileImage"
+        android:text="TextView"
+        android:textSize="12sp"
+        tools:text="error message" />
+
+    <TextView
+        android:id="@+id/tvPhoneError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etOrganization"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        tools:text="error message" />
+
+    <TextView
+        android:id="@+id/tvEmailError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etPhone"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        tools:text="error message" />
+
+    <TextView
+        android:id="@+id/tvFacebookError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivEmail"
+        android:layout_marginTop="10dp"
+        android:text="TextView"
+        android:textSize="12sp"
+        tools:text="error message" />
+
+    <EditText
+        android:id="@+id/etPhone"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivPhone"
+        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@+id/ivPhone"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvNameError"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:focusedByDefault="true"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColor="@android:color/black" />
+
+    <EditText
+        android:id="@+id/etOrganization"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etName"
+        android:layout_marginTop="-10dp"
+        android:ems="10"
+        android:hint="Organization"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColor="@android:color/darker_gray" />
+
+    <Button
+        android:id="@+id/btnCheck"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Create Profile" />
+
+    <ImageView
+        android:id="@+id/ivPhone"
         android:layout_width="46dp"
         android:layout_height="46dp"
-        android:layout_below="@+id/etEmail"
-        android:layout_toStartOf="@+id/etPhone"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvPhoneError"
+        app:srcCompat="@drawable/phone_icon" />
+
+    <ImageView
+        android:id="@+id/ivEmail"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvEmailError"
+        app:srcCompat="@drawable/email_icon" />
+
+    <ImageView
+        android:id="@+id/ivFacebook"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvFacebookError"
         app:srcCompat="@drawable/facebook_icon" />
+
+    <TextView
+        android:id="@+id/tvAsterisk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/etPhone"
+        android:layout_toEndOf="@+id/etPhone"
+        android:text="TextView"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
+
+    <TextView
+        android:id="@+id/tvAsterisk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/etName"
+        android:text="TextView"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
 
 </RelativeLayout>

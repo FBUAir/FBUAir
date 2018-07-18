@@ -73,7 +73,7 @@ public class ProfileActivity extends AppCompatActivity{
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 try {
-                    // check for valid profile before submitting
+                    // check for valid profile before submitting (method shows error messages if false)
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();

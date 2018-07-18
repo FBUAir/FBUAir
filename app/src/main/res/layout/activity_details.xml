@@ -23,8 +23,8 @@
             android:id="@+id/etPhone"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView"
+            android:layout_alignTop="@+id/ivPhone"
+            android:layout_toEndOf="@+id/ivPhone"
             android:ems="10"
             android:hint="Phone Number"
             android:inputType="phone" />
@@ -84,7 +84,7 @@
             android:inputType="textUri" />
 
         <ImageView
-            android:id="@+id/imageView"
+            android:id="@+id/ivPhone"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:layout_alignParentStart="true"
@@ -97,7 +97,7 @@
             android:id="@+id/imageView2"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
+            android:layout_alignStart="@+id/ivPhone"
             android:layout_below="@+id/etPhone"
             app:srcCompat="@drawable/email_icon" />
 
@@ -105,7 +105,7 @@
             android:id="@+id/imageView3"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
+            android:layout_alignStart="@+id/ivPhone"
             android:layout_below="@+id/etEmail"
             app:srcCompat="@drawable/home_icon" />
 
