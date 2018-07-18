@@ -10,9 +10,8 @@ import android.view.MenuItem;
 
 import java.util.ArrayList;
 
-import me.gnahum12345.fbuair.Adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.ProfileActivity;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 
 public class DiscoverActivity extends AppCompatActivity {
 

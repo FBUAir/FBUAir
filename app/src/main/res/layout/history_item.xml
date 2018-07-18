@@ -17,7 +17,7 @@
         app:srcCompat="@android:color/black" />
 
     <TextView
-        android:id="@+id/tvtName"
+        android:id="@+id/tvName"
         android:layout_width="239dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"

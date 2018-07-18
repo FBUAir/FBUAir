@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.Adapters;
+package me.gnahum12345.fbuair.adapters;
 
 
 import android.content.Context;
