@@ -12,7 +12,7 @@
         android:foreground="?android:attr/selectableItemBackground">
 
         <ImageView
-            android:id="@+id/ivProfileImage"
+            android:id="@+id/ivFacebookIcon"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentTop="true"
@@ -23,8 +23,8 @@
             android:id="@+id/etPhone"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/ivPhone"
-            android:layout_toEndOf="@+id/ivPhone"
+            android:layout_alignTop="@+id/imageView"
+            android:layout_toEndOf="@+id/imageView"
             android:ems="10"
             android:hint="Phone Number"
             android:inputType="phone" />
@@ -34,7 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/ivProfileImage"
+            android:layout_below="@+id/ivFacebookIcon"
             android:ems="10"
             android:hint="Name"
             android:inputType="textPersonName"
@@ -64,27 +64,17 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/etAddress"
+            android:id="@+id/etFacebookURL"
             android:layout_width="265dp"
             android:layout_height="wrap_content"
             android:layout_alignStart="@+id/etPhone"
             android:layout_below="@+id/etEmail"
             android:ems="10"
-            android:hint="Address"
-            android:inputType="textPostalAddress" />
-
-        <EditText
-            android:id="@+id/etFacebookURL"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etAddress"
-            android:ems="10"
             android:hint="Facebook URL"
             android:inputType="textUri" />
 
         <ImageView
-            android:id="@+id/ivPhone"
+            android:id="@+id/imageView"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:layout_alignParentStart="true"
@@ -97,23 +87,15 @@
             android:id="@+id/imageView2"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_alignStart="@+id/ivPhone"
+            android:layout_alignStart="@+id/imageView"
             android:layout_below="@+id/etPhone"
             app:srcCompat="@drawable/email_icon" />
-
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignStart="@+id/ivPhone"
-            android:layout_below="@+id/etEmail"
-            app:srcCompat="@drawable/home_icon" />
 
         <ImageView
             android:id="@+id/imageView4"
             android:layout_width="46dp"
             android:layout_height="46dp"
-            android:layout_below="@+id/etAddress"
+            android:layout_below="@+id/etEmail"
             android:layout_toStartOf="@+id/etPhone"
             app:srcCompat="@drawable/facebook_icon" />
 
