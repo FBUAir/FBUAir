@@ -7,14 +7,25 @@ import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.PhoneNumberUtils;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.Charset;
 
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.R;
@@ -40,16 +51,18 @@ public class ProfileActivity extends AppCompatActivity{
         setContentView(R.layout.activity_profile);
         context = this;
 
-        ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
-        etName = (EditText) findViewById(R.id.etName);
-        etOrganization = (EditText) findViewById(R.id.etOrganization);
-        etPhoneNumber = (EditText) findViewById(R.id.etPhone);
-        etEmail = (EditText) findViewById(R.id.etEmail);
-        etAddress = (EditText) findViewById(R.id.etAddress);
-        etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
-        btnCheck = (Button) findViewById(R.id.btnCheck);
+        ivProfileImage = findViewById(R.id.ivProfileImage);
+        etName = findViewById(R.id.etName);
+        etOrganization = findViewById(R.id.etOrganization);
+        etPhoneNumber = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
+        etFacebookURL = findViewById(R.id.etFacebookURL);
+        btnCheck = findViewById(R.id.btnCheck);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        // add formatter to phone number field
+        etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         btnCheck.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,12 +71,13 @@ public class ProfileActivity extends AppCompatActivity{
                 final String organization = etOrganization.getText().toString();
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
-                final String address = etAddress.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 try {
-                    createProfile(name, organization, phoneNumber, email, address, facebookURL);
-                    addContact(name, organization, phoneNumber, email, address, facebookURL);
-                    Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                    // check for valid profile before submitting
+                    if (isValidProfile(name, phoneNumber, email, facebookURL)) {
+                        createProfile(name, organization, phoneNumber, email, facebookURL);
+                        Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -82,37 +96,59 @@ public class ProfileActivity extends AppCompatActivity{
 
     }
 
-    private void createProfile(String name, String organization, String phoneNumber, String email, String address, String facebookURL) throws JSONException {
+    // checks if profile is valid before submitting. if not, sets invalid fields red
+    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+        boolean valid = true;
+        if (name.isEmpty()) {
+            etName.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!email.isEmpty() && !isValidEmail(email)) {
+            etEmail.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!isValidPhoneNumber(phone)) {
+            etPhoneNumber.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
+            etFacebookURL.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            valid = false;
+        }
+        return valid;
+    }
+
+    // validity checkers
+    public static boolean isValidEmail(CharSequence email) {
+        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+    }
+
+    public static boolean isValidPhoneNumber(String number) {
+        return android.util.Patterns.PHONE.matcher(number).matches();
+    }
+
+    public static boolean isValidFacebookUrl(String facebookUrlString) {
+        URL facebookUrl;
+        try {
+            facebookUrl = new URL(facebookUrlString);
+            if (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrl.getHost().contains("facebook")) {
+                return true;
+            }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL) throws JSONException {
         User user = new User();
         user.setName(name);
         user.setOrganization(organization);
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
-        user.setAddress(address);
         user.setFacebookURL(facebookURL);
         saveUserTwo(user);
     }
-    
-    private void addContact(String name, String organization, String phoneNumber, String email, String address, String facebookURL){
-        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-        // Sets the MIME type to match the Contacts Provider
-        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-        // insert user's info into intent
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, name)
-                .putExtra(ContactsContract.Intents.Insert.COMPANY, organization)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL, email)
-                .putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber)
-                .putExtra(ContactsContract.Intents.Insert.POSTAL, address)
-                .putExtra(ContactsContract.Intents.Insert.NOTES, facebookURL)
-
-                // insert email and phone types
-                .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_HOME);
-
-        // send the intent
-        startActivity(intent);
-    }
-
 
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
