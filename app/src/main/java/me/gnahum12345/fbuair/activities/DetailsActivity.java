@@ -54,6 +54,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     // current profile whose details are being views
     JSONObject user;
+    // todo - is this necessary?
     String name;
     String organization;
     String phone;
@@ -75,7 +76,8 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details2);
 
         // set user (would be from intent or something, but placeholder for now)
-        user = FakeUsers.jsonUser1;
+        FakeUsers fakeUsers = new FakeUsers();
+        user = fakeUsers.jsonUser0;
 
         // get references to views
         ivImage = findViewById(R.id.ivImage);

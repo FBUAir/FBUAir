@@ -4,7 +4,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class FakeUsers {
-
     // placeholder users to add
     public static JSONObject jsonUser0;
     {
