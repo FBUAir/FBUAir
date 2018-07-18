@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.Activities;
+package me.gnahum12345.fbuair.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,7 @@ import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.Adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.ProfileActivity;
 
 public class DiscoverActivity extends AppCompatActivity {
 

@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.Activities;
+package me.gnahum12345.fbuair.activities;
 
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;

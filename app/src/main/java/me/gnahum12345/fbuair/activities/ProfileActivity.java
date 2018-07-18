@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair.Activities;
+package me.gnahum12345.fbuair.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -16,7 +16,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
-import me.gnahum12345.fbuair.Models.User;
+import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.R;
 
 public class ProfileActivity extends AppCompatActivity{
@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity{
         if(current_user != null) {
             Toast.makeText(ProfileActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
             Log.d("MadeUser", current_user);
-            Intent intent = new Intent(ProfileActivity.this, DiscoverActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, me.gnahum12345.fbuair.Activities.DiscoverActivity.class);
             startActivity(intent);
         }
 
