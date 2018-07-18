@@ -55,9 +55,14 @@ public class DiscoverActivity extends AppCompatActivity {
         }
     }
 
-    public void onClick(MenuItem mi) {
+    public void onProfileClick(MenuItem mi) {
         // handle click here
         Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+    public void onHistoryClick(MenuItem mi) {
+        // handle click here
+        Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
 

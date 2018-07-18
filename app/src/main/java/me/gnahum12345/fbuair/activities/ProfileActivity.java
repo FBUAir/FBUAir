@@ -91,7 +91,7 @@ public class ProfileActivity extends AppCompatActivity{
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     /**
                     // check for valid profile before submitting
->>>>>>> e15e590b4e928b884bb920a6e8cdb8e3cdeb0c1e
+
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         addContact(name, organization, phoneNumber, email, facebookURL);
