@@ -26,6 +26,8 @@
         </activity>
         <activity android:name="me.gnahum12345.fbuair.activities.ProfileActivity">
         </activity>
+        <activity android:name="me.gnahum12345.fbuair.activities.HistoryActivity">
+        </activity>
     </application>
 
 </manifest>
