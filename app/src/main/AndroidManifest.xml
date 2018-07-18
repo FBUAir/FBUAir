@@ -2,9 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="me.gnahum12345.fbuair">
 
-    <uses-permission android:name="android.permission.READ_CONTACTS"/>
-    <uses-permission android:name="android.permission.WRITE_CONTACTS"/>
-    <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL"/>
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="com.google.android.gm.permission.READ_GMAIL" />
 
     <application
         android:allowBackup="true"
@@ -13,20 +13,16 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="me.gnahum12345.fbuair.activities.MainActivity">
-        </activity>
-        <activity android:name="me.gnahum12345.fbuair.activities.DiscoverActivity">
+        <activity android:name=".activities.MainActivity"/>
+        <activity android:name=".activities.DiscoverActivity"/>
+        <activity android:name=".activities.ProfileActivity"/>
+        <activity android:name=".activities.HistoryActivity"/>
+        <activity android:name=".activities.DetailsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name="me.gnahum12345.fbuair.activities.AddContactActivity">
-        </activity>
-        <activity android:name="me.gnahum12345.fbuair.activities.ProfileActivity">
-        </activity>
-        <activity android:name="me.gnahum12345.fbuair.activities.HistoryActivity">
         </activity>
     </application>
 

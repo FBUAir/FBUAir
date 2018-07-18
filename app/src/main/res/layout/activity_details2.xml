@@ -4,8 +4,48 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/rlAddContact"
-    tools:context=".activities.AddContactActivity">
+    tools:context=".activities.DetailsActivity">
+
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        app:srcCompat="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivImage"
+        android:layout_centerHorizontal="true"
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/tvOrganization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvName"
+        android:layout_centerHorizontal="true"
+        android:text="Organization" />
+
+    <TextView
+        android:id="@+id/tvPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvOrganization"
+        android:layout_centerHorizontal="true"
+        android:text="Phone" />
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhone"
+        android:layout_centerHorizontal="true"
+        android:text="Email" />
 
     <Button
         android:id="@+id/btAddContact"
@@ -61,7 +101,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            android:text="Phone/Email already exists in Contacts!" />
+            android:text="Conflict message" />
 
         <TextView
             android:id="@+id/tvViewConflict"
@@ -81,5 +121,14 @@
             android:text="ADD ANYWAY"
             android:textColor="@android:color/holo_blue_light" />
     </RelativeLayout>
+
+    <Button
+        android:id="@+id/btFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="130dp"
+        android:text="Add on FB" />
 
 </RelativeLayout>

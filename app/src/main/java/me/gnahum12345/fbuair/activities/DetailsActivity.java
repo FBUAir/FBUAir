@@ -14,113 +14,30 @@ import android.provider.ContactsContract.CommonDataKinds;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
+import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
 
-public class AddContactActivity extends AppCompatActivity {
-
-    // placeholder users to add
-    JSONObject jsonUser1;
-    {
-        try {
-            // populate fields
-            jsonUser1 = new JSONObject()
-                    .put("name", "Foo Bar")
-                    .put("phone", "5478392306")
-                    .put("email", "foobar@gmail.com");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // duplicate name
-    JSONObject jsonUser2;
-    {
-        try {
-            // populate fields
-            jsonUser2 = new JSONObject()
-                    .put("name", "Foo Bar")
-                    .put("phone", "7482034937")
-                    .put("email", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // duplicate number
-    JSONObject jsonUser3;
-    {
-        try {
-            // populate fields
-            jsonUser3 = new JSONObject()
-                    .put("name", "Mary Smith")
-                    .put("phone", "5478392306")
-                    .put("email", "mary@gmail.com");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-
-    // duplicate email
-    JSONObject jsonUser4;
-    {
-        try {
-            // populate fields
-            jsonUser4 = new JSONObject()
-                    .put("name", "James Smith")
-                    .put("phone", "4958203748")
-                    .put("email", "foobar@gmail.com");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    JSONObject jsonUser5;
-    {
-        try {
-            // populate fields
-            jsonUser5 = new JSONObject()
-                    .put("name", "James Smith")
-                    .put("phone", "2039481726")
-                    .put("email", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    JSONObject jsonUser6;
-    {
-        try {
-            // populate fields
-            jsonUser6 = new JSONObject()
-                    .put("name", "James")
-                    .put("phone", "2039481726")
-                    .put("email", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
-    JSONObject jsonUser7;
-    {
-        try {
-            // populate fields
-            jsonUser7 = new JSONObject()
-                    .put("name", "Lo")
-                    .put("phone", "2938401927")
-                    .put("email", "");
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-    }
+public class DetailsActivity extends AppCompatActivity {
 
     // views
+    // user info views
+    ImageView ivImage;
+    TextView tvName;
+    TextView tvOrganization;
+    TextView tvPhone;
+    TextView tvEmail;
+
+    // add contact views
     Button btAddContact;
     RelativeLayout rlContactOptions;
     TextView tvUndo;
@@ -129,6 +46,18 @@ public class AddContactActivity extends AppCompatActivity {
     TextView tvViewConflict;
     TextView tvIgnoreConflict;
     TextView tvConflictMessage;
+
+    // add on social media views
+    Button btFacebook;
+
+    // current profile whose details are being views
+    JSONObject user;
+    // todo - is this necessary?
+    String name;
+    String organization;
+    String phone;
+    String email;
+    String facebookUrl;
 
     // user contact IDs
     String contactId;
@@ -142,9 +71,19 @@ public class AddContactActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_contact);
+        setContentView(R.layout.activity_details2);
+
+        // set user (would be from intent or something, but placeholder for now)
+        FakeUsers fakeUsers = new FakeUsers();
+        user = fakeUsers.jsonUser0;
 
         // get references to views
+        ivImage = findViewById(R.id.ivImage);
+        tvName = findViewById(R.id.tvName);
+        tvOrganization = findViewById(R.id.tvOrganization);
+        tvPhone = findViewById(R.id.tvPhone);
+        tvEmail = findViewById(R.id.tvEmail);
+        btFacebook = findViewById(R.id.btFacebook);
         btAddContact = findViewById(R.id.btAddContact);
         rlContactOptions = findViewById(R.id.rlContactOptions);
         tvUndo = findViewById(R.id.tvUndo);
@@ -154,14 +93,21 @@ public class AddContactActivity extends AppCompatActivity {
         tvIgnoreConflict = findViewById(R.id.tvIgnoreConflict);
         tvConflictMessage = findViewById(R.id.tvConflictMessage);
 
+        // get user info and display in views
+        try {
+            setInfo();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
         // CLICK HANDLERS
-        // add new contact when button is clicked
+        // add contact when add contact button is clicked
         btAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 try {
-                    if (noConflict(jsonUser3)) {
-                        addContact(jsonUser3);
+                    if (noConflict(user)) {
+                        addContact(user);
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -186,11 +132,39 @@ public class AddContactActivity extends AppCompatActivity {
         });
     }
 
+    // sets class variables to user's info and sets views to display this info
+    void setInfo() throws JSONException {
+        // set class vars
+        name = user.getString("name");
+        organization = user.getString("organization");
+        phone = user.getString("phone");
+        email = user.getString("email");
+        facebookUrl = user.getString("facebookURL");
+
+        // set views
+        tvName.setText(name);
+        tvOrganization.setText(organization);
+        tvPhone.setText(phone);
+        tvEmail.setText(email);
+
+        // set  'add on fb button' to redirect to fb url on click
+        btFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(facebookUrl));
+                startActivity(i);
+            }
+        });
+    }
+
+    // adds given json user to contacts
     void addContact(JSONObject user) throws JSONException {
         // get user's info
         String name = user.getString("name");
         String phone = user.getString("phone");
         String email = user.getString("email");
+        String organization = user.getString("organization");
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -206,6 +180,13 @@ public class AddContactActivity extends AppCompatActivity {
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                .build());
+        // add organization
+        ops.add(ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                .withValue(CommonDataKinds.Organization.TITLE, organization)
                 .build());
         // add number
         ops.add(ContentProviderOperation
