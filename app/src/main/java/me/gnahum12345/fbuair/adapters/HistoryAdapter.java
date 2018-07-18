@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.adapters;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
@@ -15,6 +16,7 @@ import java.util.Date;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.DetailsActivity;
 import me.gnahum12345.fbuair.models.User;
 
 
@@ -49,7 +51,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO makes an intent to go to Details Activity
+                Intent i = new Intent(mContext, DetailsActivity.class);
+                mContext.startActivity(i);
 
             }
         });
