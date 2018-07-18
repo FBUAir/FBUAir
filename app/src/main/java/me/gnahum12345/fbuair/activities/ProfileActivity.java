@@ -76,7 +76,7 @@ public class ProfileActivity extends AppCompatActivity{
         if(current_user != null) {
             Toast.makeText(ProfileActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
             Log.d("MadeUser", current_user);
-            Intent intent = new Intent(ProfileActivity.this, me.gnahum12345.fbuair.Activities.DiscoverActivity.class);
+            Intent intent = new Intent(ProfileActivity.this, DiscoverActivity.class);
             startActivity(intent);
         }
 
