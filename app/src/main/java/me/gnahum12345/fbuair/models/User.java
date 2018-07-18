@@ -1,9 +1,14 @@
 package me.gnahum12345.fbuair.models;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
 import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 
 public class User {
     public String name;
@@ -12,6 +17,8 @@ public class User {
     public String email;
     public String address;
     public String facebookURL;
+    public Bitmap ivProfileImage;
+    //public Date createdAt;
 
     public String getName() { return name; }
 
@@ -24,6 +31,15 @@ public class User {
     public String getAddress() { return address; }
 
     public String getFacebookURL() { return facebookURL; }
+
+    //public Date getCreatedAt() { return createdAt; }
+
+    //public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
+
+
+    public Bitmap getIvProfileImage() { return ivProfileImage; }
+
+    public void setIvProfileImage(Bitmap ivProfileImage) { this.ivProfileImage = ivProfileImage; }
 
     public void setName(String name) { this.name = name; }
 
@@ -45,6 +61,8 @@ public class User {
         user.email = json.getString("email");
         user.address = json.getString("address");
         user.facebookURL = json.getString("facebookURL");
+        String profileImage = json.getString("ivProfileImage");
+        user.ivProfileImage = toBitMap(profileImage);
         return user;
 
     }
@@ -56,6 +74,8 @@ public class User {
         String email = user.getEmail();
         String address = user.getAddress();
         String facebookURL = user.getFacebookURL();
+        Bitmap profileImage = user.getIvProfileImage();
+        String ivProfileInage = toBitMapString(profileImage);
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -64,10 +84,30 @@ public class User {
         json.put("email", email);
         json.put("address", address);
         json.put("facebookURL", facebookURL);
+        json.put("ivProfileImage", ivProfileInage);
 
         Log.d("toJson", json.toString());
         return json;
 
+    }
+
+    public static Bitmap toBitMap(String encodedString){
+        try {
+            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
+            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            return bitmap;
+        } catch(Exception e) {
+            e.getMessage();
+            return null;
+        }
+    }
+
+    public static String toBitMapString(Bitmap bitmap){
+        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
+        byte [] b=baos.toByteArray();
+        String temp=Base64.encodeToString(b, Base64.DEFAULT);
+        return temp;
     }
 
 
