@@ -15,10 +15,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.PhoneNumberUtils;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -26,23 +23,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
 
-<<<<<<< HEAD
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-
-=======
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 
-import me.gnahum12345.fbuair.models.User;
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
@@ -71,8 +61,8 @@ public class ProfileActivity extends AppCompatActivity{
         setContentView(R.layout.activity_profile);
         context = this;
 
-<<<<<<< HEAD
-        ivProfileImage = (ImageView) findViewById(R.id.ivProfileImage);
+
+        ivProfileImage = (ImageView) findViewById(R.id.ivFacebookIcon);
         etName = (EditText) findViewById(R.id.etName);
         etOrganization = (EditText) findViewById(R.id.etOrganization);
         etPhoneNumber = (EditText) findViewById(R.id.etPhone);
@@ -80,15 +70,14 @@ public class ProfileActivity extends AppCompatActivity{
         etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
         btnCheck = (Button) findViewById(R.id.btnCheck);
         btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
-=======
-        ivProfileImage = findViewById(R.id.ivProfileImage);
+
+        ivProfileImage = findViewById(R.id.ivFacebookIcon);
         etName = findViewById(R.id.etName);
         etOrganization = findViewById(R.id.etOrganization);
         etPhoneNumber = findViewById(R.id.etPhone);
         etEmail = findViewById(R.id.etEmail);
         etFacebookURL = findViewById(R.id.etFacebookURL);
-        btnCheck = findViewById(R.id.btnCheck);
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
+
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
@@ -104,17 +93,17 @@ public class ProfileActivity extends AppCompatActivity{
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
                 try {
-<<<<<<< HEAD
+
                     createProfile(name, organization, phoneNumber, email, facebookURL);
                     addContact(name, organization, phoneNumber, email, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
-=======
+
                     // check for valid profile before submitting
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     }
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -125,7 +114,6 @@ public class ProfileActivity extends AppCompatActivity{
         btnProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //startActivityForResult(new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.INTERNAL_CONTENT_URI), 3);
                 showDialog();
             }
         });
@@ -141,8 +129,6 @@ public class ProfileActivity extends AppCompatActivity{
 
     }
 
-<<<<<<< HEAD
-=======
     // checks if profile is valid before submitting. if not, sets invalid fields red
     public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
         boolean valid = true;
@@ -187,7 +173,6 @@ public class ProfileActivity extends AppCompatActivity{
         return false;
     }
 
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
     private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL) throws JSONException {
         User user = new User();
         user.setName(name);
@@ -195,10 +180,10 @@ public class ProfileActivity extends AppCompatActivity{
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
+        //TODO SET PROFILE IMAGE user.setIvProfileImage();
         saveUserTwo(user);
     }
-<<<<<<< HEAD
-    
+
     private void addContact(String name, String organization, String phoneNumber, String email, String facebookURL){
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         // Sets the MIME type to match the Contacts Provider
@@ -218,8 +203,6 @@ public class ProfileActivity extends AppCompatActivity{
         startActivity(intent);
     }
 
-=======
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
 
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();

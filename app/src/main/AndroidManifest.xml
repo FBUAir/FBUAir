@@ -14,29 +14,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".activities.MainActivity"/>
-<<<<<<< HEAD
         <activity android:name=".activities.DetailsActivity"/>
         <activity android:name=".activities.ProfileActivity"/>
         <activity android:name=".activities.HistoryActivity"/>
         <activity android:name=".activities.DiscoverActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-=======
-        <activity android:name=".activities.DiscoverActivity"/>
-        <activity android:name=".activities.ProfileActivity">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
+        </activity>
 
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
-        </activity>
-        <activity android:name=".activities.HistoryActivity"/>
-        <activity android:name=".activities.DetailsActivity">
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
-        </activity>
     </application>
 
 </manifest>

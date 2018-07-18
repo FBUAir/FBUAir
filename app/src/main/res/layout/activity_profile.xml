@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< HEAD
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-=======
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
+
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -11,7 +9,7 @@
         android:foreground="?android:attr/selectableItemBackground">
 
         <ImageView
-            android:id="@+id/ivProfileImage"
+            android:id="@+id/ivFacebookIcon"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_alignParentEnd="true"
@@ -81,17 +79,16 @@
             android:layout_alignParentStart="true"
             android:text="Create Profile" />
 
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_below="@+id/etPhone"
-            android:layout_toStartOf="@+id/etPhone"
-            app:srcCompat="@drawable/email_icon" />
+    <ImageView
+        android:id="@+id/ivEmailIcon"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_below="@+id/etPhone"
+        android:layout_toStartOf="@+id/etPhone"
+        app:srcCompat="@drawable/email_icon" />
 
-<<<<<<< HEAD
         <ImageView
-            android:id="@+id/imageView4"
+            android:id="@+id/ivFacebookIcon"
             android:layout_width="46dp"
             android:layout_height="46dp"
             android:layout_below="@+id/etEmail"
@@ -107,23 +104,14 @@
             android:background="@drawable/ic_launcher_round_grey"
             android:scaleType="centerCrop" />
 
-        <ImageView
-            android:id="@+id/imageView3"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignBottom="@+id/etPhone"
-            android:layout_toStartOf="@+id/etPhone"
-            app:srcCompat="@drawable/phone_icon" />
-
-    </RelativeLayout>
-=======
     <ImageView
-        android:id="@+id/imageView4"
+        android:id="@+id/ivPhoneIcon"
         android:layout_width="46dp"
         android:layout_height="46dp"
-        android:layout_below="@+id/etEmail"
+        android:layout_alignBottom="@+id/etPhone"
         android:layout_toStartOf="@+id/etPhone"
-        app:srcCompat="@drawable/facebook_icon" />
+        app:srcCompat="@drawable/phone_icon" />
+
 
 </RelativeLayout>
->>>>>>> 53f4d43fdf5446a077019b72052e6d7c900cc194
+
