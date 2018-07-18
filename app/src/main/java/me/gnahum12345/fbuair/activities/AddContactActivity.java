@@ -12,7 +12,6 @@ import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
@@ -134,7 +133,6 @@ public class AddContactActivity extends AppCompatActivity {
     // user contact IDs
     String contactId;
     String[] rawContactIds;
-    String lookupKey;
 
     // codes for options after adding contact
     final static int SUCCESS = 1;
