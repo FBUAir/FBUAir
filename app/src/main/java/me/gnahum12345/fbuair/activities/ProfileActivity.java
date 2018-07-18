@@ -22,6 +22,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
@@ -43,9 +45,14 @@ public class ProfileActivity extends AppCompatActivity{
     EditText etEmail;
     EditText etFacebookURL;
     Context context;
-    Button btnCheck;
+    Button btSubmit;
     ImageButton btnProfileImage;
     Bitmap profileImage;
+
+    TextView tvNameError;
+    TextView tvPhoneError;
+    TextView tvEmailError;
+    TextView tvFacebookError;
 
     SharedPreferences sharedpreferences;
     String MyPREFERENCES = "MyPrefs";
@@ -60,22 +67,34 @@ public class ProfileActivity extends AppCompatActivity{
         setContentView(R.layout.activity_profile);
         context = this;
 
+        etName = findViewById(R.id.etName);
+        etOrganization = findViewById(R.id.etOrganization);
+        etPhoneNumber = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
+        etFacebookURL = findViewById(R.id.etFacebookURL);
+        btSubmit = findViewById(R.id.btSubmit);
+        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileImage);
 
-        etName = (EditText) findViewById(R.id.etName);
-        etOrganization = (EditText) findViewById(R.id.etOrganization);
-        etPhoneNumber = (EditText) findViewById(R.id.etPhone);
-        etEmail = (EditText) findViewById(R.id.etEmail);
-        etFacebookURL = (EditText) findViewById(R.id.etFacebookURL);
-        btnCheck = (Button) findViewById(R.id.btnCheck);
-        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
+        etName = findViewById(R.id.etName);
+        etOrganization = findViewById(R.id.etOrganization);
+        etPhoneNumber = findViewById(R.id.etPhone);
+        etEmail = findViewById(R.id.etEmail);
+        etFacebookURL = findViewById(R.id.etFacebookURL);
 
+        tvNameError = findViewById(R.id.tvNameError);
+        tvEmailError = findViewById(R.id.tvEmailError);
+        tvPhoneError = findViewById(R.id.tvPhoneError);
+        tvFacebookError = findViewById(R.id.tvFacebookError);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        // clear placeholder text in errors
+        clearErrors();
 
         // add formatter to phone number field
         etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
-        btnCheck.setOnClickListener(new View.OnClickListener() {
+        btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 final String name = etName.getText().toString();
@@ -86,18 +105,10 @@ public class ProfileActivity extends AppCompatActivity{
                 final Bitmap ivProfileImage = profileImage;
                 try {
 
-                    createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
-                    addContact(name, organization, phoneNumber, email, facebookURL);
-                    Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
-                    /**
-                    // check for valid profile before submitting
-
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
-                        addContact(name, organization, phoneNumber, email, facebookURL);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     }
-                     **/
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -126,24 +137,38 @@ public class ProfileActivity extends AppCompatActivity{
 
     // checks if profile is valid before submitting. if not, sets invalid fields red
     public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+        // clear previous errors
+        clearErrors();
+        // check fields and set appropriate error messages
         boolean valid = true;
         if (name.isEmpty()) {
-            etName.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvNameError.setText(getResources().getString(R.string.no_name_error));
             valid = false;
         }
         if (!email.isEmpty() && !isValidEmail(email)) {
-            etEmail.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
         if (!isValidPhoneNumber(phone)) {
-            etPhoneNumber.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
+            valid = false;
+        }
+        if (phone.isEmpty()) {
+            tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
             valid = false;
         }
         if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
-            etFacebookURL.setTextColor(getResources().getColor(android.R.color.holo_red_dark));
+            tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
             valid = false;
         }
         return valid;
+    }
+
+    void clearErrors() {
+        tvNameError.setText("");
+        tvPhoneError.setText("");
+        tvEmailError.setText("");
+        tvFacebookError.setText("");
     }
 
     // validity checkers
@@ -156,16 +181,7 @@ public class ProfileActivity extends AppCompatActivity{
     }
 
     public static boolean isValidFacebookUrl(String facebookUrlString) {
-        URL facebookUrl;
-        try {
-            facebookUrl = new URL(facebookUrlString);
-            if (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrl.getHost().contains("facebook")) {
-                return true;
-            }
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        return false;
+        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
     }
 
     private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap ivProfileImage) throws JSONException {
