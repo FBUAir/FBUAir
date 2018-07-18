@@ -72,7 +72,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_contact);
+        setContentView(R.layout.activity_details2);
 
         // set user (would be from intent or something, but placeholder for now)
         user = FakeUsers.jsonUser1;
