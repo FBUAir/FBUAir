@@ -73,10 +73,8 @@ public class ProfileActivity extends AppCompatActivity{
         etEmail = findViewById(R.id.etEmail);
         etFacebookURL = findViewById(R.id.etFacebookURL);
         btSubmit = findViewById(R.id.btSubmit);
-        ivProfileImage = findViewById(R.id.ivProfileImage);
-        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
+        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileImage);
 
-        ivProfileImage = findViewById(R.id.ivFacebookIcon);
         etName = findViewById(R.id.etName);
         etOrganization = findViewById(R.id.etOrganization);
         etPhoneNumber = findViewById(R.id.etPhone);
@@ -89,6 +87,9 @@ public class ProfileActivity extends AppCompatActivity{
         tvFacebookError = findViewById(R.id.tvFacebookError);
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        // clear placeholder text in errors
+        clearErrors();
 
         // add formatter to phone number field
         etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
