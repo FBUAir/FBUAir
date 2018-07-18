@@ -39,7 +39,6 @@ import me.gnahum12345.fbuair.models.User;
 
 public class ProfileActivity extends AppCompatActivity{
 
-    ImageView ivProfileImage;
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
@@ -48,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity{
     Context context;
     Button btSubmit;
     ImageButton btnProfileImage;
+    Bitmap profileImage;
 
     TextView tvNameError;
     TextView tvPhoneError;
@@ -74,6 +74,7 @@ public class ProfileActivity extends AppCompatActivity{
         etFacebookURL = findViewById(R.id.etFacebookURL);
         btSubmit = findViewById(R.id.btSubmit);
         ivProfileImage = findViewById(R.id.ivProfileImage);
+        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileIImage);
 
         ivProfileImage = findViewById(R.id.ivFacebookIcon);
         etName = findViewById(R.id.etName);
@@ -100,10 +101,11 @@ public class ProfileActivity extends AppCompatActivity{
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
+                final Bitmap ivProfileImage = profileImage;
                 try {
                     // check for valid profile before submitting
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
-                        createProfile(name, organization, phoneNumber, email, facebookURL);
+                        createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     }
 
@@ -114,12 +116,12 @@ public class ProfileActivity extends AppCompatActivity{
             }
         });
 
-/*        btnProfileImage.setOnClickListener(new View.OnClickListener() {
+        btnProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialog();
             }
-        });*/
+        });
 
         String current_user = sharedpreferences.getString("current_user", null);
 
@@ -181,14 +183,14 @@ public class ProfileActivity extends AppCompatActivity{
         return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
     }
 
-    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL) throws JSONException {
+    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap ivProfileImage) throws JSONException {
         User user = new User();
         user.setName(name);
         user.setOrganization(organization);
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
-        //TODO SET PROFILE IMAGE user.setIvProfileImage();
+        user.setIvProfileImage(ivProfileImage);
         saveUserTwo(user);
     }
 
@@ -226,17 +228,15 @@ public class ProfileActivity extends AppCompatActivity{
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // set image icon to newly selected image
-                ivProfileImage.setImageBitmap(bitmap);
-
                 btnProfileImage.setImageBitmap(bitmap);
+                profileImage = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = this.getContentResolver().openInputStream(
                         data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                ivProfileImage.setImageBitmap(bitmap);
-
+                profileImage = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
 
 

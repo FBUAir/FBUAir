@@ -26,21 +26,13 @@
         android:hint="Email"
         android:inputType="textEmailAddress" />
 
-    <ImageView
-        android:id="@+id/ivProfileImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        app:srcCompat="@android:color/black" />
-
 
     <TextView
         android:id="@+id/tvNameError"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:layout_below="@id/ivProfileImage"
+        android:layout_above="@id/etName"
         android:text=""
         android:textColor="@android:color/holo_red_dark"
         android:textSize="12sp"/>
@@ -168,5 +160,15 @@
         android:textAppearance="@android:style/TextAppearance.Large"
         android:textColor="@android:color/holo_red_dark"
         tools:text="*" />
+
+    <ImageButton
+        android:id="@+id/btnProfileIImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="70dp"
+        android:background="@drawable/ic_launcher_round_grey"
+        android:scaleType="centerCrop" />
 
 </RelativeLayout>
