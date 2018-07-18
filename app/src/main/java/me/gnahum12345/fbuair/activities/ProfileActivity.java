@@ -47,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity{
     Context context;
     Button btnCheck;
     ImageButton btnProfileImage;
+    Bitmap profileImage;
 
     SharedPreferences sharedpreferences;
     String MyPREFERENCES = "MyPrefs";
@@ -92,17 +93,19 @@ public class ProfileActivity extends AppCompatActivity{
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
+                final Bitmap ivProfileImage = profileImage;
                 try {
-
-                    createProfile(name, organization, phoneNumber, email, facebookURL);
+                    createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                     addContact(name, organization, phoneNumber, email, facebookURL);
                     Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
-
+                    /**
                     // check for valid profile before submitting
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
-                        createProfile(name, organization, phoneNumber, email, facebookURL);
+                        createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
+                        addContact(name, organization, phoneNumber, email, facebookURL);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     }
+                     **/
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -173,14 +176,14 @@ public class ProfileActivity extends AppCompatActivity{
         return false;
     }
 
-    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL) throws JSONException {
+    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap ivProfileImage) throws JSONException {
         User user = new User();
         user.setName(name);
         user.setOrganization(organization);
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
-        //TODO SET PROFILE IMAGE user.setIvProfileImage();
+        user.setIvProfileImage(ivProfileImage);
         saveUserTwo(user);
     }
 
@@ -219,8 +222,8 @@ public class ProfileActivity extends AppCompatActivity{
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // set image icon to newly selected image
                 ivProfileImage.setImageBitmap(bitmap);
-
                 btnProfileImage.setImageBitmap(bitmap);
+                profileImage = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = this.getContentResolver().openInputStream(
@@ -228,7 +231,7 @@ public class ProfileActivity extends AppCompatActivity{
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 ivProfileImage.setImageBitmap(bitmap);
-
+                profileImage = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
 
 
