@@ -191,7 +191,7 @@ public class SignUpContact extends AppCompatActivity{
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
-        user.setProfileImage(profileImage);
+        user.setIvProfileImage(profileImage);
         saveUser(user);
     }
 

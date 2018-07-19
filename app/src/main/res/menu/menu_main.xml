@@ -15,4 +15,11 @@
         android:icon="@drawable/history_icon"
         android:onClick="onHistoryClick"
         android:title="Compose" />
+
+    <item
+        android:id="@+id/miAddContact"
+        app:showAsAction="always"
+        android:icon="@drawable/add_user_icon"
+        android:onClick="onContactAddClick"
+        android:title="Compose" />
 </menu>

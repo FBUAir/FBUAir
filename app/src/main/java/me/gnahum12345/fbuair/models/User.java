@@ -17,35 +17,6 @@ public class User {
     public String email;
     public String facebookURL;
     public Bitmap profileImage;
-    //public Date createdAt;
-
-    public String getName() { return name; }
-
-    public String getOrganization() { return organization; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-
-    public String getEmail() { return email; }
-
-    public String getFacebookURL() { return facebookURL; }
-
-    //public Date getCreatedAt() { return createdAt; }
-
-    //public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
-
-    public Bitmap getProfileImage() { return profileImage; }
-
-    public void setProfileImage(Bitmap profileImage) { this.profileImage = profileImage; }
-
-    public void setName(String name) { this.name = name; }
-
-    public void setOrganization(String organization) { this.organization = organization; }
-
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
@@ -60,7 +31,7 @@ public class User {
 
     }
 
-    public static JSONObject toJson(User user) throws JSONException{
+    public static JSONObject toJson(User user) throws JSONException {
         String name = user.getName();
         String organization = user.getOrganization();
         String phoneNumber = user.getPhoneNumber();
@@ -81,25 +52,72 @@ public class User {
 
     }
 
-    public static Bitmap stringToBitmap(String encodedString){
+    public static Bitmap stringToBitmap(String encodedString) {
         try {
-            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
+            Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
             return bitmap;
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
-    public static String bitmapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        String temp=Base64.encodeToString(b, Base64.DEFAULT);
+    public static String bitmapToString(Bitmap bitmap) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] b = baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getFacebookURL() {
+        return facebookURL;
+    }
+
+    public void setFacebookURL(String facebookURL) {
+        this.facebookURL = facebookURL;
+    }
+
+    public Bitmap getProfileImage() {
+        return profileImage;
+    }
+
+    public void setIvProfileImage(Bitmap ivProfileImage) {
+        this.profileImage = ivProfileImage;
+    }
 
 
 }

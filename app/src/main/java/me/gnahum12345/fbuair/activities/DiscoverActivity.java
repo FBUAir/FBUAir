@@ -1,15 +1,22 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArraySet;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.ArrayList;
+import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.models.GestureDetector;
@@ -48,6 +55,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     private RecyclerView rvDevicesView;
     private HashSet<Endpoint> deviceLst;
     private DiscoverAdapter rvAdapter;
+    public ArrayList<String> listRandos = new ArrayList<>();
 
     /**
      * The connection strategy we'll use for Nearby Connections. In this case, we've decided on
@@ -438,14 +446,60 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
     public void onProfileClick(MenuItem mi) {
         // handle click here
+        rvAdapter.clear();
+        rvAdapter.notifyDataSetChanged();
+
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
     public void onHistoryClick(MenuItem mi) {
         // handle click here
+        rvAdapter.clear();
+        rvAdapter.notifyDataSetChanged();
+
         Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
+
+
+
+    //creating my shared preferences array of fake contacts
+    public void onContactAddClick(MenuItem mi) {
+        JSONObject rando = createRando();
+
+        listRandos.add(rando.toString());
+
+        SharedPreferences sharedpreferences;
+        String MyPREFERENCES = "MyPrefs";
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString("history", rando.toString());
+        editor.commit();
+
+        Log.d("addContacts", String.valueOf(listRandos));
+    }
+
+    public JSONObject createRando(){
+        FakeUsers fakeUsers = new FakeUsers();
+
+        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
+        listUsers.add(fakeUsers.jsonUser1);
+        listUsers.add(fakeUsers.jsonUser2);
+        listUsers.add(fakeUsers.jsonUser3);
+        listUsers.add(fakeUsers.jsonUser4);
+        listUsers.add(fakeUsers.jsonUser5);
+        listUsers.add(fakeUsers.jsonUser6);
+        listUsers.add(fakeUsers.jsonUser7);
+        listUsers.add(fakeUsers.jsonUser8);
+
+        Random random = new Random();
+        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
+        return rando;
+
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

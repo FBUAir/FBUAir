@@ -50,6 +50,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             mDeviceList.add(e);
         }
     }
+    public void clear() {
+        mDeviceList.clear();
+        mDevices.clear();
+    }
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
