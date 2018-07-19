@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -98,11 +99,13 @@ public class SignUpActivity extends AppCompatActivity{
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
-                final Bitmap ivProfileImage = profileImage;
+                Bitmap ivProfileImage = profileImage;
                 try {
-                    if (isValidProfile(name, phoneNumber, email, facebookURL)) {
+                    if (isValidProfile(name, phoneNumber, email, facebookURL, ivProfileImage)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         Toast.makeText(SignUpActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(SignUpActivity.this, "Profile is incomplete. Please fill the required portions out. ", Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -132,7 +135,7 @@ public class SignUpActivity extends AppCompatActivity{
 
     //following are validity checkers
     // checks if profile is valid before submitting. if not, sets invalid fields red
-    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+    public boolean isValidProfile(String name, String phone, String email, String facebookUrl, Bitmap ivProfileImage){
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -157,6 +160,12 @@ public class SignUpActivity extends AppCompatActivity{
             tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
             valid = false;
         }
+        if (ivProfileImage == null) {
+            profileImage = BitmapFactory.decodeResource(context.getResources(),
+                    R.drawable.email_icon);
+
+        }
+
         return valid;
     }
 
