@@ -6,7 +6,6 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
 
 import java.util.ArrayList;
 
@@ -20,12 +19,7 @@ public class HistoryActivity extends AppCompatActivity{
     RecyclerView rvUser;
 
     private SwipeRefreshLayout swipeContainer;
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -41,7 +35,7 @@ public class HistoryActivity extends AppCompatActivity{
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                // TODO loadTopPosts();
+                // TODO populateTimeline;
                 swipeContainer.setRefreshing(false);
             }
         });

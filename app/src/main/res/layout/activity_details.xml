@@ -1,103 +1,134 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    tools:context=".activities.DetailsActivity">
 
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:foreground="?android:attr/selectableItemBackground">
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="32dp"
+        app:srcCompat="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ivImage"
+        android:layout_centerHorizontal="true"
+        android:text="Name" />
+
+    <TextView
+        android:id="@+id/tvOrganization"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvName"
+        android:layout_centerHorizontal="true"
+        android:text="Organization" />
+
+    <TextView
+        android:id="@+id/tvPhone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvOrganization"
+        android:layout_centerHorizontal="true"
+        android:text="Phone" />
+
+    <TextView
+        android:id="@+id/tvEmail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvPhone"
+        android:layout_centerHorizontal="true"
+        android:text="Email" />
+
+    <Button
+        android:id="@+id/btAddContact"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:text="Add Contact" />
+
+    <RelativeLayout
+        android:id="@+id/rlContactOptions"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
 
         <ImageView
-            android:id="@+id/ivFacebookIcon"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:id="@+id/ivCheck"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
-            app:srcCompat="@android:color/black" />
+            android:src="@drawable/ic_check_black_24dp" />
 
-        <EditText
-            android:id="@+id/etPhone"
-            android:layout_width="265dp"
+        <TextView
+            android:id="@+id/tvView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/imageView"
-            android:layout_toEndOf="@+id/imageView"
-            android:ems="10"
-            android:hint="Phone Number"
-            android:inputType="phone" />
+            android:layout_below="@id/ivCheck"
+            android:layout_centerHorizontal="true"
+            android:text="VIEW IN CONTACTS"
+            android:textColor="@android:color/holo_blue_light" />
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvUndo"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/ivFacebookIcon"
-            android:ems="10"
-            android:hint="Name"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textColor="@android:color/black" />
-
-        <EditText
-            android:id="@+id/etOrganization"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/etName"
-            android:ems="10"
-            android:hint="Organization"
-            android:inputType="textPersonName"
-            android:textAlignment="center"
-            android:textColor="@android:color/darker_gray" />
-
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etPhone"
-            android:ems="10"
-            android:hint="Email"
-            android:inputType="textEmailAddress" />
-
-        <EditText
-            android:id="@+id/etFacebookURL"
-            android:layout_width="265dp"
-            android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/etPhone"
-            android:layout_below="@+id/etEmail"
-            android:ems="10"
-            android:hint="Facebook URL"
-            android:inputType="textUri" />
-
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="226dp"
-            app:srcCompat="@drawable/phone_icon" />
-
-        <ImageView
-            android:id="@+id/imageView2"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_alignStart="@+id/imageView"
-            android:layout_below="@+id/etPhone"
-            app:srcCompat="@drawable/email_icon" />
-
-        <ImageView
-            android:id="@+id/imageView4"
-            android:layout_width="46dp"
-            android:layout_height="46dp"
-            android:layout_below="@+id/etEmail"
-            android:layout_toStartOf="@+id/etPhone"
-            app:srcCompat="@drawable/facebook_icon" />
-
+            android:layout_below="@id/tvView"
+            android:layout_centerHorizontal="true"
+            android:text="UNDO"
+            android:textColor="@android:color/holo_blue_light" />
     </RelativeLayout>
-</android.support.v7.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/rlConflict"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvConflictMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:text="Conflict message" />
+
+        <TextView
+            android:id="@+id/tvViewConflict"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvConflictMessage"
+            android:layout_centerHorizontal="true"
+            android:text="VIEW IN CONTACTS"
+            android:textColor="@android:color/holo_blue_light" />
+
+        <TextView
+            android:id="@+id/tvIgnoreConflict"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvViewConflict"
+            android:layout_centerHorizontal="true"
+            android:text="ADD ANYWAY"
+            android:textColor="@android:color/holo_blue_light" />
+    </RelativeLayout>
+
+    <Button
+        android:id="@+id/btFacebook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="130dp"
+        android:text="Add on FB" />
+
+</RelativeLayout>

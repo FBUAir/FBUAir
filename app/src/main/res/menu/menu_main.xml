@@ -3,9 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/miCompose"
+        android:id="@+id/miProfile"
         app:showAsAction="always"
-        android:icon="@drawable/ic_launcher_foreground"
-        android:onClick="onClick"
+        android:icon="@drawable/profile_icon"
+        android:onClick="onProfileClick"
+        android:title="Compose" />
+
+    <item
+        android:id="@+id/miHistory"
+        app:showAsAction="always"
+        android:icon="@drawable/history_icon"
+        android:onClick="onHistoryClick"
         android:title="Compose" />
 </menu>

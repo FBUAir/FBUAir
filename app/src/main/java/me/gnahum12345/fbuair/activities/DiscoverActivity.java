@@ -251,7 +251,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         deviceLst.clear();
         rvAdapter.notifyDataSetChanged();
         String msg = "StartDiscovery failed. \nIf this is the 3rd time seeing this message, please restart the app";
-        Toast.makeText(this, msg, 1).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
         setState(State.DISCOVERING);
 
@@ -435,9 +435,15 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
 
-    public void onClick(MenuItem mi) {
+
+    public void onProfileClick(MenuItem mi) {
         // handle click here
         Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+    public void onHistoryClick(MenuItem mi) {
+        // handle click here
+        Intent intent = new Intent(this, HistoryActivity.class);
         startActivity(intent);
     }
 

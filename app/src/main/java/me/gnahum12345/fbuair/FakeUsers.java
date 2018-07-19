@@ -1,5 +1,8 @@
 package me.gnahum12345.fbuair;
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,7 +17,8 @@ public class FakeUsers {
                     .put("phone", "5478392306")
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Pinterest")
-                    .put("facebookURL", "");
+                    .put("facebookURL", "")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -30,7 +34,8 @@ public class FakeUsers {
                     .put("phone", "7482034937")
                     .put("email", "")
                     .put("organization", "Google")
-                    .put("facebookURL", "");
+                    .put("facebookURL", "")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -46,7 +51,8 @@ public class FakeUsers {
                     .put("phone", "5478392306")
                     .put("email", "mary@gmail.com")
                     .put("organization", "")
-                    .put("facebookURL", "");
+                    .put("facebookURL", "")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -62,7 +68,8 @@ public class FakeUsers {
                     .put("phone", "4958203748")
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Airbnb")
-                    .put("facebookURL", "");
+                    .put("facebookURL", "")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -76,7 +83,8 @@ public class FakeUsers {
                     .put("phone", "2039481726")
                     .put("email", "gabyn@yahoo.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/gnahum12345");
+                    .put("facebookURL", "https://www.facebook.com/gnahum12345")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -91,7 +99,8 @@ public class FakeUsers {
                     .put("phone", "19283742837")
                     .put("email", "gabyg@gmail.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406");
+                    .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -106,7 +115,8 @@ public class FakeUsers {
                     .put("phone", "2938401927")
                     .put("email", "mike@fb.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/mikecole20");
+                    .put("facebookURL", "https://www.facebook.com/mikecole20")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -120,7 +130,8 @@ public class FakeUsers {
                     .put("phone", "2938472633")
                     .put("email", "mariam@gmail.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9");
+                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
+                    .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
         }

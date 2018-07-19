@@ -18,6 +18,44 @@ public class ProfileUser {
     private String name;
     private Bitmap ivProfileImage;
 
+    public ProfileUser(Context context) {
+        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String current_user = sharedpreferences.getString("current_user", null);
+        User user = new User();
+        try {
+            user = User.fromJson(new JSONObject(current_user));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            user.setName("Unknown Name");
+        }
+        setName(user.getName());
+        setIvProfileImage(user.getProfileImage());
+    }
+
+    public ProfileUser(String name, Bitmap ivProfileImage) {
+        this.name = name;
+        this.ivProfileImage = ivProfileImage;
+    }
+
+    public static ProfileUser fromJSONString(String profileUser) {
+        try {
+
+            JSONObject profile = new JSONObject(profileUser);
+
+            String name = profile.getString(NAME_KEY);
+            String bitmapString = profile.getString(BITMAP_KEY);
+            Bitmap image = User.stringToBitmap(bitmapString);
+
+            return new ProfileUser(name, image);
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            //TODO handle the exception properly.
+            return null;
+        }
+
+    }
+
     public String getName() {
         return name;
     }
@@ -34,26 +72,8 @@ public class ProfileUser {
         this.ivProfileImage = ivProfileImage;
     }
 
-    public ProfileUser(Context context) {
-        SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String current_user = sharedpreferences.getString("current_user", null);
-        User user = new User();
-//        try {
-//            user = User.fromJson(new JSONObject(current_user));
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-        setName(user.getName());
-        setIvProfileImage(user.getIvProfileImage());
-    }
-
-    public ProfileUser(String name, Bitmap ivProfileImage) {
-        this.name = name;
-        this.ivProfileImage = ivProfileImage;
-    }
-
     public String convertToString() {
-        String bitmap = User.toBitMapString(ivProfileImage);
+        String bitmap = User.bitmapToString(ivProfileImage);
         JSONObject jsonProfile = new JSONObject();
         try {
             jsonProfile.put(BITMAP_KEY, getIvProfileImage());
@@ -63,20 +83,5 @@ public class ProfileUser {
             //TODO handle the exception properly.
         }
         return jsonProfile.toString();
-    }
-
-    public static ProfileUser fromJSONString(String profileUser) {
-        try {
-            JSONObject profile = new JSONObject(profileUser);
-            String name = profile.getString(NAME_KEY);
-            String bitmapString = profile.getString(BITMAP_KEY);
-            Bitmap image = User.toBitMap(bitmapString);
-            return new ProfileUser(name, image);
-        } catch (JSONException e) {
-            e.printStackTrace();
-            //TODO handle the exception properly.
-            return null;
-        }
-
     }
 }

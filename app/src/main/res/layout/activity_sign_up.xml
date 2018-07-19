@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:focusable="true"
-    android:focusableInTouchMode="true"
-    tools:context=".activities.ProfileActivity">
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="?android:attr/selectableItemBackground">
 
     <EditText
         android:id="@+id/etFacebookURL"
@@ -14,7 +12,6 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/etPhone"
         android:layout_alignTop="@+id/ivFacebook"
-        android:enabled="false"
         android:ems="10"
         android:hint="Facebook Profile URL"
         android:inputType="textUri"
@@ -29,7 +26,6 @@
         android:ems="10"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:enabled="false"
         android:textColor="@android:color/black"/>
 
 
@@ -86,7 +82,6 @@
         android:ems="10"
         android:hint="Phone Number"
         android:inputType="phone"
-        android:enabled="false"
         android:textColor="@android:color/black"/>
 
     <EditText
@@ -97,11 +92,11 @@
         android:layout_below="@+id/tvNameError"
         android:layout_marginBottom="10dp"
         android:ems="10"
+        android:focusedByDefault="true"
         android:hint="Name"
+        android:inputType="textPersonName"
         android:textAlignment="center"
-        android:textColor="@android:color/black"
-        android:enabled="false"
-        android:inputType="textPersonName"/>
+        android:textColor="@android:color/black" />
 
     <EditText
         android:id="@+id/etOrganization"
@@ -112,17 +107,8 @@
         android:ems="10"
         android:hint="Organization"
         android:inputType="textPersonName"
-        android:enabled="false"
         android:textAlignment="center"
         android:textColor="@android:color/black" />
-
-    <Button
-        android:id="@+id/btEditProfile"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:text="Edit Profile" />
 
     <Button
         android:id="@+id/btSubmit"
@@ -130,8 +116,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:text="Submit Changes"
-        android:visibility="gone" />
+        android:text="Create Profile" />
 
     <ImageView
         android:id="@+id/ivPhone"
@@ -157,6 +142,26 @@
         android:layout_below="@+id/tvFacebookError"
         app:srcCompat="@drawable/facebook_icon" />
 
+    <TextView
+        android:id="@+id/tvAsterisk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/etPhone"
+        android:layout_toEndOf="@+id/etPhone"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
+
+    <TextView
+        android:id="@+id/tvAsterisk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/etName"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
+
     <ImageButton
         android:id="@+id/btnProfileImage"
         android:layout_width="100dp"
@@ -165,7 +170,6 @@
         android:layout_centerHorizontal="true"
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
-        android:src="@android:color/transparent" />
-
+        android:src="@android:drawable/ic_menu_camera" />
 
 </RelativeLayout>
