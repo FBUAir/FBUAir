@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
@@ -16,7 +15,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +32,7 @@ import java.io.InputStream;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
-public class SignUpActivity extends AppCompatActivity{
+public class SignUpContact extends AppCompatActivity{
 
     EditText etName;
     EditText etOrganization;
@@ -106,7 +104,7 @@ public class SignUpActivity extends AppCompatActivity{
                     // create profile if valid. if not, shows appropriate error messages
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, profileImage);
-                        Toast.makeText(SignUpActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                        Toast.makeText(SignUpContact.this, "Profile made!!", Toast.LENGTH_LONG).show();
                         // go to discover activity
                         Intent intent = new Intent(getBaseContext(), DiscoverActivity.class);
                         startActivity(intent);
@@ -129,7 +127,7 @@ public class SignUpActivity extends AppCompatActivity{
         String current_user = sharedpreferences.getString("current_user", null);
 
         if (current_user != null) {
-            Intent intent = new Intent(SignUpActivity.this,DiscoverActivity.class);
+            Intent intent = new Intent(SignUpContact.this,DiscoverActivity.class);
             startActivity(intent);
         }
 

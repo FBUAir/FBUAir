@@ -14,18 +14,14 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.gson.Gson;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -174,7 +170,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
         else {
             // go to sign up activity if no current user
-            Intent intent = new Intent (this, SignUpActivity.class);
+            Intent intent = new Intent (this, SignUpContact.class);
             startActivity(intent);
             finish();
         }
