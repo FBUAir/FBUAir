@@ -49,7 +49,7 @@ public class ProfileActivity extends AppCompatActivity{
     ImageButton btnProfileImage;
 
     SharedPreferences sharedpreferences;
-    String MyPREFERENCES = "MyPrefs";
+    final static String MyPREFERENCES = "MyPrefs";
 
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
