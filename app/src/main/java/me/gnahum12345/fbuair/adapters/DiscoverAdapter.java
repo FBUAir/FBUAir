@@ -1,7 +1,7 @@
 package me.gnahum12345.fbuair.adapters;
 
-
 import android.content.Context;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,18 +10,27 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.ConnectionsActivity;
+import me.gnahum12345.fbuair.activities.DiscoverActivity;
 
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder>{
 
-    private List<String> mDevices;
+    private Set<ConnectionsActivity.Endpoint> mDevices;
+    private List<ConnectionsActivity.Endpoint> mDeviceList;
     private Context mContext;
 
-    public DiscoverAdapter(List<String> devices) {
+
+    public DiscoverAdapter(Set<ConnectionsActivity.Endpoint> devices) {
         mDevices = devices;
+        mDeviceList = new ArrayList<>();
+        mDeviceList.addAll(mDevices);
     }
 
     @NonNull
@@ -30,36 +39,35 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         mContext = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
 
-        // creat eht view using the item_movie layout.
+        // create the view using the item_movie layout.
         View deviceView = inflater.inflate(R.layout.discover_item, viewGroup, false);
         // return a new viewHolder,
         return new ViewHolder(deviceView);
     }
 
+    public void add(ConnectionsActivity.Endpoint e) {
+        if (mDevices.add(e)) {
+            mDeviceList.add(e);
+        }
+    }
+    public void clear() {
+        mDeviceList.clear();
+        mDevices.clear();
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        String device = mDevices.get(i);
+        final ConnectionsActivity.Endpoint device = mDeviceList.get(i);
 
-        viewHolder.mtvDeviceName.setText(device);
+        viewHolder.mtvDeviceName.setText(device.getName());
+        viewHolder.mtvDeviceName.setTextColor(Color.BLACK);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /* TODO Delete this toast and replace it with snackbar
-                 *  that will send data from one device to another, unless clicked on undo.
-                 */
                 Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
-                /* Snackbar... TODO: need to add it to gradle? probably.
-                 Snackbar.make(mContext, "Contact Added", Snackbar.LENGTH_LONG)
-                        .setActionTextColor(ContextCompat.getColor(mContext, R.color.colorAccent))
-                        .setAction("UNDO", new View.OnClickListener() {
-                            @Override
-                            public void onClick(View view) {
-
-                            }
-                        })
-                        .show(); // Don’t forget to show!
-                        */
+                String name = device.getName();
+                ((DiscoverActivity) mContext).sendFromEndPoint(device);
             }
         });
 
@@ -81,5 +89,4 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         }
 
     }
-
 }

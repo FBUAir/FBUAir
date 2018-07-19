@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.activities;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +9,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 
 import org.json.JSONObject;
@@ -34,7 +32,7 @@ public class HistoryActivity extends AppCompatActivity{
     SharedPreferences sharedpreferences;
     String MyPREFERENCES = "MyPrefs";
 
-    public ArrayList<String> listRandos = new ArrayList<>();
+    public static ArrayList<String> listRandos = new ArrayList<>();
 
 
     private SwipeRefreshLayout swipeContainer;
@@ -98,13 +96,13 @@ public class HistoryActivity extends AppCompatActivity{
     }
 
     //creating my shared preferences array of fake contacts
-    public void onContactAddClick(MenuItem mi) {
+    public static void onContactAddClick(MenuItem mi) {
         JSONObject rando = createRando();
         listRandos.add(rando.toString());
         Log.d("addContacts", String.valueOf(listRandos));
     }
 
-    public JSONObject createRando(){
+    public static JSONObject createRando(){
         FakeUsers fakeUsers = new FakeUsers();
 
         ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
@@ -122,21 +120,5 @@ public class HistoryActivity extends AppCompatActivity{
         return rando;
     }
 
-    public void onProfileClick(MenuItem mi) {
-        // handle click here
-        Intent intent = new Intent(this, ProfileActivity.class);
-        startActivity(intent);
-    }
-    public void onHistoryClick(MenuItem mi) {
-        // handle click here
-        Intent intent = new Intent(this, HistoryActivity.class);
-        startActivity(intent);
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
 }

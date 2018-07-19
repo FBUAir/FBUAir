@@ -45,14 +45,15 @@ public class ProfileActivity extends AppCompatActivity {
     ImageButton btnProfileImage;
     Bitmap profileImageBitmap;
 
+    // name of preferences file
+    SharedPreferences sharedpreferences;
+    final static String MyPREFERENCES = "MyPrefs";
+
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
     TextView tvFacebookError;
 
-    // name of preferences file
-    String MyPREFERENCES = "MyPrefs";
-    SharedPreferences sharedpreferences;
 
     // current user
     User user;
