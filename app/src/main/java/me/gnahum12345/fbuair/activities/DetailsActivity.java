@@ -153,7 +153,7 @@ public class DetailsActivity extends AppCompatActivity {
         String phone = user.getString("phone");
         String email = user.getString("email");
         String organization = user.getString("organization");
-        String profileImageString = user.getString("profileImage");
+        String profileImageString = user.getString("profileImageBitmap");
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();

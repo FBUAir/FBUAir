@@ -99,15 +99,19 @@ public class SignUpActivity extends AppCompatActivity{
                 final String phoneNumber = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 final String facebookURL = etFacebookURL.getText().toString();
-                Bitmap ivProfileImage = profileImage;
+                if (profileImage == null) {
+                    profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_profile);
+                }
                 try {
-                    if (isValidProfile(name, phoneNumber, email, facebookURL, ivProfileImage)) {
-                        createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
+                    // create profile if valid. if not, shows appropriate error messages
+                    if (isValidProfile(name, phoneNumber, email, facebookURL)) {
+                        createProfile(name, organization, phoneNumber, email, facebookURL, profileImage);
                         Toast.makeText(SignUpActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
-                    } else {
-                        Toast.makeText(SignUpActivity.this, "Profile is incomplete. Please fill the required portions out. ", Toast.LENGTH_LONG).show();
+                        // go to discover activity
+                        Intent intent = new Intent(getBaseContext(), DiscoverActivity.class);
+                        startActivity(intent);
+                        finish();
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -125,8 +129,6 @@ public class SignUpActivity extends AppCompatActivity{
         String current_user = sharedpreferences.getString("current_user", null);
 
         if (current_user != null) {
-            Toast.makeText(SignUpActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
-            Log.d("MadeUser", current_user);
             Intent intent = new Intent(SignUpActivity.this,DiscoverActivity.class);
             startActivity(intent);
         }
@@ -135,7 +137,7 @@ public class SignUpActivity extends AppCompatActivity{
 
     //following are validity checkers
     // checks if profile is valid before submitting. if not, sets invalid fields red
-    public boolean isValidProfile(String name, String phone, String email, String facebookUrl, Bitmap ivProfileImage){
+    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -160,12 +162,6 @@ public class SignUpActivity extends AppCompatActivity{
             tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
             valid = false;
         }
-        if (ivProfileImage == null) {
-            profileImage = BitmapFactory.decodeResource(context.getResources(),
-                    R.drawable.email_icon);
-
-        }
-
         return valid;
     }
 
@@ -190,21 +186,21 @@ public class SignUpActivity extends AppCompatActivity{
     }
 
 
-    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap ivProfileImage) throws JSONException {
+    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap profileImage) throws JSONException {
         User user = new User();
         user.setName(name);
         user.setOrganization(organization);
         user.setPhoneNumber(phoneNumber);
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
-        user.setIvProfileImage(ivProfileImage);
+        user.setProfileImage(profileImage);
         saveUser(user);
     }
 
     //persistence method
     private void saveUser(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("current_user", user.toJson(user).toString());
+        editor.putString("current_user", User.toJson(user).toString());
         editor.commit();
     }
 

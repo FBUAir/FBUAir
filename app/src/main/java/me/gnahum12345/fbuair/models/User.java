@@ -35,7 +35,7 @@ public class User {
 
     public Bitmap getProfileImage() { return profileImage; }
 
-    public void setIvProfileImage(Bitmap ivProfileImage) { this.profileImage = ivProfileImage; }
+    public void setProfileImage(Bitmap profileImage) { this.profileImage = profileImage; }
 
     public void setName(String name) { this.name = name; }
 
@@ -54,7 +54,7 @@ public class User {
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
         user.facebookURL = json.getString("facebookURL");
-        String profileImage = json.getString("ivProfileImage");
+        String profileImage = json.getString("profileImage");
         user.profileImage = stringToBitmap(profileImage);
         return user;
 

@@ -18,18 +18,27 @@ import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.gson.Gson;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.models.User;
 
 public class ProfileActivity extends AppCompatActivity {
+    // views
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
@@ -38,15 +47,19 @@ public class ProfileActivity extends AppCompatActivity {
     Button btEditProfile;
     Button btSubmit;
     ImageButton btnProfileImage;
-    Bitmap profileImage;
+    Bitmap profileImageBitmap;
 
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
     TextView tvFacebookError;
 
-    SharedPreferences sharedpreferences;
+    // name of preferences file
     String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedpreferences;
+
+    // current user
+    User user;
 
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
@@ -57,6 +70,10 @@ public class ProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
 
+        // get shared preferences from filename
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+
+        // get references to views
         etName = findViewById(R.id.etName);
         etOrganization = findViewById(R.id.etOrganization);
         etPhoneNumber = findViewById(R.id.etPhone);
@@ -80,9 +97,17 @@ public class ProfileActivity extends AppCompatActivity {
         // clear placeholder text in errors
         clearErrors();
 
+        // set user's info in views
+        try {
+            setUserInfo();
+        } catch (JSONException e) {
+            Toast.makeText(this, "json exception", Toast.LENGTH_LONG).show();
+        }
+
         // add formatter to phone number field
         etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
+        // CLICK LISTENERS
         // make edittext views editable when user clicks edit profile
         btEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -94,16 +119,7 @@ public class ProfileActivity extends AppCompatActivity {
         btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                final String name = etName.getText().toString();
-                final String organization = etOrganization.getText().toString();
-                final String phoneNumber = etPhoneNumber.getText().toString();
-                final String email = etEmail.getText().toString();
-                final String facebookURL = etFacebookURL.getText().toString();
-                final Bitmap ivProfileImage = profileImage;
-                if (isValidProfile(name, phoneNumber, email, facebookURL)) {
-                    setEditable(false);
-                    // todo - submit changes
-                }
+                saveProfile();
             }
         });
 
@@ -115,40 +131,80 @@ public class ProfileActivity extends AppCompatActivity {
         });
     }
 
-    // sets text views to display current user info
-    void setUserInfo() {
-        // name of preferences file
-        String MyPREFERENCES = "MyPrefs";
-        // get shared preferences at this file
-        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        // get json user from preferences
-        sharedpreferences.getString("user", null);
+    // saves user profile to be edit text fields if valid
+    void saveProfile() {
+        final String name = etName.getText().toString();
+        final String organization = etOrganization.getText().toString();
+        final String phoneNumber = etPhoneNumber.getText().toString();
+        final String email = etEmail.getText().toString();
+        final String facebookURL = etFacebookURL.getText().toString();
+        if (isValidProfile(name, phoneNumber, email, facebookURL)) {
+            setEditable(false);
+            user.setName(name);
+            user.setPhoneNumber(phoneNumber);
+            user.setEmail(email);
+            user.setOrganization(organization);
+            user.setFacebookURL(facebookURL);
+            if (profileImageBitmap != null)
+                user.setProfileImage(profileImageBitmap);;
+            // save changes to shared preferences
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            try {
+                editor.putString("current_user", User.toJson(user).toString());
+                editor.commit();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // gets current user and sets text views to display current user info
+    void setUserInfo() throws JSONException {
+        // get json user from preferences and convert to user java object
+        String userJsonString = sharedpreferences.getString("current_user", null);
+        if (userJsonString != null) {
+            JSONObject userJson = new JSONObject(userJsonString);
+            user = User.fromJson(userJson);
+            // set views to display info
+            etName.setText(user.getName());
+            etPhoneNumber.setText(user.getPhoneNumber());
+            etEmail.setText(user.getEmail());
+            etOrganization.setText(user.getOrganization());
+            btnProfileImage.setImageBitmap(user.getProfileImage());
+        }
+        else {
+            // go to sign up activity if no current user
+            Intent intent = new Intent (this, SignUpActivity.class);
+            startActivity(intent);
+            finish();
+        }
 
     }
 
+    // makes edittexts editable and shows submit changes button
     void setEditable(boolean flag) {
         if (flag) {
-            etName.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-            etOrganization.setInputType(InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
-            etPhoneNumber.setInputType(InputType.TYPE_CLASS_PHONE);
-            etEmail.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-            etFacebookURL.setInputType(InputType.TYPE_TEXT_VARIATION_URI);
+            etName.setEnabled(true);
+            etOrganization.setEnabled(true);
+            etPhoneNumber.setEnabled(true);
+            etEmail.setEnabled(true);
+            etFacebookURL.setEnabled(true);
             // replace edit profile button with submit changes option
             btEditProfile.setVisibility(View.GONE);
             btSubmit.setVisibility(View.VISIBLE);
         } else {
-            etName.setInputType(InputType.TYPE_CLASS_TEXT);
-            etOrganization.setInputType(InputType.TYPE_CLASS_TEXT);
-            etPhoneNumber.setInputType(InputType.TYPE_CLASS_TEXT);
-            etEmail.setInputType(InputType.TYPE_CLASS_TEXT);
-            etFacebookURL.setInputType(InputType.TYPE_CLASS_TEXT);
+            etName.setEnabled(false);
+            etOrganization.setEnabled(false);
+            etPhoneNumber.setEnabled(false);
+            etEmail.setEnabled(false);
+            etFacebookURL.setEnabled(false);
             // replace submit changes button with edit profile button
             btEditProfile.setVisibility(View.VISIBLE);
             btSubmit.setVisibility(View.GONE);
         }
     }
 
-    // checks if profile is valid before submitting. if not, sets invalid fields red
+    // checks if profile is valid before submitting. if not, shows appropriate error messages
     public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
         // clear previous errors
         clearErrors();
@@ -177,6 +233,7 @@ public class ProfileActivity extends AppCompatActivity {
         return valid;
     }
 
+    // clear all error messages
     void clearErrors() {
         tvNameError.setText("");
         tvPhoneError.setText("");
@@ -207,14 +264,14 @@ public class ProfileActivity extends AppCompatActivity {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // set image icon to newly selected image
                 btnProfileImage.setImageBitmap(bitmap);
-                profileImage = bitmap;
+                profileImageBitmap = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = this.getContentResolver().openInputStream(
                         data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                profileImage = bitmap;
+                profileImageBitmap = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
 
 
@@ -227,6 +284,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+    // show dialog for capturing or selecting photo for new profile image
     public void showDialog() {
         CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
 

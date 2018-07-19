@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".activities.ProfileActivity">
 
     <EditText
@@ -12,9 +14,11 @@
         android:layout_height="wrap_content"
         android:layout_alignStart="@+id/etPhone"
         android:layout_alignTop="@+id/ivFacebook"
+        android:enabled="false"
         android:ems="10"
         android:hint="Facebook Profile URL"
-        android:inputType="none" />
+        android:inputType="textUri"
+        android:textColor="@android:color/black"/>
 
     <EditText
         android:id="@+id/etEmail"
@@ -24,7 +28,9 @@
         android:layout_alignTop="@+id/ivEmail"
         android:ems="10"
         android:hint="Email"
-        android:inputType="none" />
+        android:inputType="textEmailAddress"
+        android:enabled="false"
+        android:textColor="@android:color/black"/>
 
 
     <TextView
@@ -79,7 +85,9 @@
         android:layout_toEndOf="@+id/ivPhone"
         android:ems="10"
         android:hint="Phone Number"
-        android:inputType="none" />
+        android:inputType="phone"
+        android:enabled="false"
+        android:textColor="@android:color/black"/>
 
     <EditText
         android:id="@+id/etName"
@@ -89,10 +97,11 @@
         android:layout_below="@+id/tvNameError"
         android:layout_marginBottom="10dp"
         android:ems="10"
-        android:focusedByDefault="true"
         android:hint="Name"
         android:textAlignment="center"
-        android:textColor="@android:color/black" />
+        android:textColor="@android:color/black"
+        android:enabled="false"
+        android:inputType="textPersonName"/>
 
     <EditText
         android:id="@+id/etOrganization"
@@ -102,9 +111,10 @@
         android:layout_below="@+id/etName"
         android:ems="10"
         android:hint="Organization"
-        android:inputType="none"
+        android:inputType="textPersonName"
+        android:enabled="false"
         android:textAlignment="center"
-        android:textColor="@android:color/darker_gray" />
+        android:textColor="@android:color/black" />
 
     <Button
         android:id="@+id/btEditProfile"
@@ -153,8 +163,9 @@
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:background="@drawable/ic_launcher_round_grey"
-        android:scaleType="centerCrop" />
+        android:background="@android:color/transparent"
+        android:scaleType="centerCrop"
+        android:src="@android:color/transparent" />
 
 
 </RelativeLayout>
