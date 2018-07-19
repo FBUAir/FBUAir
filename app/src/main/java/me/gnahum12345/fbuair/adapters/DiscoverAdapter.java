@@ -10,7 +10,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.ConnectionsActivity;
@@ -19,11 +22,15 @@ import me.gnahum12345.fbuair.activities.DiscoverActivity;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder>{
 
-    private List<ConnectionsActivity.Endpoint> mDevices;
+    private Set<ConnectionsActivity.Endpoint> mDevices;
+    private List<ConnectionsActivity.Endpoint> mDeviceList;
     private Context mContext;
 
-    public DiscoverAdapter(List<ConnectionsActivity.Endpoint> devices) {
+
+    public DiscoverAdapter(Set<ConnectionsActivity.Endpoint> devices) {
         mDevices = devices;
+        mDeviceList = new ArrayList<>();
+        mDeviceList.addAll(mDevices);
     }
 
     @NonNull
@@ -38,9 +45,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         return new ViewHolder(deviceView);
     }
 
+    public void add(ConnectionsActivity.Endpoint e) {
+        if (mDevices.add(e)) {
+            mDeviceList.add(e);
+        }
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        final ConnectionsActivity.Endpoint device = mDevices.get(i);
+        final ConnectionsActivity.Endpoint device = mDeviceList.get(i);
 
         viewHolder.mtvDeviceName.setText(device.getName());
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);

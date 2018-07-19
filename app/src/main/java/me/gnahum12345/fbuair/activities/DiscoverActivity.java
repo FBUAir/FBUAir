@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.ArraySet;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -38,13 +39,14 @@ import com.google.android.gms.nearby.connection.Strategy;
 
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Random;
 
 public class DiscoverActivity extends ConnectionsActivity implements SensorEventListener {
 
     // Instance variables.
     private RecyclerView rvDevicesView;
-    private ArrayList<Endpoint> deviceLst;
+    private HashSet<Endpoint> deviceLst;
     private DiscoverAdapter rvAdapter;
 
     /**
@@ -170,7 +172,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         getSupportActionBar().setLogo(R.mipmap.ic_launcher);
         getSupportActionBar().setDisplayUseLogoEnabled(true);
 
-        deviceLst = new ArrayList<>();
+        deviceLst = new HashSet<>();
         rvAdapter = new DiscoverAdapter(deviceLst);
 
         rvDevicesView.setLayoutManager(layoutManager);
@@ -244,6 +246,19 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
 
     @Override
+    protected void onDiscoveryFailed() {
+        disconnectFromAllEndpoints();
+        deviceLst.clear();
+        rvAdapter.notifyDataSetChanged();
+        String msg = "StartDiscovery failed. \nIf this is the 3rd time seeing this message, please restart the app";
+        Toast.makeText(this, msg, 1).show();
+
+        setState(State.DISCOVERING);
+
+    }
+
+
+    @Override
     protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
         // A connection to another device has been initiated! We'll accept the connection immediately.
         super.onConnectionInitiated(endpoint, connectionInfo);
@@ -255,6 +270,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         Toast.makeText(
                 this, getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT)
                 .show();
+        rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
         rvAdapter.notifyItemChanged(deviceLst.size() - 1);
         vibrate();
