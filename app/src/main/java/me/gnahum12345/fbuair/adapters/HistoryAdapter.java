@@ -45,7 +45,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
         User contact = mContacts.get(i);
         viewHolder.tvName.setText(contact.name);
-        viewHolder.ivProfileImage.setImageBitmap(contact.ivProfileImage);
+        viewHolder.ivProfileImage.setImageBitmap(contact.profileImage);
 
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

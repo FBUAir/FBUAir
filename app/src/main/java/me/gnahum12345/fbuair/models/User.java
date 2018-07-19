@@ -16,7 +16,7 @@ public class User {
     public String phoneNumber;
     public String email;
     public String facebookURL;
-    public Bitmap ivProfileImage;
+    public Bitmap profileImage;
     //public Date createdAt;
 
     public String getName() { return name; }
@@ -33,10 +33,9 @@ public class User {
 
     //public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
+    public Bitmap getProfileImage() { return profileImage; }
 
-    public Bitmap getIvProfileImage() { return ivProfileImage; }
-
-    public void setIvProfileImage(Bitmap ivProfileImage) { this.ivProfileImage = ivProfileImage; }
+    public void setIvProfileImage(Bitmap ivProfileImage) { this.profileImage = ivProfileImage; }
 
     public void setName(String name) { this.name = name; }
 
@@ -56,7 +55,7 @@ public class User {
         user.email = json.getString("email");
         user.facebookURL = json.getString("facebookURL");
         String profileImage = json.getString("ivProfileImage");
-        user.ivProfileImage = toBitMap(profileImage);
+        user.profileImage = stringToBitmap(profileImage);
         return user;
 
     }
@@ -67,8 +66,7 @@ public class User {
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
         String facebookURL = user.getFacebookURL();
-        Bitmap profileImage = user.getIvProfileImage();
-        String ivProfileInage = toBitMapString(profileImage);
+        String profileImageString = bitmapToString(user.getProfileImage());
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -76,14 +74,14 @@ public class User {
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);
         json.put("facebookURL", facebookURL);
-        json.put("ivProfileImage", ivProfileInage);
+        json.put("profileImage", profileImageString);
 
         Log.d("toJson", json.toString());
         return json;
 
     }
 
-    public static Bitmap toBitMap(String encodedString){
+    public static Bitmap stringToBitmap(String encodedString){
         try {
             byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
             Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
@@ -94,7 +92,7 @@ public class User {
         }
     }
 
-    public static String toBitMapString(Bitmap bitmap){
+    public static String bitmapToString(Bitmap bitmap){
         ByteArrayOutputStream baos=new  ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
         byte [] b=baos.toByteArray();

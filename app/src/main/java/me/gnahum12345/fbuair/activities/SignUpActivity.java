@@ -1,7 +1,18 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
+import android.provider.MediaStore;
+import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-<<<<<<< HEAD
 import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.text.TextUtils;
 import android.util.Log;
@@ -18,16 +29,38 @@ import org.json.JSONException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import android.os.Bundle;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.models.User;
 
-public class ProfileActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity{
+
+    EditText etName;
+    EditText etOrganization;
+    EditText etPhoneNumber;
+    EditText etEmail;
+    EditText etFacebookURL;
+    Context context;
+    Button btSubmit;
+    ImageButton btnProfileImage;
+    Bitmap profileImage;
+
+    TextView tvNameError;
+    TextView tvPhoneError;
+    TextView tvEmailError;
+    TextView tvFacebookError;
+
+    SharedPreferences sharedpreferences;
+    String MyPREFERENCES = "MyPrefs";
+
+    Dialog dialog;
+    final int REQUEST_IMAGE_SELECT = 1;
+    final int REQUEST_IMAGE_CAPTURE = 2;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        setContentView(R.layout.activity_sign_up);
         context = this;
 
         etName = findViewById(R.id.etName);
@@ -70,9 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
 
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
-                        Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
-                        Intent i = new Intent(ProfileActivity.this, DiscoverActivity.class);
-                        startActivity(i);
+                        Toast.makeText(SignUpActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
                     }
 
                 } catch (JSONException e) {
@@ -92,9 +123,9 @@ public class ProfileActivity extends AppCompatActivity {
         String current_user = sharedpreferences.getString("current_user", null);
 
         if(current_user != null) {
-            Toast.makeText(ProfileActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
+            Toast.makeText(SignUpActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
             Log.d("MadeUser", current_user);
-            Intent intent = new Intent(ProfileActivity.this, DiscoverActivity.class);
+            Intent intent = new Intent(SignUpActivity.this, DiscoverActivity.class);
             startActivity(intent);
         }
 
@@ -160,38 +191,12 @@ public class ProfileActivity extends AppCompatActivity {
         saveUserTwo(user);
     }
 
-    //making a phone contact
-    private void addContact(String name, String organization, String phoneNumber, String email, String facebookURL){
-        Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
-        // Sets the MIME type to match the Contacts Provider
-        intent.setType(ContactsContract.RawContacts.CONTENT_TYPE);
-        // insert user's info into intent
-        intent.putExtra(ContactsContract.Intents.Insert.NAME, name)
-                .putExtra(ContactsContract.Intents.Insert.COMPANY, organization)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL, email)
-                .putExtra(ContactsContract.Intents.Insert.PHONE, phoneNumber)
-                .putExtra(ContactsContract.Intents.Insert.NOTES, facebookURL)
-
-                // insert email and phone types
-                .putExtra(ContactsContract.Intents.Insert.PHONE_TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_HOME)
-                .putExtra(ContactsContract.Intents.Insert.EMAIL_TYPE, ContactsContract.CommonDataKinds.Email.TYPE_HOME);
-
-        // send the intent
-        startActivity(intent);
-    }
-
-
-    //adding user to shared preferences
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("current_user", user.toJson(user).toString());
         editor.commit();
     }
 
-
-
-
-    //following blocks of code are for user adding a profile image, setting it as the image of the image button and setting it in user
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap;
@@ -265,6 +270,5 @@ public class ProfileActivity extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
-
     }
 }

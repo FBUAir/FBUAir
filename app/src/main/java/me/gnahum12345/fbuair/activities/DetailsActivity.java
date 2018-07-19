@@ -65,7 +65,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details2);
+        setContentView(R.layout.activity_details);
 
         // set user (would be from intent or something, but placeholder for now)
         FakeUsers fakeUsers = new FakeUsers();
@@ -153,11 +153,11 @@ public class DetailsActivity extends AppCompatActivity {
         String phone = user.getString("phone");
         String email = user.getString("email");
         String organization = user.getString("organization");
+        String profileImageString = user.getString("profileImage");
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         int rawContactInsertIndex = ops.size();
-        // set user contact fields
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
@@ -168,6 +168,13 @@ public class DetailsActivity extends AppCompatActivity {
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, name)
+                .build());
+        // add photo
+        ops.add(ContentProviderOperation
+                .newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                .withValue(CommonDataKinds.Photo.PHOTO, profileImageString)
                 .build());
         // add organization
         ops.add(ContentProviderOperation

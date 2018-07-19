@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:foreground="?android:attr/selectableItemBackground">
+
+    <EditText
+        android:id="@+id/etFacebookURL"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etPhone"
+        android:layout_alignTop="@+id/ivFacebook"
+        android:ems="10"
+        android:hint="Facebook Profile URL"
+        android:inputType="textUri" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etPhone"
+        android:layout_alignTop="@+id/ivEmail"
+        android:ems="10"
+        android:hint="Email"
+        android:inputType="textEmailAddress" />
+
+
+    <TextView
+        android:id="@+id/tvNameError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@id/btnProfileImage"
+        android:text="name error"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12sp"/>
+
+    <TextView
+        android:id="@+id/tvPhoneError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etOrganization"
+        android:layout_marginTop="10dp"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="phone error" />
+
+    <TextView
+        android:id="@+id/tvEmailError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etPhone"
+        android:layout_marginTop="10dp"
+        android:text="email error"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_dark" />
+
+    <TextView
+        android:id="@+id/tvFacebookError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/ivEmail"
+        android:layout_marginTop="10dp"
+        android:text="fb url error"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_dark" />
+
+    <EditText
+        android:id="@+id/etPhone"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/ivPhone"
+        android:layout_centerHorizontal="true"
+        android:layout_toEndOf="@+id/ivPhone"
+        android:ems="10"
+        android:hint="Phone Number"
+        android:inputType="phone" />
+
+    <EditText
+        android:id="@+id/etName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvNameError"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:focusedByDefault="true"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColor="@android:color/black" />
+
+    <EditText
+        android:id="@+id/etOrganization"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etName"
+        android:ems="10"
+        android:hint="Organization"
+        android:inputType="textPersonName"
+        android:textAlignment="center"
+        android:textColor="@android:color/darker_gray" />
+
+    <Button
+        android:id="@+id/btSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Create Profile" />
+
+    <ImageView
+        android:id="@+id/ivPhone"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvPhoneError"
+        app:srcCompat="@drawable/phone_icon" />
+
+    <ImageView
+        android:id="@+id/ivEmail"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvEmailError"
+        app:srcCompat="@drawable/email_icon" />
+
+    <ImageView
+        android:id="@+id/ivFacebook"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvFacebookError"
+        app:srcCompat="@drawable/facebook_icon" />
+
+    <TextView
+        android:id="@+id/tvAsterisk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/etPhone"
+        android:layout_toEndOf="@+id/etPhone"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
+
+    <TextView
+        android:id="@+id/tvAsterisk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/etName"
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:textColor="@android:color/holo_red_dark"
+        tools:text="*" />
+
+    <ImageButton
+        android:id="@+id/btnProfileImage"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="@drawable/ic_launcher_round_grey"
+        android:scaleType="centerCrop" />
+
+</RelativeLayout>
