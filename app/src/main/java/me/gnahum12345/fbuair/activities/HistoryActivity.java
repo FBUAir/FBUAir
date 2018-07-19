@@ -1,14 +1,27 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;
@@ -17,6 +30,12 @@ public class HistoryActivity extends AppCompatActivity{
     HistoryAdapter historyAdapter;
     ArrayList<User> contacts;
     RecyclerView rvUser;
+
+    SharedPreferences sharedpreferences;
+    String MyPREFERENCES = "MyPrefs";
+
+    public ArrayList<String> listRandos = new ArrayList<>();
+
 
     private SwipeRefreshLayout swipeContainer;
 
@@ -35,7 +54,7 @@ public class HistoryActivity extends AppCompatActivity{
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                // TODO populateTimeline;
+                populateHistory();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -53,6 +72,71 @@ public class HistoryActivity extends AppCompatActivity{
         rvUser.setAdapter(historyAdapter);
 
 
-        //TODO populateTimeline();
+        populateHistory();
+    }
+
+    public void addSharedPreferences(SharedPreferences.Editor editor, List list) throws IOException {
+        editor.putString("history", ObjectSerializer.serialize((Serializable) list));
+        editor.commit();
+    }
+
+    private void populateHistory(){
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+
+        try {
+            addSharedPreferences(editor, listRandos);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String history = sharedpreferences.getString("history", null);
+        Log.d("history", history);
+
+    }
+
+    //creating my shared preferences array of fake contacts
+    public void onContactAddClick(MenuItem mi) {
+        JSONObject rando = createRando();
+        listRandos.add(rando.toString());
+        Log.d("addContacts", String.valueOf(listRandos));
+    }
+
+    public JSONObject createRando(){
+        FakeUsers fakeUsers = new FakeUsers();
+
+        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
+        listUsers.add(fakeUsers.jsonUser1);
+        listUsers.add(fakeUsers.jsonUser2);
+        listUsers.add(fakeUsers.jsonUser3);
+        listUsers.add(fakeUsers.jsonUser4);
+        listUsers.add(fakeUsers.jsonUser5);
+        listUsers.add(fakeUsers.jsonUser6);
+        listUsers.add(fakeUsers.jsonUser7);
+        listUsers.add(fakeUsers.jsonUser8);
+
+        Random random = new Random();
+        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
+        return rando;
+    }
+
+    public void onProfileClick(MenuItem mi) {
+        // handle click here
+        Intent intent = new Intent(this, ProfileActivity.class);
+        startActivity(intent);
+    }
+    public void onHistoryClick(MenuItem mi) {
+        // handle click here
+        Intent intent = new Intent(this, HistoryActivity.class);
+        startActivity(intent);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
     }
 }
