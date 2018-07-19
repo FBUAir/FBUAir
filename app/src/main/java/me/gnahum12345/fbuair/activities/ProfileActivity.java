@@ -77,8 +77,6 @@ public class ProfileActivity extends AppCompatActivity {
         tvPhoneError = findViewById(R.id.tvPhoneError);
         tvFacebookError = findViewById(R.id.tvFacebookError);
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
         // clear placeholder text in errors
         clearErrors();
 
@@ -119,7 +117,13 @@ public class ProfileActivity extends AppCompatActivity {
 
     // sets text views to display current user info
     void setUserInfo() {
-        // todo
+        // name of preferences file
+        String MyPREFERENCES = "MyPrefs";
+        // get shared preferences at this file
+        SharedPreferences sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        // get json user from preferences
+        sharedpreferences.getString("user", null);
+
     }
 
     void setEditable(boolean flag) {
