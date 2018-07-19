@@ -16,10 +16,10 @@
         <activity android:name=".activities.MainActivity" />
         <activity android:name=".activities.DetailsActivity">
         </activity>
-        <activity android:name=".activities.SignUpActivity" />
+        <activity android:name=".activities.ProfileActivity" />
         <activity android:name=".activities.HistoryActivity" />
         <activity android:name=".activities.DiscoverActivity" />
-        <activity android:name=".activities.ProfileActivity">
+        <activity android:name=".activities.SignUpActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

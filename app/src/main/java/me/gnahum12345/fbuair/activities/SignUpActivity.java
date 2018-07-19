@@ -100,7 +100,6 @@ public class SignUpActivity extends AppCompatActivity{
                 final String facebookURL = etFacebookURL.getText().toString();
                 final Bitmap ivProfileImage = profileImage;
                 try {
-
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         Toast.makeText(SignUpActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
@@ -122,15 +121,16 @@ public class SignUpActivity extends AppCompatActivity{
 
         String current_user = sharedpreferences.getString("current_user", null);
 
-        if(current_user != null) {
+        if (current_user != null) {
             Toast.makeText(SignUpActivity.this, "Profile already made!", Toast.LENGTH_LONG).show();
             Log.d("MadeUser", current_user);
-            Intent intent = new Intent(SignUpActivity.this, DiscoverActivity.class);
+            Intent intent = new Intent(SignUpActivity.this,DiscoverActivity.class);
             startActivity(intent);
         }
 
     }
 
+    //following are validity checkers
     // checks if profile is valid before submitting. if not, sets invalid fields red
     public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
         // clear previous errors
@@ -180,6 +180,7 @@ public class SignUpActivity extends AppCompatActivity{
         return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
     }
 
+
     private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap ivProfileImage) throws JSONException {
         User user = new User();
         user.setName(name);
@@ -188,15 +189,17 @@ public class SignUpActivity extends AppCompatActivity{
         user.setEmail(email);
         user.setFacebookURL(facebookURL);
         user.setIvProfileImage(ivProfileImage);
-        saveUserTwo(user);
+        saveUser(user);
     }
 
-    private void saveUserTwo(User user) throws JSONException {
+    //persistence method
+    private void saveUser(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("current_user", user.toJson(user).toString());
         editor.commit();
     }
 
+    //following are profile image methods
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap;
@@ -219,11 +222,9 @@ public class SignUpActivity extends AppCompatActivity{
 
                 stream.close();
             }
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -239,9 +240,8 @@ public class SignUpActivity extends AppCompatActivity{
                 // when "select from pictures" button is pressed, select picture
                 if (option == 0) {
                     launchImageSelect();
-                }
-                // when "capture picture" option is pressed, take picture
-                else {
+                } else {
+                    // when "capture picture" option is pressed, take picture
                     launchImageCapture();
                 }
 
