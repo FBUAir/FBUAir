@@ -22,7 +22,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,8 +30,6 @@ import org.json.JSONException;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
@@ -108,6 +105,8 @@ public class ProfileActivity extends AppCompatActivity{
                     if (isValidProfile(name, phoneNumber, email, facebookURL)) {
                         createProfile(name, organization, phoneNumber, email, facebookURL, ivProfileImage);
                         Toast.makeText(ProfileActivity.this, "Profile made!!", Toast.LENGTH_LONG).show();
+                        Intent i = new Intent(ProfileActivity.this, DiscoverActivity.class);
+                        startActivity(i);
                     }
 
                 } catch (JSONException e) {
@@ -195,6 +194,7 @@ public class ProfileActivity extends AppCompatActivity{
         saveUserTwo(user);
     }
 
+    //making a phone contact
     private void addContact(String name, String organization, String phoneNumber, String email, String facebookURL){
         Intent intent = new Intent(ContactsContract.Intents.Insert.ACTION);
         // Sets the MIME type to match the Contacts Provider
@@ -215,12 +215,17 @@ public class ProfileActivity extends AppCompatActivity{
     }
 
 
+    //adding user to shared preferences
     private void saveUserTwo(User user) throws JSONException {
         SharedPreferences.Editor editor = sharedpreferences.edit();
         editor.putString("current_user", user.toJson(user).toString());
         editor.commit();
     }
 
+
+
+
+    //following blocks of code are for user adding a profile image, setting it as the image of the image button and setting it in user
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap;

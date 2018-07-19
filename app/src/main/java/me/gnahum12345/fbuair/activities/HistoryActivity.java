@@ -35,7 +35,7 @@ public class HistoryActivity extends AppCompatActivity{
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                // TODO loadTopPosts();
+                // TODO populateTimeline;
                 swipeContainer.setRefreshing(false);
             }
         });
