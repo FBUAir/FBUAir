@@ -15,8 +15,11 @@ public class User {
     public String organization;
     public String phoneNumber;
     public String email;
-    public String facebookURL;
     public Bitmap profileImage;
+    public String facebookURL;
+    public String instagramURL;
+    public String linkedInURL;
+
     //public Date createdAt;
 
     public String getName() { return name; }
@@ -28,6 +31,10 @@ public class User {
     public String getEmail() { return email; }
 
     public String getFacebookURL() { return facebookURL; }
+
+    public String getInstagramURL() { return instagramURL; }
+
+    public String getLinkedInURL() { return linkedInURL; }
 
     //public Date getCreatedAt() { return createdAt; }
 
@@ -47,6 +54,10 @@ public class User {
 
     public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
 
+    public void setInstagramURL(String instagramURL) { this.instagramURL = instagramURL; }
+
+    public void setLinkedInURL(String linkedInURL) { this.linkedInURL = linkedInURL; }
+
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
         user.name = json.getString("name");
@@ -54,8 +65,9 @@ public class User {
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
         user.facebookURL = json.getString("facebookURL");
-        String profileImage = json.getString("profileImage");
-        user.profileImage = stringToBitmap(profileImage);
+        user.profileImage = stringToBitmap(json.getString("profileImage"));
+        user.instagramURL = json.getString("instagramURL");
+        user.linkedInURL = json.getString("linkedInURL");
         return user;
 
     }
@@ -65,8 +77,10 @@ public class User {
         String organization = user.getOrganization();
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
-        String facebookURL = user.getFacebookURL();
         String profileImageString = bitmapToString(user.getProfileImage());
+        String facebookURL = user.getFacebookURL();
+        String instagramURL = user.getInstagramURL();
+        String linkedInURL = user.getLinkedInURL();
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -75,6 +89,8 @@ public class User {
         json.put("email", email);
         json.put("facebookURL", facebookURL);
         json.put("profileImage", profileImageString);
+        json.put("instagramURL", instagramURL);
+        json.put("linkedInURL", linkedInURL);
 
         Log.d("toJson", json.toString());
         return json;
