@@ -65,7 +65,7 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_details2);
+        setContentView(R.layout.activity_details);
 
         // set user (would be from intent or something, but placeholder for now)
         FakeUsers fakeUsers = new FakeUsers();
@@ -158,7 +158,6 @@ public class DetailsActivity extends AppCompatActivity {
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
         int rawContactInsertIndex = ops.size();
-        // set user contact fields
         ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
                 .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
@@ -175,7 +174,7 @@ public class DetailsActivity extends AppCompatActivity {
                 .newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Photo.PHOTO, 3)
+                .withValue(CommonDataKinds.Photo.PHOTO, profileImageString)
                 .build());
         // add organization
         ops.add(ContentProviderOperation

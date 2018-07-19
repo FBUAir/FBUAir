@@ -1,5 +1,8 @@
 package me.gnahum12345.fbuair;
 
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
