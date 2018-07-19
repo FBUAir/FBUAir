@@ -64,7 +64,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         notifyDataSetChanged();
     }
 
-    // Add a list of items -- change to type used
+    // Add a list of items -- change to type used, used to populate history
     public void addAll(List<User> list) {
         mContacts.addAll(list);
         notifyDataSetChanged();
@@ -91,6 +91,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     }
 
+    //TODO ADD TIMESTAMPS
     public static String getRelativeTimeAgo(Date date) {
         String relativeDate;
         long dateMillis = date.getTime();

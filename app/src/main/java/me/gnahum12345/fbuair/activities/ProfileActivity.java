@@ -142,7 +142,7 @@ public class ProfileActivity extends AppCompatActivity {
             user.setOrganization(organization);
             user.setFacebookURL(facebookURL);
             if (profileImageBitmap != null)
-                user.setProfileImage(profileImageBitmap);;
+                user.setIvProfileImage(profileImageBitmap);
             // save changes to shared preferences
             SharedPreferences.Editor editor = sharedpreferences.edit();
             try {
