@@ -24,19 +24,39 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;
 
-public class HistoryActivity extends AppCompatActivity{
+public class HistoryActivity extends AppCompatActivity {
+    public static ArrayList<String> listRandos = new ArrayList<>();
     HistoryAdapter historyAdapter;
     ArrayList<User> contacts;
     RecyclerView rvUser;
-
     SharedPreferences sharedpreferences;
     String MyPREFERENCES = "MyPrefs";
-
-    public static ArrayList<String> listRandos = new ArrayList<>();
-
-
     private SwipeRefreshLayout swipeContainer;
 
+    //creating my shared preferences array of fake contacts
+    public static void onContactAddClick(MenuItem mi) {
+        JSONObject rando = createRando();
+        listRandos.add(rando.toString());
+        Log.d("addContacts", String.valueOf(listRandos));
+    }
+
+    public static JSONObject createRando() {
+        FakeUsers fakeUsers = new FakeUsers();
+
+        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
+        listUsers.add(fakeUsers.jsonUser1);
+        listUsers.add(fakeUsers.jsonUser2);
+        listUsers.add(fakeUsers.jsonUser3);
+        listUsers.add(fakeUsers.jsonUser4);
+        listUsers.add(fakeUsers.jsonUser5);
+        listUsers.add(fakeUsers.jsonUser6);
+        listUsers.add(fakeUsers.jsonUser7);
+        listUsers.add(fakeUsers.jsonUser8);
+
+        Random random = new Random();
+        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
+        return rando;
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -52,7 +72,7 @@ public class HistoryActivity extends AppCompatActivity{
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                populateHistory();
+                getHistory();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -69,8 +89,7 @@ public class HistoryActivity extends AppCompatActivity{
         rvUser.setLayoutManager(new LinearLayoutManager(this));
         rvUser.setAdapter(historyAdapter);
 
-
-        populateHistory();
+        getHistory();
     }
 
     public void addSharedPreferences(SharedPreferences.Editor editor, List list) throws IOException {
@@ -78,46 +97,48 @@ public class HistoryActivity extends AppCompatActivity{
         editor.commit();
     }
 
-    private void populateHistory(){
+    public void getHistory() {
 
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
 
+        //adding to the shared preferences
         try {
             addSharedPreferences(editor, listRandos);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String history = sharedpreferences.getString("history", null);
-        Log.d("history", history);
+        //reading from the shared preferences
+        try {
+            listRandos = (ArrayList<String>) ObjectSerializer.deserialize(sharedpreferences.getString("history", ObjectSerializer.serialize(new ArrayList<String>())));
+            Log.d("history", String.valueOf(listRandos));
+            populateHistory(listRandos);
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
-    //creating my shared preferences array of fake contacts
-    public static void onContactAddClick(MenuItem mi) {
-        JSONObject rando = createRando();
-        listRandos.add(rando.toString());
-        Log.d("addContacts", String.valueOf(listRandos));
-    }
+    //TODO
+    public void populateHistory(List listRandos){
+       // for (int i = 0; i<listRandos.size(); i++){
+            //try {
 
-    public static JSONObject createRando(){
-        FakeUsers fakeUsers = new FakeUsers();
+                //TODO NEED TO MAKE LISTRANODS BE MADE OF JSONOBJECTS
+                //JSONObject rando = (JSONObject) listRandos.get(i);
+               // User user = User.fromJson(rando);
+                //contacts.add(user);
+                //HistoryAdapter.notifyItemInserted(contacts.size() - 1);
 
-        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
-        listUsers.add(fakeUsers.jsonUser1);
-        listUsers.add(fakeUsers.jsonUser2);
-        listUsers.add(fakeUsers.jsonUser3);
-        listUsers.add(fakeUsers.jsonUser4);
-        listUsers.add(fakeUsers.jsonUser5);
-        listUsers.add(fakeUsers.jsonUser6);
-        listUsers.add(fakeUsers.jsonUser7);
-        listUsers.add(fakeUsers.jsonUser8);
+            //}catch (JSONException e){
+             //   e.printStackTrace();
+            //}
 
-        Random random = new Random();
-        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
-        return rando;
+       // }
+
     }
 
 
