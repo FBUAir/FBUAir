@@ -1,12 +1,10 @@
 package me.gnahum12345.fbuair.activities;
 
-import android.Manifest;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,8 +13,8 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,11 +23,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
@@ -97,13 +95,10 @@ public class DetailsActivity extends AppCompatActivity {
         tvConflictMessage = findViewById(R.id.tvConflictMessage);
 
         // display selected user's info
-        FakeUsers fakeUsers = new FakeUsers();
-        try {
-            user = User.fromJson(fakeUsers.jsonUser8);
-            setInfo();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        user = (User) Parcels.unwrap(getIntent().getParcelableExtra(User.class.getSimpleName()));
+        Log.d("name", user.getName());
+        setInfo();
+
 
         // CLICK HANDLERS
         // add contact when add contact button is clicked
@@ -193,19 +188,6 @@ public class DetailsActivity extends AppCompatActivity {
             });
         }
     }
-
-    // check if user has required permissions. if not, request them
-/*    boolean checkContactPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[] {Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
-        }
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED)) {
-
-        }
-
-    }*/
 
     // adds given json user to contacts
     void addContact() throws JSONException {

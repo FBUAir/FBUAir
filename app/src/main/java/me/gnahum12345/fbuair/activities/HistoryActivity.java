@@ -78,6 +78,7 @@ public class HistoryActivity extends AppCompatActivity {
                 historyAdapter.clear();
                 getHistory();
                 swipeContainer.setRefreshing(false);
+                Log.d("refresh", "refreshingggg");
             }
         });
         // Configure the refreshing colors
@@ -97,7 +98,7 @@ public class HistoryActivity extends AppCompatActivity {
         getHistory();
     }
 
-    public void addSharedPreferences(SharedPreferences.Editor editor, String list) {
+    public static void addSharedPreferences(SharedPreferences.Editor editor, String list) {
         editor.putString("history", list);
         editor.commit();
     }
