@@ -1,15 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:layout_margin="10dp">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
+    <!--TODO: Make the image circular.-->
+    <ImageView
+        android:id="@+id/ivProfilePic"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:adjustViewBounds="false"
+        android:scaleType="centerCrop"
+        app:srcCompat="@drawable/profile_icon" />
 
-    <!--TODO: Make this textview look hella pretty. -->
     <TextView
+        android:id="@+id/tvNameofDevice"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tvNameOfDevice"
-        android:layout_centerInParent="true"/>
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@+id/ivProfilePic"
+        android:hint="Name"
+        android:inputType="textPersonName"
+        android:textSize="18sp" />
 
+    <!--        android:layout_alignParentTop="false"
+        android:layout_centerHorizontal="true"
+
+    -->
 </RelativeLayout>
