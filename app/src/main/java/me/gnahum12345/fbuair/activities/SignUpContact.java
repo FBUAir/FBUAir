@@ -1,26 +1,19 @@
 package me.gnahum12345.fbuair.activities;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -28,40 +21,40 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import org.json.JSONException;
-
-import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.models.User;
 
 public class SignUpContact extends AppCompatActivity {
 
+    // profile image to access in next activity (bitmap too large to pass via intent)
+    public static Bitmap profileImage;
+    final int REQUEST_IMAGE_SELECT = 1;
+    final int REQUEST_IMAGE_CAPTURE = 2;
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
     EditText etEmail;
     Button btNext;
     ImageButton btnProfileImage;
-
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
-
     // filename for preferences
     String MyPREFERENCES = "MyPrefs";
-
     Dialog dialog;
-    final int REQUEST_IMAGE_SELECT = 1;
-    final int REQUEST_IMAGE_CAPTURE = 2;
 
-    // profile image to access in next activity (bitmap too large to pass via intent)
-    public static Bitmap profileImage;
+    // validity checkers
+    public static boolean isValidEmail(CharSequence email) {
+        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+    }
+
+    public static boolean isValidPhoneNumber(String number) {
+        return android.util.Patterns.PHONE.matcher(number).matches();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -128,7 +121,7 @@ public class SignUpContact extends AppCompatActivity {
     }
 
     // checks if profile is valid before submitting. if not, shows error messages
-    public boolean isValidContact(String name, String phone, String email){
+    public boolean isValidContact(String name, String phone, String email) {
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -156,15 +149,6 @@ public class SignUpContact extends AppCompatActivity {
         tvNameError.setText("");
         tvPhoneError.setText("");
         tvEmailError.setText("");
-    }
-
-    // validity checkers
-    public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
-    }
-
-    public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
     }
 
     //following are profile image methods
@@ -196,7 +180,7 @@ public class SignUpContact extends AppCompatActivity {
     }
 
     public void showDialog() {
-        CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
+        CharSequence options[] = new CharSequence[]{"Select from pictures", "Capture picture"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit profile picture");
         builder.setItems(options, new DialogInterface.OnClickListener() {
