@@ -104,8 +104,9 @@ public class FakeUsers {
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
                     .put("instagramURL", "https://www.instagram.com/mariamdiallo9/")
-                    .put("linkedInURL", "https://www.linkedin.com/in/mariamdiallo9/")
+                    .put("linkedInURL", "https://www..com/in/mariamdiallo9/")
                     .put("profileImage", "");
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
