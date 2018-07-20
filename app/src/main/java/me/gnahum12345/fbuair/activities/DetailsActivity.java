@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -26,12 +27,13 @@ import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.models.User;
 
 public class DetailsActivity extends AppCompatActivity {
 
     // views
     // user info views
-    ImageView ivImage;
+    ImageView ivProfileImage;
     TextView tvName;
     TextView tvOrganization;
     TextView tvPhone;
@@ -49,6 +51,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     // add on social media views
     Button btFacebook;
+    Button btInstagram;
+    Button btLinkedIn;
 
     // current profile whose details are being views
     JSONObject user;
@@ -72,7 +76,7 @@ public class DetailsActivity extends AppCompatActivity {
         user = fakeUsers.jsonUser8;
 
         // get references to views
-        ivImage = findViewById(R.id.ivImage);
+        ivProfileImage = findViewById(R.id.ivImage);
         tvName = findViewById(R.id.tvName);
         tvOrganization = findViewById(R.id.tvOrganization);
         tvPhone = findViewById(R.id.tvPhone);
@@ -133,14 +137,32 @@ public class DetailsActivity extends AppCompatActivity {
         tvOrganization.setText(user.getString("organization"));
         tvPhone.setText(user.getString("phone"));
         tvEmail.setText(user.getString("email"));
-
-        // set  'add on fb button' to redirect to fb url on click
+        ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));
         final String facebookUrl = user.getString("facebookURL");
+        final String instagramUrl = user.getString("instagramUrl");
+        final String linkedInUrl = user.getString("linkedInUrl");
+        // set 'add on [social media]' buttons to redirect to profile URLs on click
         btFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(facebookUrl));
+                startActivity(i);
+            }
+        });
+        btInstagram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(instagramUrl));
+                startActivity(i);
+            }
+        });
+        btLinkedIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                i.setData(Uri.parse(linkedInUrl));
                 startActivity(i);
             }
         });
@@ -153,7 +175,7 @@ public class DetailsActivity extends AppCompatActivity {
         String phone = user.getString("phone");
         String email = user.getString("email");
         String organization = user.getString("organization");
-        String profileImageString = user.getString("profileImageBitmap");
+        String profileImageString = User.bitmapToString(BitmapFactory.decodeResource(getResources(), R.drawable.happy_face));
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();

@@ -51,14 +51,16 @@
         android:id="@+id/btAddContact"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/tvEmail"
+        android:layout_centerHorizontal="true"
         android:text="Add Contact" />
 
     <RelativeLayout
         android:id="@+id/rlContactOptions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/tvEmail"
+        android:layout_centerHorizontal="true"
         android:visibility="gone">
 
         <ImageView
@@ -92,7 +94,8 @@
         android:id="@+id/rlConflict"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_below="@+id/tvEmail"
+        android:layout_centerHorizontal="true"
         android:visibility="gone">
 
         <TextView
@@ -128,7 +131,24 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="130dp"
-        android:text="Add on FB" />
+        android:layout_marginBottom="193dp"
+        android:text="Add on Facebook" />
+
+    <Button
+        android:id="@+id/btInstagram"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btFacebook"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-193dp"
+        android:text="Add on Instagram" />
+
+    <Button
+        android:id="@+id/btLinkedIn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btInstagram"
+        android:layout_centerHorizontal="true"
+        android:text="Add on LinkedIn" />
 
 </RelativeLayout>
