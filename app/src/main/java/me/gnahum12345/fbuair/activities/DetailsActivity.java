@@ -1,9 +1,11 @@
 package me.gnahum12345.fbuair.activities;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.content.pm.PackageManager;
@@ -15,6 +17,8 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -74,14 +78,18 @@ public class DetailsActivity extends AppCompatActivity {
     String contactId;
     String[] rawContactId;
 
+    // whether user granted Contacts permissions
+    boolean permissionGranted;
+    // whether user checked "Never ask again". Disables Add Contact functionality
+    boolean permissionDeniedForever = false;
+
     // codes for options after adding contact
     final static int SUCCESS = 1;
     final static int PHONE_CONFLICT = 2;
     final static int EMAIL_CONFLICT = 3;
 
     // request codes for permissions results
-    final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 4;
-    final static int MY_PERMISSIONS_REQUEST_WRITE_CONTACTS = 5;
+    final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +114,14 @@ public class DetailsActivity extends AppCompatActivity {
         tvIgnoreConflict = findViewById(R.id.tvIgnoreConflict);
         tvConflictMessage = findViewById(R.id.tvConflictMessage);
 
+
+        // check whether user granted contacts permissions
+        permissionGranted = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED;
+
         // display selected user's info
         FakeUsers fakeUsers = new FakeUsers();
         try {
@@ -120,12 +136,18 @@ public class DetailsActivity extends AppCompatActivity {
         btAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    if (noConflict()) {
-                        addContact();
+                if (requestPermissionsIfNeeded()) {
+                    try {
+                        if (noConflict()) {
+                            addContact();
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                }
+                // if user is missing permission and opted to not show Permissions request again, show them message to go to Settings to change
+                else if (permissionDeniedForever) {
+                    showPermissionDeniedForeverDialog();
                 }
             }
         });
@@ -207,18 +229,80 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
-    // check if user has required permissions. if not, request them
-/*    boolean checkContactPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[] {Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+    // requests permissions if needed and returns true if permission is granted
+    boolean requestPermissionsIfNeeded() {
+        if (!permissionGranted) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
+                        MY_PERMISSIONS_REQUEST_CONTACTS);
+            return false;
         }
-        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED)) {
+        return true;
+    }
 
+    // show rationale for needing contact permissions and offer to request permissions again
+    void showPermissionsRationale() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.contact_permissions_rationale)
+                .setTitle("Permission Denied")
+                .setPositiveButton("I'm Sure", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                })
+                .setNegativeButton("Re-Try", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ActivityCompat.requestPermissions(DetailsActivity.this,
+                                new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
+                                MY_PERMISSIONS_REQUEST_CONTACTS);
+                    }
+                })
+                .setCancelable(false);
+        builder.show();
+    }
+
+    // result after user accepts/denies permission
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // set permissionsGranted variable to true if user granted all requested permissions. false otherwise.
+        permissionGranted = (requestCode == MY_PERMISSIONS_REQUEST_CONTACTS
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED);
+        if (!permissionGranted) {
+            boolean showRationale = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS);
+            // user checked "never ask again", disable add contact functionality
+            if (!showRationale) {
+                permissionDeniedForever = true;
+            }
+            // user denied but didn't press press "never ask again". show rationale and request permission again
+            else {
+                showPermissionsRationale();
+            }
         }
+    }
 
-    }*/
+    // allow user to go to settings to manually grant permissions if denied and pressed "Never show again"
+    void showPermissionDeniedForeverDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Go to App Permissions in Settings to change this.")
+                .setTitle("Missing Contact Permissions")
+                // go to settings if user wants to
+                .setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                    }
+                })
+                .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                });
+        builder.show();
+    }
 
     // adds given json user to contacts
     void addContact() throws JSONException {

@@ -148,7 +148,7 @@ public class ProfileActivity extends AppCompatActivity {
         }
         else {
             // go to sign up activity if no current user
-            Intent intent = new Intent (this, SignUpContact.class);
+            Intent intent = new Intent (this, SignUpContactActivity.class);
             startActivity(intent);
             finish();
         }
