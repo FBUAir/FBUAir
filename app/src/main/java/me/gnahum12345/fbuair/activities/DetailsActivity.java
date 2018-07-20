@@ -13,11 +13,13 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -232,9 +234,9 @@ public class DetailsActivity extends AppCompatActivity {
     // requests permissions if needed and returns true if permission is granted
     boolean requestPermissionsIfNeeded() {
         if (!permissionGranted) {
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
-                        MY_PERMISSIONS_REQUEST_CONTACTS);
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
+                    MY_PERMISSIONS_REQUEST_CONTACTS);
             return false;
         }
         return true;
@@ -264,6 +266,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // result after user accepts/denies permission
+    @RequiresApi(api = Build.VERSION_CODES.M)
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // set permissionsGranted variable to true if user granted all requested permissions. false otherwise.
