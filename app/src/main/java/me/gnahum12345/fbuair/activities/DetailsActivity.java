@@ -6,6 +6,7 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.FakeUsers;
@@ -175,7 +177,13 @@ public class DetailsActivity extends AppCompatActivity {
         String phone = user.getString("phone");
         String email = user.getString("email");
         String organization = user.getString("organization");
-        String profileImageString = User.bitmapToString(BitmapFactory.decodeResource(getResources(), R.drawable.happy_face));
+
+        // fake image
+        Bitmap profileImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.happy_face);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        profileImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] profileImageBytes = stream.toByteArray();
+        profileImageBitmap.recycle();
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -196,7 +204,7 @@ public class DetailsActivity extends AppCompatActivity {
                 .newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Photo.PHOTO, profileImageString)
+                .withValue(CommonDataKinds.Photo.PHOTO, profileImageBytes)
                 .build());
         // add organization
         ops.add(ContentProviderOperation
