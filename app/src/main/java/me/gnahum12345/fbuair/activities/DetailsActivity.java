@@ -1,10 +1,12 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.Manifest;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -75,6 +78,10 @@ public class DetailsActivity extends AppCompatActivity {
     final static int SUCCESS = 1;
     final static int PHONE_CONFLICT = 2;
     final static int EMAIL_CONFLICT = 3;
+
+    // request codes for permissions results
+    final static int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 4;
+    final static int MY_PERMISSIONS_REQUEST_WRITE_CONTACTS = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,6 +206,19 @@ public class DetailsActivity extends AppCompatActivity {
             });
         }
     }
+
+    // check if user has required permissions. if not, request them
+/*    boolean checkContactPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED)) {
+
+        }
+
+    }*/
 
     // adds given json user to contacts
     void addContact() throws JSONException {
