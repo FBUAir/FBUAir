@@ -59,6 +59,8 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.models.GestureDetector;
 
+import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
+
 public class DiscoverActivity extends ConnectionsActivity implements SensorEventListener {
 
     // Instance variables.
@@ -161,9 +163,11 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         send(Payload.fromBytes(senderInfo.getBytes()));
     }
 
-    public void sendFromEndPoint(Endpoint endpoint) {
-        String payloadInfo = "This is gonnna be one gigantically large json because we are soooooo coolll!!!!!";
-        send(Payload.fromBytes(payloadInfo.getBytes()), endpoint);
+    public void sendToEndpoint(Endpoint endpoint) {
+        SharedPreferences sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String current_user = sharedpreferences.getString("current_user", null);
+
+        send(Payload.fromBytes(current_user.getBytes()), endpoint);
 
     }
 
@@ -298,14 +302,21 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         Toast.makeText(
                 this, getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT)
                 .show();
+        sendProfileUser(endpoint);
         rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
         rvAdapter.notifyItemChanged(deviceLst.size() - 1);
-
-        //        vibrate();
-        // TODO: Send profile data and display that instead.
         setState(State.CONNECTED);
     }
+
+
+    private void sendProfileUser(Endpoint endpoint) {
+        ProfileUser profileUser = new ProfileUser(this);
+        Payload payload = Payload.fromBytes(profileUser.convertToString().getBytes());
+        send(payload, endpoint);
+    }
+
+
 
     @Override
     protected void onEndpointDisconnected(Endpoint endpoint) {

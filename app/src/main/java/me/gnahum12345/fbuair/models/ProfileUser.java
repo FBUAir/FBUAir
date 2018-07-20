@@ -11,7 +11,7 @@ import org.json.JSONObject;
 public class ProfileUser {
 
     //constant variables for shared preferences.
-    private final static String MyPREFERENCES = "MyPrefs";
+    public final static String MyPREFERENCES = "MyPrefs";
     private final static String BITMAP_KEY = "bitmap";
     private final static String NAME_KEY = "name";
 
@@ -23,10 +23,15 @@ public class ProfileUser {
         String current_user = sharedpreferences.getString("current_user", null);
         User user = new User();
         try {
-            user = User.fromJson(new JSONObject(current_user));
+            if (current_user != null) {
+                user = User.fromJson(new JSONObject(current_user));
+            } else {
+                throw new JSONException("current user was null");
+            }
         } catch (JSONException e) {
             e.printStackTrace();
-            user.setName("Unknown Name");
+            //TODO figure it out.
+//            user.setName("Unknown Name");
         }
         setName(user.getName());
         setIvProfileImage(user.getProfileImage());
@@ -64,10 +69,13 @@ public class ProfileUser {
     }
 
     public String convertToString() {
-        String bitmap = User.bitmapToString(ivProfileImage);
+        String bitmap = "";
+        if (ivProfileImage != null) {
+             bitmap = User.bitmapToString(ivProfileImage);
+        }
         JSONObject jsonProfile = new JSONObject();
         try {
-            jsonProfile.put(BITMAP_KEY, getIvProfileImage());
+            jsonProfile.put(BITMAP_KEY, bitmap);
             jsonProfile.put(NAME_KEY, getName());
         } catch (JSONException e) {
             e.printStackTrace();

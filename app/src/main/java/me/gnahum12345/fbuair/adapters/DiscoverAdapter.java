@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +69,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
     // TODO 2: find a way s.t. after a call to put the onBindViewholder is called and updates the image.
     public void put(ConnectionsActivity.Endpoint e, ProfileUser profileUser) {
+        if (profileUser.getName() == "" || profileUser.getName() == null) {
+            return;
+        }
         profileUserMap.put(e, profileUser);
         notifyDataSetChanged();
     }
@@ -101,7 +103,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
-                ((DiscoverActivity) mContext).sendFromEndPoint(device);
+                ((DiscoverActivity) mContext).sendToEndpoint(device);
             }
         });
     }
