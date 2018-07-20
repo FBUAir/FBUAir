@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import org.json.JSONException;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -38,50 +39,48 @@ public class SignUpContact extends AppCompatActivity{
     EditText etOrganization;
     EditText etPhoneNumber;
     EditText etEmail;
-    EditText etFacebookURL;
-    Context context;
-    Button btSubmit;
+    Button btNext;
     ImageButton btnProfileImage;
-    Bitmap profileImage;
 
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
-    TextView tvFacebookError;
 
-    SharedPreferences sharedpreferences;
+    // filename for preferences
     String MyPREFERENCES = "MyPrefs";
 
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
     final int REQUEST_IMAGE_CAPTURE = 2;
 
+    // profile image to access in next activity (bitmap too large to pass via intent)
+    public static Bitmap profileImage;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
-        context = this;
+        setContentView(R.layout.activity_sign_up_contact);
 
+        // if user already signed up, take them to discover page
+        SharedPreferences sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String current_user = sharedPreferences.getString("current_user", null);
+        if (current_user != null) {
+            Intent intent = new Intent(SignUpContact.this,DiscoverActivity.class);
+            startActivity(intent);
+            finish();
+        }
+
+        // get references to views
         etName = findViewById(R.id.etName);
         etOrganization = findViewById(R.id.etOrganization);
         etPhoneNumber = findViewById(R.id.etPhone);
         etEmail = findViewById(R.id.etEmail);
-        etFacebookURL = findViewById(R.id.etFacebookURL);
-        btSubmit = findViewById(R.id.btSubmit);
-        btnProfileImage = (ImageButton) findViewById(R.id.btnProfileImage);
-
-        etName = findViewById(R.id.etName);
-        etOrganization = findViewById(R.id.etOrganization);
-        etPhoneNumber = findViewById(R.id.etPhone);
-        etEmail = findViewById(R.id.etEmail);
-        etFacebookURL = findViewById(R.id.etFacebookURL);
+        btNext = findViewById(R.id.btNext);
+        btnProfileImage = findViewById(R.id.btnProfileImage);
 
         tvNameError = findViewById(R.id.tvNameError);
         tvEmailError = findViewById(R.id.tvEmailError);
         tvPhoneError = findViewById(R.id.tvPhoneError);
-        tvFacebookError = findViewById(R.id.tvFacebookError);
-
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
 
         // clear placeholder text in errors
         clearErrors();
@@ -89,31 +88,27 @@ public class SignUpContact extends AppCompatActivity{
         // add formatter to phone number field
         etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
-        btSubmit.setOnClickListener(new View.OnClickListener() {
+        // go to next sign up screen when user clicks on button
+        btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                // get values user submitted
                 final String name = etName.getText().toString();
                 final String organization = etOrganization.getText().toString();
-                final String phoneNumber = etPhoneNumber.getText().toString();
+                final String phone = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
-                final String facebookURL = etFacebookURL.getText().toString();
                 if (profileImage == null) {
                     profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_profile);
                 }
-                try {
-                    // create profile if valid. if not, shows appropriate error messages
-                    if (isValidProfile(name, phoneNumber, email, facebookURL)) {
-                        createProfile(name, organization, phoneNumber, email, facebookURL, profileImage);
-                        Toast.makeText(SignUpContact.this, "Profile made!!", Toast.LENGTH_LONG).show();
-                        // go to discover activity
-                        Intent intent = new Intent(getBaseContext(), DiscoverActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                // go to next sign up page if contact info is valid. if not, shows appropriate error messages
+                if (isValidContact(name, phone, email)) {
+                    Intent intent = new Intent(getBaseContext(), SignUpSocialMedia.class);
+                    intent.putExtra("name", name);
+                    intent.putExtra("organization", organization);
+                    intent.putExtra("phone", phone);
+                    intent.putExtra("email", email);
+                    startActivity(intent);
                 }
-
             }
         });
 
@@ -123,19 +118,11 @@ public class SignUpContact extends AppCompatActivity{
                 showDialog();
             }
         });
-
-        String current_user = sharedpreferences.getString("current_user", null);
-
-        if (current_user != null) {
-            Intent intent = new Intent(SignUpContact.this,DiscoverActivity.class);
-            startActivity(intent);
-        }
-
     }
 
     //following are validity checkers
     // checks if profile is valid before submitting. if not, sets invalid fields red
-    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+    public boolean isValidContact(String name, String phone, String email){
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -156,10 +143,6 @@ public class SignUpContact extends AppCompatActivity{
             tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
             valid = false;
         }
-        if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
-            tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
-            valid = false;
-        }
         return valid;
     }
 
@@ -167,7 +150,6 @@ public class SignUpContact extends AppCompatActivity{
         tvNameError.setText("");
         tvPhoneError.setText("");
         tvEmailError.setText("");
-        tvFacebookError.setText("");
     }
 
     // validity checkers
@@ -177,29 +159,6 @@ public class SignUpContact extends AppCompatActivity{
 
     public static boolean isValidPhoneNumber(String number) {
         return android.util.Patterns.PHONE.matcher(number).matches();
-    }
-
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-
-    private void createProfile(String name, String organization, String phoneNumber, String email, String facebookURL, Bitmap profileImage) throws JSONException {
-        User user = new User();
-        user.setName(name);
-        user.setOrganization(organization);
-        user.setPhoneNumber(phoneNumber);
-        user.setEmail(email);
-        user.setFacebookURL(facebookURL);
-        user.setIvProfileImage(profileImage);
-        saveUser(user);
-    }
-
-    //persistence method
-    private void saveUser(User user) throws JSONException {
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("current_user", User.toJson(user).toString());
-        editor.commit();
     }
 
     //following are profile image methods
@@ -221,8 +180,6 @@ public class SignUpContact extends AppCompatActivity{
                 // set image icon to newly selected image
                 profileImage = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
-
-
                 stream.close();
             }
         } catch (FileNotFoundException e) {
@@ -234,7 +191,6 @@ public class SignUpContact extends AppCompatActivity{
 
     public void showDialog() {
         CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
-
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit profile picture");
         builder.setItems(options, new DialogInterface.OnClickListener() {

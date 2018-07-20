@@ -1,7 +1,14 @@
 package me.gnahum12345.fbuair;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import me.gnahum12345.fbuair.activities.DiscoverActivity;
+import me.gnahum12345.fbuair.models.User;
 
 public class FakeUsers {
     // placeholder users to add
@@ -88,6 +95,8 @@ public class FakeUsers {
                     .put("email", "mariam@gmail.com")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
+                    .put("instagramURL", "https://www.instagram.com/mariamdiallo9/")
+                    .put("linkedInURL", "https://www.linkedin.com/in/mariamdiallo9/")
                     .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();

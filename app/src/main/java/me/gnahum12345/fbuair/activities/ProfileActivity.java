@@ -39,24 +39,35 @@ public class ProfileActivity extends AppCompatActivity {
     EditText etOrganization;
     EditText etPhoneNumber;
     EditText etEmail;
-    EditText etFacebookURL;
+    EditText etFacebookUrl;
+    EditText etLinkedInUrl;
+    EditText etInstagramUrl;
     Button btEditProfile;
     Button btSubmit;
     ImageButton btnProfileImage;
-    Bitmap profileImageBitmap;
-
-    // name of preferences file
-    SharedPreferences sharedpreferences;
-    final static String MyPREFERENCES = "MyPrefs";
 
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
     TextView tvFacebookError;
+    TextView tvInstagramError;
+    TextView tvLinkedInError;
 
+    // name of preferences file
+    String MyPREFERENCES = "MyPrefs";
+    SharedPreferences sharedpreferences;
 
-    // current user
+    // current user info
     User user;
+    String name;
+    String email;
+    String organization;
+    String phone;
+    Bitmap profileImageBitmap;
+    String facebookUrl;
+    String linkedInUrl;
+    String instagramUrl;
+
 
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
@@ -75,21 +86,18 @@ public class ProfileActivity extends AppCompatActivity {
         etOrganization = findViewById(R.id.etOrganization);
         etPhoneNumber = findViewById(R.id.etPhone);
         etEmail = findViewById(R.id.etEmail);
-        etFacebookURL = findViewById(R.id.etFacebookURL);
-        btSubmit = findViewById(R.id.btSubmit);
+        etFacebookUrl = findViewById(R.id.etFacebookUrl);
+        etInstagramUrl = findViewById(R.id.etInstagramUrl);
+        etLinkedInUrl = findViewById(R.id.etLinkedInUrl);
         btnProfileImage = findViewById(R.id.btnProfileImage);
-        btEditProfile = findViewById(R.id.btEditProfile);
-
-        etName = findViewById(R.id.etName);
-        etOrganization = findViewById(R.id.etOrganization);
-        etPhoneNumber = findViewById(R.id.etPhone);
-        etEmail = findViewById(R.id.etEmail);
-        etFacebookURL = findViewById(R.id.etFacebookURL);
-
         tvNameError = findViewById(R.id.tvNameError);
         tvEmailError = findViewById(R.id.tvEmailError);
         tvPhoneError = findViewById(R.id.tvPhoneError);
         tvFacebookError = findViewById(R.id.tvFacebookError);
+        tvInstagramError = findViewById(R.id.tvInstagramError);
+        tvLinkedInError = findViewById(R.id.tvLinkedInError);
+        btEditProfile = findViewById(R.id.btEditProfile);
+        btSubmit = findViewById(R.id.btSubmit);
 
         // clear placeholder text in errors
         clearErrors();
@@ -119,40 +127,6 @@ public class ProfileActivity extends AppCompatActivity {
                 saveProfile();
             }
         });
-
-        btnProfileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showDialog();
-            }
-        });
-    }
-
-    // saves user profile to be edit text fields if valid
-    void saveProfile() {
-        final String name = etName.getText().toString();
-        final String organization = etOrganization.getText().toString();
-        final String phoneNumber = etPhoneNumber.getText().toString();
-        final String email = etEmail.getText().toString();
-        final String facebookURL = etFacebookURL.getText().toString();
-        if (isValidProfile(name, phoneNumber, email, facebookURL)) {
-            setEditable(false);
-            user.setName(name);
-            user.setPhoneNumber(phoneNumber);
-            user.setEmail(email);
-            user.setOrganization(organization);
-            user.setFacebookURL(facebookURL);
-            if (profileImageBitmap != null)
-                user.setIvProfileImage(profileImageBitmap);
-            // save changes to shared preferences
-            SharedPreferences.Editor editor = sharedpreferences.edit();
-            try {
-                editor.putString("current_user", User.toJson(user).toString());
-                editor.commit();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     // gets current user and sets text views to display current user info
@@ -167,6 +141,9 @@ public class ProfileActivity extends AppCompatActivity {
             etPhoneNumber.setText(user.getPhoneNumber());
             etEmail.setText(user.getEmail());
             etOrganization.setText(user.getOrganization());
+            etFacebookUrl.setText(user.getFacebookURL());
+            etInstagramUrl.setText(user.getInstagramURL());
+            etLinkedInUrl.setText(user.getLinkedInURL());
             btnProfileImage.setImageBitmap(user.getProfileImage());
         }
         else {
@@ -178,31 +155,38 @@ public class ProfileActivity extends AppCompatActivity {
 
     }
 
-    // makes edittexts editable and shows submit changes button
-    void setEditable(boolean flag) {
-        if (flag) {
-            etName.setEnabled(true);
-            etOrganization.setEnabled(true);
-            etPhoneNumber.setEnabled(true);
-            etEmail.setEnabled(true);
-            etFacebookURL.setEnabled(true);
-            // replace edit profile button with submit changes option
-            btEditProfile.setVisibility(View.GONE);
-            btSubmit.setVisibility(View.VISIBLE);
-        } else {
-            etName.setEnabled(false);
-            etOrganization.setEnabled(false);
-            etPhoneNumber.setEnabled(false);
-            etEmail.setEnabled(false);
-            etFacebookURL.setEnabled(false);
-            // replace submit changes button with edit profile button
-            btEditProfile.setVisibility(View.VISIBLE);
-            btSubmit.setVisibility(View.GONE);
+    // saves user profile to be edit text fields if valid
+    void saveProfile() {
+        name = etName.getText().toString();
+        organization = etOrganization.getText().toString();
+        phone = etPhoneNumber.getText().toString();
+        email = etEmail.getText().toString();
+        facebookUrl = etFacebookUrl.getText().toString();
+        instagramUrl = etInstagramUrl.getText().toString();
+        linkedInUrl = etLinkedInUrl.getText().toString();
+
+        if (isValidProfile()) {
+            setEditable(false);
+            user.setName(name);
+            user.setPhoneNumber(phone);
+            user.setEmail(email);
+            user.setOrganization(organization);
+            user.setFacebookURL(facebookUrl);
+            if (profileImageBitmap != null)
+                user.setProfileImage(profileImageBitmap);;
+            // save changes to shared preferences
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            try {
+                editor.putString("current_user", User.toJson(user).toString());
+                editor.commit();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
         }
     }
 
     // checks if profile is valid before submitting. if not, shows appropriate error messages
-    public boolean isValidProfile(String name, String phone, String email, String facebookUrl){
+    public boolean isValidProfile() {
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -227,15 +211,15 @@ public class ProfileActivity extends AppCompatActivity {
             tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
             valid = false;
         }
+        if (!linkedInUrl.isEmpty() && !isValidLinkedInUrl(linkedInUrl)) {
+            tvLinkedInError.setText(getResources().getString(R.string.bad_linked_in_url_error));
+            valid = false;
+        }
+        if (!instagramUrl.isEmpty() && !isValidInstagramUrl(instagramUrl)) {
+            tvInstagramError.setText(getResources().getString(R.string.bad_instagram_url_error));
+            valid = false;
+        }
         return valid;
-    }
-
-    // clear all error messages
-    void clearErrors() {
-        tvNameError.setText("");
-        tvPhoneError.setText("");
-        tvEmailError.setText("");
-        tvFacebookError.setText("");
     }
 
     // validity checkers
@@ -251,6 +235,45 @@ public class ProfileActivity extends AppCompatActivity {
         return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
     }
 
+    public static boolean isValidInstagramUrl(String instagramUrlString) {
+        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
+    }
+
+    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
+        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
+    }
+
+    // clear all error messages
+    void clearErrors() {
+        tvNameError.setText("");
+        tvPhoneError.setText("");
+        tvEmailError.setText("");
+        tvFacebookError.setText("");
+        tvInstagramError.setText("");
+        tvLinkedInError.setText("");
+    }
+
+    // go to edit profile mode
+    void setEditable(final boolean flag) {
+        // make edit texts editable/not editable
+        etName.setEnabled(flag);
+        etOrganization.setEnabled(flag);
+        etPhoneNumber.setEnabled(flag);
+        etEmail.setEnabled(flag);
+        etFacebookUrl.setEnabled(flag);
+        etLinkedInUrl.setEnabled(flag);
+        etInstagramUrl.setEnabled(flag);
+        // show appropriate button
+        btEditProfile.setVisibility(flag ? View.GONE : View.VISIBLE);
+        btSubmit.setVisibility(flag ? View.VISIBLE : View.GONE);
+        // if in edit profile mode, can click profile image to change it
+        btnProfileImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (flag) showDialog();
+            }
+        });
+    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
