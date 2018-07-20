@@ -56,8 +56,16 @@ public class DetailsActivity extends AppCompatActivity {
     Button btInstagram;
     Button btLinkedIn;
 
-    // current profile whose details are being views
-    JSONObject user;
+    // current profile and info
+    User user;
+    String name;
+    String email;
+    String organization;
+    String phone;
+    Bitmap profileImage;
+    String facebookUrl;
+    String linkedInUrl;
+    String instagramUrl;
 
     // user contact IDs
     String contactId;
@@ -73,9 +81,7 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        // set user (would be from intent or something, but placeholder for now)
-        FakeUsers fakeUsers = new FakeUsers();
-        user = fakeUsers.jsonUser8;
+
 
         // get references to views
         ivProfileImage = findViewById(R.id.ivImage);
@@ -84,6 +90,8 @@ public class DetailsActivity extends AppCompatActivity {
         tvPhone = findViewById(R.id.tvPhone);
         tvEmail = findViewById(R.id.tvEmail);
         btFacebook = findViewById(R.id.btFacebook);
+        btInstagram = findViewById(R.id.btInstagram);
+        btLinkedIn = findViewById(R.id.btLinkedIn);
         btAddContact = findViewById(R.id.btAddContact);
         rlContactOptions = findViewById(R.id.rlContactOptions);
         tvUndo = findViewById(R.id.tvUndo);
@@ -93,8 +101,10 @@ public class DetailsActivity extends AppCompatActivity {
         tvIgnoreConflict = findViewById(R.id.tvIgnoreConflict);
         tvConflictMessage = findViewById(R.id.tvConflictMessage);
 
-        // get user info and display in views
+        // display selected user's info
+        FakeUsers fakeUsers = new FakeUsers();
         try {
+            user = User.fromJson(fakeUsers.jsonUser8);
             setInfo();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -106,8 +116,8 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (noConflict(user)) {
-                        addContact(user);
+                    if (noConflict()) {
+                        addContact();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -133,16 +143,22 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // sets views to display user info
-    void setInfo() throws JSONException {
-        // set views
-        tvName.setText(user.getString("name"));
-        tvOrganization.setText(user.getString("organization"));
-        tvPhone.setText(user.getString("phone"));
-        tvEmail.setText(user.getString("email"));
-        ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));
-        final String facebookUrl = user.getString("facebookURL");
-        final String instagramUrl = user.getString("instagramUrl");
-        final String linkedInUrl = user.getString("linkedInUrl");
+    void setInfo() {
+        // get user's info
+        name = user.getName();
+        email = user.getEmail();
+        organization = user.getOrganization();
+        profileImage = user.getProfileImage();
+        facebookUrl = user.getFacebookURL();
+        instagramUrl = user.getInstagramURL();
+        linkedInUrl = user.getLinkedInURL();
+
+        // set views to display info
+        tvName.setText(name);
+        tvOrganization.setText(organization);
+        tvPhone.setText(phone);
+        tvEmail.setText(email);
+        ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
         // set 'add on [social media]' buttons to redirect to profile URLs on click
         btFacebook.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -171,13 +187,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // adds given json user to contacts
-    void addContact(JSONObject user) throws JSONException {
-        // get user's info
-        String name = user.getString("name");
-        String phone = user.getString("phone");
-        String email = user.getString("email");
-        String organization = user.getString("organization");
-
+    void addContact() throws JSONException {
         // fake image
         Bitmap profileImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.happy_face);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -255,11 +265,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // checks for email and phone conflicts and shows conflict options if true
-    boolean noConflict(final JSONObject user) throws JSONException {
-        // get user info
-        final String phone = user.getString("phone");
-        final String email = user.getString("email");
-
+    boolean noConflict() throws JSONException {
         // find phone number conflicts
         final String phoneConflictId = getPhoneConflictId(phone);
         if (phoneConflictId != null) {
@@ -278,7 +284,7 @@ public class DetailsActivity extends AppCompatActivity {
                     try {
                         // check for more conflicts
                         showOptions(PHONE_CONFLICT, false);
-                        addContact(user);
+                        addContact();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -303,7 +309,7 @@ public class DetailsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     try {
                         showOptions(EMAIL_CONFLICT, false);
-                        addContact(user);
+                        addContact();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

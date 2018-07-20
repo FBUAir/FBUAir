@@ -35,7 +35,7 @@ public class FakeUsers {
             // populate fields
             jsonUser1 = new JSONObject()
                     .put("name", "Reese Jones")
-                    .put("phone", "5478392306")
+                    .put("phoneNumber", "5478392306")
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Pinterest")
                     .put("facebookURL", "")
@@ -43,7 +43,7 @@ public class FakeUsers {
 
             jsonUser2 = new JSONObject()
                     .put("name", "Reese Jones")
-                    .put("phone", "7482034937")
+                    .put("phoneNumber", "7482034937")
                     .put("email", "")
                     .put("organization", "Google")
                     .put("facebookURL", "")
@@ -51,7 +51,7 @@ public class FakeUsers {
 
             jsonUser3 = new JSONObject()
                     .put("name", "Mary Smith")
-                    .put("phone", "5478392306")
+                    .put("phoneNumber", "5478392306")
                     .put("email", "mary@gmail.com")
                     .put("organization", "")
                     .put("facebookURL", "")
@@ -59,7 +59,7 @@ public class FakeUsers {
 
             jsonUser4 = new JSONObject()
                     .put("name", "Ryan Smith")
-                    .put("phone", "4958203748")
+                    .put("phoneNumber", "4958203748")
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Airbnb")
                     .put("facebookURL", "")
@@ -67,7 +67,7 @@ public class FakeUsers {
 
             jsonUser5 = new JSONObject()
                     .put("name", "Gaby Nahum")
-                    .put("phone", "2039481726")
+                    .put("phoneNumber", "2039481726")
                     .put("email", "gabyn@yahoo.com")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/gnahum12345")
@@ -75,7 +75,7 @@ public class FakeUsers {
 
             jsonUser6 = new JSONObject()
                     .put("name", "Gaby Garcia")
-                    .put("phone", "19283742837")
+                    .put("phoneNumber", "19283742837")
                     .put("email", "gabyg@gmail.com")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406")
@@ -83,7 +83,7 @@ public class FakeUsers {
 
             jsonUser7 = new JSONObject()
                     .put("name", "Mike")
-                    .put("phone", "2938401927")
+                    .put("phoneNumber", "2938401927")
                     .put("email", "mike@fb.com")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/mikecole20")
@@ -91,7 +91,7 @@ public class FakeUsers {
 
             jsonUser8 = new JSONObject()
                     .put("name", "Mariam Diallo")
-                    .put("phone", "2938472633")
+                    .put("phoneNumber", "2938472633")
                     .put("email", "mariam@gmail.com")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/ari.diallo.9")

@@ -115,7 +115,4 @@ public class User {
         String temp=Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
-
-
-
 }
