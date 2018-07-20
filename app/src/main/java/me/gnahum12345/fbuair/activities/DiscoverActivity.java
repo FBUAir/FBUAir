@@ -446,6 +446,17 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
+    public void onDetailsClick(MenuItem mi) {
+        // handle click here
+        rvAdapter.clear();
+        rvAdapter.notifyDataSetChanged();
+
+        Intent intent = new Intent(this, DetailsActivity.class);
+        startActivity(intent);
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -464,6 +475,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 onHistoryClick(item);
             case R.id.miProfile:
                 onProfileClick(item);
+            case R.id.miDetails:
+                onDetailsClick(item);
 
         }
 

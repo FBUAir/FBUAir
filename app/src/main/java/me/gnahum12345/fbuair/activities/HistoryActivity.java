@@ -113,7 +113,7 @@ public class HistoryActivity extends AppCompatActivity {
         try {
             listRandos = (ArrayList<String>) ObjectSerializer.deserialize(sharedpreferences.getString("history", ObjectSerializer.serialize(new ArrayList<String>())));
             Log.d("history", String.valueOf(listRandos));
-            populateHistory(listRandos);
+            //populateHistory(listRandos);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -123,23 +123,25 @@ public class HistoryActivity extends AppCompatActivity {
     }
 
     //TODO
+    /**
     public void populateHistory(List listRandos){
-       // for (int i = 0; i<listRandos.size(); i++){
-            //try {
+       for (int i = 0; i<listRandos.size(); i++){
+            try {
 
                 //TODO NEED TO MAKE LISTRANODS BE MADE OF JSONOBJECTS
-                //JSONObject rando = (JSONObject) listRandos.get(i);
-               // User user = User.fromJson(rando);
-                //contacts.add(user);
-                //HistoryAdapter.notifyItemInserted(contacts.size() - 1);
+                JSONObject rando = (JSONObject) listRandos.get(i);
+                User user = User.fromJson(rando);
+                contacts.add(user);
+                HistoryAdapter.notifyItemInserted(contacts.size() - 1);
 
-            //}catch (JSONException e){
-             //   e.printStackTrace();
-            //}
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
 
-       // }
+        }
 
     }
+     **/
 
 
 }

@@ -3,6 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miDetails"
+        app:showAsAction="always"
+        android:icon="@drawable/details_icon"
+        android:title="Compose" />
+    <item
         android:id="@+id/miProfile"
         app:showAsAction="always"
         android:icon="@drawable/profile_icon"
