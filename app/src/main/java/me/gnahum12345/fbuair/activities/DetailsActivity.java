@@ -1,14 +1,16 @@
 package me.gnahum12345.fbuair.activities;
 
+<<<<<<< HEAD
+=======
 import android.Manifest;
 import android.app.AlertDialog;
+>>>>>>> 44be5f317b202086e11c0bc765cac9d4d34737d2
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.OperationApplicationException;
-import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,11 +20,15 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+<<<<<<< HEAD
+=======
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+>>>>>>> 44be5f317b202086e11c0bc765cac9d4d34737d2
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -31,12 +37,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
+<<<<<<< HEAD
+import org.parceler.Parcels;
+=======
 import org.json.JSONObject;
+>>>>>>> 44be5f317b202086e11c0bc765cac9d4d34737d2
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
-import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
@@ -125,13 +134,10 @@ public class DetailsActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED;
 
         // display selected user's info
-        FakeUsers fakeUsers = new FakeUsers();
-        try {
-            user = User.fromJson(fakeUsers.jsonUser8);
-            setInfo();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        user = (User) Parcels.unwrap(getIntent().getParcelableExtra(User.class.getSimpleName()));
+        Log.d("name", user.getName());
+        setInfo();
+
 
         // CLICK HANDLERS
         // add contact when add contact button is clicked
@@ -231,6 +237,8 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+<<<<<<< HEAD
+=======
     // requests permissions if needed and returns true if permission is granted
     boolean requestPermissionsIfNeeded() {
         if (!permissionGranted) {
@@ -307,6 +315,7 @@ public class DetailsActivity extends AppCompatActivity {
         builder.show();
     }
 
+>>>>>>> 44be5f317b202086e11c0bc765cac9d4d34737d2
     // adds given json user to contacts
     void addContact() throws JSONException {
         // fake image
