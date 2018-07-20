@@ -37,23 +37,14 @@ public class ProfileUser {
         this.ivProfileImage = ivProfileImage;
     }
 
-    public static ProfileUser fromJSONString(String profileUser) {
-        try {
+    public static ProfileUser fromJSONString(String profileUser) throws JSONException {
+        JSONObject profile = new JSONObject(profileUser);
 
-            JSONObject profile = new JSONObject(profileUser);
+        String name = profile.getString(NAME_KEY);
+        String bitmapString = profile.getString(BITMAP_KEY);
+        Bitmap image = User.stringToBitmap(bitmapString);
 
-            String name = profile.getString(NAME_KEY);
-            String bitmapString = profile.getString(BITMAP_KEY);
-            Bitmap image = User.stringToBitmap(bitmapString);
-
-            return new ProfileUser(name, image);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-            //TODO handle the exception properly.
-            return null;
-        }
-
+        return new ProfileUser(name, image);
     }
 
     public String getName() {

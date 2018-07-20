@@ -31,6 +31,10 @@ public class User {
 
     }
 
+    public static User fromString (String jsonString) throws JSONException {
+        return fromJson(new JSONObject(jsonString));
+    }
+
     public static JSONObject toJson(User user) throws JSONException {
         String name = user.getName();
         String organization = user.getOrganization();
