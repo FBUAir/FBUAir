@@ -86,7 +86,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             super(view);
             tvName = (TextView) view.findViewById(R.id.tvName);
             tvTime = (TextView) view.findViewById(R.id.tvTime);
-            ivProfileImage = (ImageView) view.findViewById(R.id.ivFacebookIcon);
+            ivProfileImage = (ImageView) view.findViewById(R.id.ivProfileImage);
         }
 
     }

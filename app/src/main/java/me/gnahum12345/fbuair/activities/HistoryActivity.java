@@ -76,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                //getHistory();
+                getHistory();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -129,7 +129,7 @@ public class HistoryActivity extends AppCompatActivity {
                 JSONObject rando = (JSONObject) history.get(i);
                 User user = User.fromJson(rando);
                 contacts.add(user);
-                historyAdapter.notifyItemInserted(contacts.size() - 1);
+                historyAdapter.notifyDataSetChanged();
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -138,6 +138,5 @@ public class HistoryActivity extends AppCompatActivity {
         }
 
     }
-
 
 }
