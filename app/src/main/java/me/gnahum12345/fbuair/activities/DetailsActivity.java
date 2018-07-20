@@ -81,8 +81,6 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-
-
         // get references to views
         ivProfileImage = findViewById(R.id.ivImage);
         tvName = findViewById(R.id.tvName);
@@ -159,31 +157,47 @@ public class DetailsActivity extends AppCompatActivity {
         tvPhone.setText(phone);
         tvEmail.setText(email);
         ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
-        // set 'add on [social media]' buttons to redirect to profile URLs on click
-        btFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(facebookUrl));
-                startActivity(i);
-            }
-        });
-        btInstagram.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(instagramUrl));
-                startActivity(i);
-            }
-        });
-        btLinkedIn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(linkedInUrl));
-                startActivity(i);
-            }
-        });
+
+        // show applicable social media buttons and set to redirect to profile URLs on click
+        if (facebookUrl.isEmpty()) {
+            btFacebook.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btFacebook.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(facebookUrl));
+                    startActivity(i);
+                }
+            });
+        }
+        if (instagramUrl.isEmpty()) {
+            btInstagram.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btInstagram.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(instagramUrl));
+                    startActivity(i);
+                }
+            });
+        }
+        if (linkedInUrl.isEmpty()) {
+            btLinkedIn.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btLinkedIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(linkedInUrl));
+                    startActivity(i);
+                }
+            });
+        }
     }
 
     // adds given json user to contacts

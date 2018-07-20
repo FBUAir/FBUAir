@@ -94,9 +94,9 @@ public class FakeUsers {
                     .put("phoneNumber", "2938472633")
                     .put("email", "mariam@gmail.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
+                    .put("facebookURL", "")
                     .put("instagramURL", "https://www.instagram.com/mariamdiallo9/")
-                    .put("linkedInURL", "https://www.linkedin.com/in/mariamdiallo9/")
+                    .put("linkedInURL", "")
                     .put("profileImage", "");
         } catch (JSONException e) {
             e.printStackTrace();
