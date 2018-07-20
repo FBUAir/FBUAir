@@ -25,26 +25,39 @@ import me.gnahum12345.fbuair.models.User;
 
 import android.Manifest;
 import android.animation.Animator;
+import android.Manifest;
+import android.animation.Animator;
+import android.content.Context;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.AudioManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.Strategy;
 
-
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+
+import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.models.GestureDetector;
 
 public class DiscoverActivity extends ConnectionsActivity implements SensorEventListener {
 
@@ -478,7 +491,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
 
-
     public void onProfileClick(MenuItem mi) {
         // handle click here
         rvAdapter.clear();
@@ -496,51 +508,41 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
+    public void onDetailsClick(MenuItem mi) {
+        // handle click here
+        rvAdapter.clear();
+        rvAdapter.notifyDataSetChanged();
 
-
-    //creating my shared preferences array of fake contacts
-    public void onContactAddClick(MenuItem mi) {
-        JSONObject rando = createRando();
-
-        listRandos.add(rando.toString());
-
-        SharedPreferences sharedpreferences;
-        String MyPREFERENCES = "MyPrefs";
-
-        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("history", rando.toString());
-        editor.commit();
-
-        Log.d("addContacts", String.valueOf(listRandos));
+        Intent intent = new Intent(this, DetailsActivity.class);
+        startActivity(intent);
     }
 
-    public JSONObject createRando(){
-        FakeUsers fakeUsers = new FakeUsers();
-
-        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
-        listUsers.add(fakeUsers.jsonUser1);
-        listUsers.add(fakeUsers.jsonUser2);
-        listUsers.add(fakeUsers.jsonUser3);
-        listUsers.add(fakeUsers.jsonUser4);
-        listUsers.add(fakeUsers.jsonUser5);
-        listUsers.add(fakeUsers.jsonUser6);
-        listUsers.add(fakeUsers.jsonUser7);
-        listUsers.add(fakeUsers.jsonUser8);
-
-        Random random = new Random();
-        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
-        return rando;
-
-    }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
         return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.miAddContact:
+                HistoryActivity.onContactAddClick(item);
+                return true;
+            case R.id.miHistory:
+                onHistoryClick(item);
+            case R.id.miProfile:
+                onProfileClick(item);
+            case R.id.miDetails:
+                onDetailsClick(item);
+
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**

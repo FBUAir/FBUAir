@@ -3,23 +3,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
+        android:id="@+id/miDetails"
+        app:showAsAction="always"
+        android:icon="@drawable/details_icon"
+        android:title="Compose" />
+    <item
         android:id="@+id/miProfile"
         app:showAsAction="always"
         android:icon="@drawable/profile_icon"
-        android:onClick="onProfileClick"
         android:title="Compose" />
 
     <item
         android:id="@+id/miHistory"
         app:showAsAction="always"
         android:icon="@drawable/history_icon"
-        android:onClick="onHistoryClick"
         android:title="Compose" />
 
     <item
         android:id="@+id/miAddContact"
         app:showAsAction="always"
         android:icon="@drawable/add_user_icon"
-        android:onClick="onContactAddClick"
         android:title="Compose" />
 </menu>

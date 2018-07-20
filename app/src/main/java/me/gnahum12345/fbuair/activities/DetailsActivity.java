@@ -6,6 +6,8 @@ import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
@@ -22,16 +24,18 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.FakeUsers;
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.models.User;
 
 public class DetailsActivity extends AppCompatActivity {
 
     // views
     // user info views
-    ImageView ivImage;
+    ImageView ivProfileImage;
     TextView tvName;
     TextView tvOrganization;
     TextView tvPhone;
@@ -49,9 +53,19 @@ public class DetailsActivity extends AppCompatActivity {
 
     // add on social media views
     Button btFacebook;
+    Button btInstagram;
+    Button btLinkedIn;
 
-    // current profile whose details are being views
-    JSONObject user;
+    // current profile and info
+    User user;
+    String name;
+    String email;
+    String organization;
+    String phone;
+    Bitmap profileImage;
+    String facebookUrl;
+    String linkedInUrl;
+    String instagramUrl;
 
     // user contact IDs
     String contactId;
@@ -67,17 +81,15 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_details);
 
-        // set user (would be from intent or something, but placeholder for now)
-        FakeUsers fakeUsers = new FakeUsers();
-        user = fakeUsers.jsonUser8;
-
         // get references to views
-        ivImage = findViewById(R.id.ivImage);
+        ivProfileImage = findViewById(R.id.ivImage);
         tvName = findViewById(R.id.tvName);
         tvOrganization = findViewById(R.id.tvOrganization);
         tvPhone = findViewById(R.id.tvPhone);
         tvEmail = findViewById(R.id.tvEmail);
         btFacebook = findViewById(R.id.btFacebook);
+        btInstagram = findViewById(R.id.btInstagram);
+        btLinkedIn = findViewById(R.id.btLinkedIn);
         btAddContact = findViewById(R.id.btAddContact);
         rlContactOptions = findViewById(R.id.rlContactOptions);
         tvUndo = findViewById(R.id.tvUndo);
@@ -87,8 +99,10 @@ public class DetailsActivity extends AppCompatActivity {
         tvIgnoreConflict = findViewById(R.id.tvIgnoreConflict);
         tvConflictMessage = findViewById(R.id.tvConflictMessage);
 
-        // get user info and display in views
+        // display selected user's info
+        FakeUsers fakeUsers = new FakeUsers();
         try {
+            user = User.fromJson(fakeUsers.jsonUser8);
             setInfo();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -100,8 +114,8 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if (noConflict(user)) {
-                        addContact(user);
+                    if (noConflict()) {
+                        addContact();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -127,33 +141,73 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // sets views to display user info
-    void setInfo() throws JSONException {
-        // set views
-        tvName.setText(user.getString("name"));
-        tvOrganization.setText(user.getString("organization"));
-        tvPhone.setText(user.getString("phone"));
-        tvEmail.setText(user.getString("email"));
+    void setInfo() {
+        // get user's info
+        name = user.getName();
+        email = user.getEmail();
+        organization = user.getOrganization();
+        profileImage = user.getProfileImage();
+        facebookUrl = user.getFacebookURL();
+        instagramUrl = user.getInstagramURL();
+        linkedInUrl = user.getLinkedInURL();
 
-        // set  'add on fb button' to redirect to fb url on click
-        final String facebookUrl = user.getString("facebookURL");
-        btFacebook.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent i = new Intent(Intent.ACTION_VIEW);
-                i.setData(Uri.parse(facebookUrl));
-                startActivity(i);
-            }
-        });
+        // set views to display info
+        tvName.setText(name);
+        tvOrganization.setText(organization);
+        tvPhone.setText(phone);
+        tvEmail.setText(email);
+        ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
+
+        // show applicable social media buttons and set to redirect to profile URLs on click
+        if (facebookUrl.isEmpty()) {
+            btFacebook.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btFacebook.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(facebookUrl));
+                    startActivity(i);
+                }
+            });
+        }
+        if (instagramUrl.isEmpty()) {
+            btInstagram.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btInstagram.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(instagramUrl));
+                    startActivity(i);
+                }
+            });
+        }
+        if (linkedInUrl.isEmpty()) {
+            btLinkedIn.setVisibility(View.INVISIBLE);
+        }
+        else {
+            btLinkedIn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(Intent.ACTION_VIEW);
+                    i.setData(Uri.parse(linkedInUrl));
+                    startActivity(i);
+                }
+            });
+        }
     }
 
     // adds given json user to contacts
-    void addContact(JSONObject user) throws JSONException {
-        // get user's info
-        String name = user.getString("name");
-        String phone = user.getString("phone");
-        String email = user.getString("email");
-        String organization = user.getString("organization");
-        String profileImageString = user.getString("profileImageBitmap");
+    void addContact() throws JSONException {
+        // fake image
+        Bitmap profileImageBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.happy_face);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        profileImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] profileImageBytes = stream.toByteArray();
+        profileImageBitmap.recycle();
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -174,7 +228,7 @@ public class DetailsActivity extends AppCompatActivity {
                 .newInsert(ContactsContract.Data.CONTENT_URI)
                 .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Photo.PHOTO, profileImageString)
+                .withValue(CommonDataKinds.Photo.PHOTO, profileImageBytes)
                 .build());
         // add organization
         ops.add(ContentProviderOperation
@@ -225,11 +279,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     // checks for email and phone conflicts and shows conflict options if true
-    boolean noConflict(final JSONObject user) throws JSONException {
-        // get user info
-        final String phone = user.getString("phone");
-        final String email = user.getString("email");
-
+    boolean noConflict() throws JSONException {
         // find phone number conflicts
         final String phoneConflictId = getPhoneConflictId(phone);
         if (phoneConflictId != null) {
@@ -248,7 +298,7 @@ public class DetailsActivity extends AppCompatActivity {
                     try {
                         // check for more conflicts
                         showOptions(PHONE_CONFLICT, false);
-                        addContact(user);
+                        addContact();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -273,7 +323,7 @@ public class DetailsActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     try {
                         showOptions(EMAIL_CONFLICT, false);
-                        addContact(user);
+                        addContact();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }

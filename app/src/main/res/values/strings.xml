@@ -9,7 +9,9 @@
     <!-- adding to contacts conflict error messages -->
     <string name="phone_conflict_message">Phone number already exists in contacts.</string>
     <string name="email_conflict_message">Email address already exists in contacts.</string>
-
+    <string name="bad_instagram_url_error">Enter a valid Instagram profile URL.</string>
+    <string name="bad_linked_in_url_error">Enter a valid LinkedIn profile URL.</string>
+    <!-- other -->
     <string name="error_missing_permissions">Cannot start without required permissions</string>
 
     <string name="toast_connected">Connected to %s</string>
