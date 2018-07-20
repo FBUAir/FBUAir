@@ -1,5 +1,30 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+import me.gnahum12345.fbuair.FakeUsers;
+import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.models.GestureDetector;
+import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.models.User;
+
+import android.Manifest;
+import android.animation.Animator;
 import android.Manifest;
 import android.animation.Animator;
 import android.content.Context;
@@ -29,7 +54,6 @@ import com.google.android.gms.nearby.connection.Strategy;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Random;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
@@ -244,10 +268,20 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         disconnectFromAllEndpoints();
         deviceLst.clear();
         rvAdapter.notifyDataSetChanged();
-        String msg = "StartDiscovery failed. \nIf this is the 3rd time seeing this message, please restart the app";
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 
-        setState(State.DISCOVERING);
+        if (Constants.oneMoreTry()) {
+            String msg = "StartDiscovery failed. Trying again" ;
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            setState(State.DISCOVERING);
+        } else {
+            String msg = "StartDiscovery failed. Resetting state." ;
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+            Constants.reset();
+            setState(State.UNKNOWN);
+            disconnectFromAllEndpoints();
+            setState(State.DISCOVERING);
+            setState(State.ADVERTISING);
+        }
 
     }
 
@@ -267,7 +301,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
         rvAdapter.notifyItemChanged(deviceLst.size() - 1);
-        vibrate();
+
+        //        vibrate();
         // TODO: Send profile data and display that instead.
         setState(State.CONNECTED);
     }
@@ -296,7 +331,9 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         // Let's try someone else.
 
         deviceLst.remove(endpoint);
+        rvAdapter.remove(endpoint);
         rvAdapter.notifyDataSetChanged();
+
 
         super.onConnectionFailed(endpoint);
 
@@ -333,6 +370,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         return mState;
     }
 
+    //TODO: Fix when to be advertising and when to be discovering in order to prevent frequent drops of connections.
     /**
      * State has changed.
      *
@@ -341,12 +379,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
      */
     private void onStateChanged(State oldState, State newState) {
         // Update Nearby Connections to the new state.
+        // Update Nearby Connections to the new state.
         switch (newState) {
             case DISCOVERING:
                 // do nothing and fall through to advertising.
-                disconnectFromAllEndpoints();
-                startDiscovering();
-                break;
             case ADVERTISING:
                 disconnectFromAllEndpoints();
                 startDiscovering();
@@ -356,8 +392,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             case CONNECTED:
                 removeCallbacks(mDiscoverRunnable);
                 logD("I connected but I'm still discovering and advertising");
-                if (!isDiscovering()) {
-                    startDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
+                if (isDiscovering()) {
+                    stopDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
                 }
                 if (!isAdvertising()) {
                     startAdvertising();
@@ -393,7 +429,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         if (gForce > SHAKE_THRESHOLD_GRAVITY && getState() == State.DISCOVERING) {
             logD("Device shaken");
             vibrate();
-
+            setState(State.ADVERTISING);
         }
     }
 
@@ -425,6 +461,32 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             String content = new String(b);
             logD(content);
             Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+
+            User user;
+            ProfileUser profileUser;
+            boolean userMade = false;
+
+            try {
+                user = User.fromString(content);
+                userMade = true;
+            } catch (JSONException e) {
+                e.printStackTrace();
+                logE("User cannot be created", e);
+                userMade = false;
+            }
+
+
+            if (!userMade) {
+                try {
+                    profileUser = ProfileUser.fromJSONString(content);
+                    rvAdapter.put(endpoint, profileUser);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                    logE("The file wasn't a profile either", e);
+                }
+            }
+
+
         }
     }
 
@@ -557,7 +619,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
     private void appendToLogs(CharSequence msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     private static CharSequence toColor(String msg, int color) {
@@ -569,7 +631,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     private static String generateRandomName() {
         String name = "";
         Random random = new Random();
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < 15; i++) {
             name += random.nextInt(10);
         }
         return name;
@@ -610,5 +672,17 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         DISCOVERING,
         ADVERTISING,
         CONNECTED
+    }
+}
+
+class Constants {
+    private static int tries = 3;
+
+    public static void reset() {
+        tries = 3;
+    }
+
+    public static boolean oneMoreTry() {
+        return tries > 0;
     }
 }

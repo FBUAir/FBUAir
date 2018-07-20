@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.ByteArrayOutputStream;
 
 public class User {
+
     public String name;
     public String organization;
     public String phoneNumber;
@@ -19,8 +20,6 @@ public class User {
     public String facebookURL;
     public String instagramURL;
     public String linkedInURL;
-
-    //public Date createdAt;
 
     public String getName() { return name; }
 
@@ -35,10 +34,6 @@ public class User {
     public String getInstagramURL() { return instagramURL; }
 
     public String getLinkedInURL() { return linkedInURL; }
-
-    //public Date getCreatedAt() { return createdAt; }
-
-    //public void setCreatedAt(Date createdAt) { this.createdAt = createdAt; }
 
     public Bitmap getProfileImage() { return profileImage; }
 
@@ -72,7 +67,12 @@ public class User {
 
     }
 
-    public static JSONObject toJson(User user) throws JSONException{
+    public static User fromString (String jsonString) throws JSONException {
+        return fromJson(new JSONObject(jsonString));
+    }
+
+    public static JSONObject toJson(User user) throws JSONException {
+
         String name = user.getName();
         String organization = user.getOrganization();
         String phoneNumber = user.getPhoneNumber();
