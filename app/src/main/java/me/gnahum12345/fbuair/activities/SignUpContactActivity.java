@@ -28,7 +28,7 @@ import java.io.InputStream;
 
 import me.gnahum12345.fbuair.R;
 
-public class SignUpContact extends AppCompatActivity {
+public class SignUpContactActivity extends AppCompatActivity {
 
     // profile image to access in next activity (bitmap too large to pass via intent)
     public static Bitmap profileImage;
@@ -65,7 +65,7 @@ public class SignUpContact extends AppCompatActivity {
         SharedPreferences sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String current_user = sharedPreferences.getString("current_user", null);
         if (current_user != null) {
-            Intent intent = new Intent(SignUpContact.this, DiscoverActivity.class);
+            Intent intent = new Intent(SignUpContactActivity.this, DiscoverActivity.class);
             startActivity(intent);
             finish();
         }
@@ -102,7 +102,7 @@ public class SignUpContact extends AppCompatActivity {
                 }
                 // go to next sign up page if contact info is valid. if not, shows appropriate error messages
                 if (isValidContact(name, phone, email)) {
-                    Intent intent = new Intent(getBaseContext(), SignUpSocialMedia.class);
+                    Intent intent = new Intent(getBaseContext(), SignUpSocialMediaActivity.class);
                     intent.putExtra("name", name);
                     intent.putExtra("organization", organization);
                     intent.putExtra("phone", phone);

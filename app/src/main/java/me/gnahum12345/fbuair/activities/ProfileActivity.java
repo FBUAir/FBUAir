@@ -34,8 +34,6 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
 public class ProfileActivity extends AppCompatActivity {
-    final int REQUEST_IMAGE_SELECT = 1;
-    final int REQUEST_IMAGE_CAPTURE = 2;
     // views
     EditText etName;
     EditText etOrganization;
@@ -47,15 +45,18 @@ public class ProfileActivity extends AppCompatActivity {
     Button btEditProfile;
     Button btSubmit;
     ImageButton btnProfileImage;
+
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
     TextView tvFacebookError;
     TextView tvInstagramError;
     TextView tvLinkedInError;
+
     // name of preferences file
     String MyPREFERENCES = "MyPrefs";
     SharedPreferences sharedpreferences;
+
     // current user info
     User user;
     String name;
@@ -66,28 +67,11 @@ public class ProfileActivity extends AppCompatActivity {
     String facebookUrl;
     String linkedInUrl;
     String instagramUrl;
+
+
     Dialog dialog;
-
-    // validity checkers
-    public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
-    }
-
-    public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
-    }
-
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-    public static boolean isValidInstagramUrl(String instagramUrlString) {
-        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
-    }
-
-    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
-        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
-    }
+    final int REQUEST_IMAGE_SELECT = 1;
+    final int REQUEST_IMAGE_CAPTURE = 2;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -161,9 +145,10 @@ public class ProfileActivity extends AppCompatActivity {
             etInstagramUrl.setText(user.getInstagramURL());
             etLinkedInUrl.setText(user.getLinkedInURL());
             btnProfileImage.setImageBitmap(user.getProfileImage());
-        } else {
+        }
+        else {
             // go to sign up activity if no current user
-            Intent intent = new Intent(this, SignUpContact.class);
+            Intent intent = new Intent (this, SignUpContactActivity.class);
             startActivity(intent);
             finish();
         }
@@ -188,8 +173,7 @@ public class ProfileActivity extends AppCompatActivity {
             user.setOrganization(organization);
             user.setFacebookURL(facebookUrl);
             if (profileImageBitmap != null)
-                user.setProfileImage(profileImageBitmap);
-            ;
+                user.setProfileImage(profileImageBitmap);;
             // save changes to shared preferences
             SharedPreferences.Editor editor = sharedpreferences.edit();
             try {
@@ -236,6 +220,27 @@ public class ProfileActivity extends AppCompatActivity {
             valid = false;
         }
         return valid;
+    }
+
+    // validity checkers
+    public static boolean isValidEmail(CharSequence email) {
+        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+    }
+
+    public static boolean isValidPhoneNumber(String number) {
+        return android.util.Patterns.PHONE.matcher(number).matches();
+    }
+
+    public static boolean isValidFacebookUrl(String facebookUrlString) {
+        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
+    }
+
+    public static boolean isValidInstagramUrl(String instagramUrlString) {
+        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
+    }
+
+    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
+        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
     }
 
     // clear all error messages
@@ -301,7 +306,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     // show dialog for capturing or selecting photo for new profile image
     public void showDialog() {
-        CharSequence options[] = new CharSequence[]{"Select from pictures", "Capture picture"};
+        CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit profile picture");

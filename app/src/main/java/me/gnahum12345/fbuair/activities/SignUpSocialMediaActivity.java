@@ -4,8 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
-import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
@@ -17,7 +17,7 @@ import org.json.JSONException;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
-public class SignUpSocialMedia extends AppCompatActivity {
+public class SignUpSocialMediaActivity extends AppCompatActivity {
     // views
     EditText etFacebookUrl;
     EditText etInstagramUrl;
@@ -39,19 +39,6 @@ public class SignUpSocialMedia extends AppCompatActivity {
 
     // preferences filename
     String MyPREFERENCES = "MyPrefs";
-
-    // checks for valid profile URLs
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-    public static boolean isValidInstagramUrl(String instagramUrlString) {
-        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
-    }
-
-    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
-        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,7 +63,7 @@ public class SignUpSocialMedia extends AppCompatActivity {
         organization = intent.getStringExtra("organization");
         phone = intent.getStringExtra("phone");
         email = intent.getStringExtra("email");
-        profileImage = SignUpContact.profileImage;
+        profileImage = SignUpContactActivity.profileImage;
 
         // create and save profile if valid
         btSubmit.setOnClickListener(new View.OnClickListener() {
@@ -121,6 +108,19 @@ public class SignUpSocialMedia extends AppCompatActivity {
             valid = false;
         }
         return valid;
+    }
+
+    // checks for valid profile URLs
+    public static boolean isValidFacebookUrl(String facebookUrlString) {
+        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
+    }
+
+    public static boolean isValidInstagramUrl(String instagramUrlString) {
+        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
+    }
+
+    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
+        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
     }
 
     // clears error textviews

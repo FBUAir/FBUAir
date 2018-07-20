@@ -6,7 +6,8 @@
     <string name="bad_phone_error">Enter a valid phone number.</string>
     <string name="no_name_error">Name is required.</string>
     <string name="no_phone_error">Phone number is required.</string>
-    <!-- adding to contacts conflict error messages -->
+    <!-- used in details screen -->
+    <string name="contact_permissions_rationale">We need Contact permissions to easily add other users into your Contacts and check for duplicates. Are you sure you want to deny this permission?</string>
     <string name="phone_conflict_message">Phone number already exists in contacts.</string>
     <string name="email_conflict_message">Email address already exists in contacts.</string>
     <string name="bad_instagram_url_error">Enter a valid Instagram profile URL.</string>
