@@ -30,26 +30,31 @@ import me.gnahum12345.fbuair.R;
 
 public class SignUpContactActivity extends AppCompatActivity {
 
+    // profile image to access in next activity (bitmap too large to pass via intent)
+    public static Bitmap profileImage;
+    final int REQUEST_IMAGE_SELECT = 1;
+    final int REQUEST_IMAGE_CAPTURE = 2;
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
     EditText etEmail;
     Button btNext;
     ImageButton btnProfileImage;
-
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
-
     // filename for preferences
     String MyPREFERENCES = "MyPrefs";
-
     Dialog dialog;
-    final int REQUEST_IMAGE_SELECT = 1;
-    final int REQUEST_IMAGE_CAPTURE = 2;
 
-    // profile image to access in next activity (bitmap too large to pass via intent)
-    public static Bitmap profileImage;
+    // validity checkers
+    public static boolean isValidEmail(CharSequence email) {
+        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+    }
+
+    public static boolean isValidPhoneNumber(String number) {
+        return android.util.Patterns.PHONE.matcher(number).matches();
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -116,7 +121,7 @@ public class SignUpContactActivity extends AppCompatActivity {
     }
 
     // checks if profile is valid before submitting. if not, shows error messages
-    public boolean isValidContact(String name, String phone, String email){
+    public boolean isValidContact(String name, String phone, String email) {
         // clear previous errors
         clearErrors();
         // check fields and set appropriate error messages
@@ -144,15 +149,6 @@ public class SignUpContactActivity extends AppCompatActivity {
         tvNameError.setText("");
         tvPhoneError.setText("");
         tvEmailError.setText("");
-    }
-
-    // validity checkers
-    public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
-    }
-
-    public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
     }
 
     //following are profile image methods
@@ -184,7 +180,7 @@ public class SignUpContactActivity extends AppCompatActivity {
     }
 
     public void showDialog() {
-        CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
+        CharSequence options[] = new CharSequence[]{"Select from pictures", "Capture picture"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit profile picture");
         builder.setItems(options, new DialogInterface.OnClickListener() {

@@ -1,34 +1,10 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.Manifest;
+import android.animation.Animator;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Random;
-
-import me.gnahum12345.fbuair.FakeUsers;
-import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
-import me.gnahum12345.fbuair.models.GestureDetector;
-import me.gnahum12345.fbuair.models.ProfileUser;
-import me.gnahum12345.fbuair.models.User;
-
-import android.Manifest;
-import android.animation.Animator;
-import android.Manifest;
-import android.animation.Animator;
-import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -51,33 +27,32 @@ import com.google.android.gms.nearby.connection.ConnectionInfo;
 import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.Strategy;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Random;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.models.GestureDetector;
+import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.models.User;
+
+import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
 
 public class DiscoverActivity extends ConnectionsActivity implements SensorEventListener {
-
-    // Instance variables.
-    private RecyclerView rvDevicesView;
-    private HashSet<Endpoint> deviceLst;
-    private DiscoverAdapter rvAdapter;
-    public ArrayList<String> listRandos = new ArrayList<>();
 
     /**
      * The connection strategy we'll use for Nearby Connections. In this case, we've decided on
      * P2P_STAR, which is a combination of Bluetooth Classic and WiFi Hotspots.
      */
     private static final Strategy STRATEGY = Strategy.P2P_CLUSTER;
-
     /**
      * Acceleration required to detect a shake. In multiples of Earth's gravity.
      */
     private static final float SHAKE_THRESHOLD_GRAVITY = 2;
-
     /**
      * How long to vibrate the phone when we change states.
      */
@@ -88,28 +63,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
      */
     private static final String SERVICE_ID =
             "com.google.location.nearby.apps.walkietalkie.manual.SERVICE_ID";
-
-    /**
-     * The state of the app. As the app changes states, the UI will update and advertising/discovery
-     * will start/stop.
-     */
-    private State mState = State.UNKNOWN;
-
-    /**
-     * A random UID used as this device's endpoint name.
-     */
-    private String mName;
-
-    /**
-     * The SensorManager gives us access to sensors on the device.
-     */
-    private SensorManager mSensorManager;
-
-    /**
-     * The accelerometer sensor allows us to detect device movement for shake-to-advertise.
-     */
-    private Sensor mAccelerometer;
-
     /**
      * Listens to holding/releasing the volume rocker.
      */
@@ -127,18 +80,21 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                     stopRecording();
                 }
             };
-
-    /**
-     * The phone's original media volume.
-     */
-    private int mOriginalVolume;
-
     /**
      * A Handler that allows us to post back on to the UI thread. We use this to resume discovery
      * after an uneventful bout of advertising.
      */
     private final Handler mUiHandler = new Handler(Looper.getMainLooper());
-
+    public ArrayList<String> listRandos = new ArrayList<>();
+    // Instance variables.
+    private RecyclerView rvDevicesView;
+    private HashSet<Endpoint> deviceLst;
+    private DiscoverAdapter rvAdapter;
+    /**
+     * The state of the app. As the app changes states, the UI will update and advertising/discovery
+     * will start/stop.
+     */
+    private State mState = State.UNKNOWN;
     /**
      * Starts discovery. Used in a postDelayed manor with {@link #mUiHandler}.
      */
@@ -149,6 +105,42 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                     setState(State.DISCOVERING);
                 }
             };
+    /**
+     * A random UID used as this device's endpoint name.
+     */
+    private String mName;
+    /**
+     * The SensorManager gives us access to sensors on the device.
+     */
+    private SensorManager mSensorManager;
+    /**
+     * The accelerometer sensor allows us to detect device movement for shake-to-advertise.
+     */
+    private Sensor mAccelerometer;
+    /**
+     * The phone's original media volume.
+     */
+    private int mOriginalVolume;
+
+    private static CharSequence toColor(String msg, int color) {
+        SpannableString spannable = new SpannableString(msg);
+        spannable.setSpan(new ForegroundColorSpan(color), 0, msg.length(), 0);
+        return spannable;
+    }
+
+    private static String generateRandomName() {
+        String name = "";
+        Random random = new Random();
+        for (int i = 0; i < 15; i++) {
+            name += random.nextInt(10);
+        }
+        return name;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T pickRandomElem(Collection<T> collection) {
+        return (T) collection.toArray()[new Random().nextInt(collection.size())];
+    }
 
     private void stopRecording() {
         logV("stopPlaying()");
@@ -161,19 +153,19 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         send(Payload.fromBytes(senderInfo.getBytes()));
     }
 
-    public void sendFromEndPoint(Endpoint endpoint) {
-        String payloadInfo = "This is gonnna be one gigantically large json because we are soooooo coolll!!!!!";
-        send(Payload.fromBytes(payloadInfo.getBytes()), endpoint);
+    public void sendToEndpoint(Endpoint endpoint) {
+        SharedPreferences sharedpreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String current_user = sharedpreferences.getString("current_user", null);
+
+        send(Payload.fromBytes(current_user.getBytes()), endpoint);
 
     }
-
 
     @Override
     protected void updateAdapter(Endpoint endpoint) {
         deviceLst.remove(endpoint);
         rvAdapter.notifyDataSetChanged();
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -201,7 +193,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
         mName = generateRandomName();
     }
-
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -262,7 +253,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         }
     }
 
-
     @Override
     protected void onDiscoveryFailed() {
         disconnectFromAllEndpoints();
@@ -270,11 +260,11 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         rvAdapter.notifyDataSetChanged();
 
         if (Constants.oneMoreTry()) {
-            String msg = "StartDiscovery failed. Trying again" ;
+            String msg = "StartDiscovery failed. Trying again";
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             setState(State.DISCOVERING);
         } else {
-            String msg = "StartDiscovery failed. Resetting state." ;
+            String msg = "StartDiscovery failed. Resetting state.";
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             Constants.reset();
             setState(State.UNKNOWN);
@@ -284,7 +274,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         }
 
     }
-
 
     @Override
     protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
@@ -298,14 +287,21 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         Toast.makeText(
                 this, getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT)
                 .show();
+        sendProfileUser(endpoint);
         rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
         rvAdapter.notifyItemChanged(deviceLst.size() - 1);
-
-        //        vibrate();
-        // TODO: Send profile data and display that instead.
         setState(State.CONNECTED);
     }
+
+
+    private void sendProfileUser(Endpoint endpoint) {
+        ProfileUser profileUser = new ProfileUser(this);
+        Payload payload = Payload.fromBytes(profileUser.convertToString().getBytes());
+        send(payload, endpoint);
+    }
+
+
 
     @Override
     protected void onEndpointDisconnected(Endpoint endpoint) {
@@ -325,6 +321,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         }
 
     }
+
+    //TODO: Fix when to be advertising and when to be discovering in order to prevent frequent drops of connections.
 
     @Override
     protected void onConnectionFailed(Endpoint endpoint) {
@@ -347,6 +345,13 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
     /**
+     * @return The current state.
+     */
+    private State getState() {
+        return mState;
+    }
+
+    /**
      * The state has changed. I wonder what we'll be doing now.
      *
      * @param state The new state.
@@ -363,14 +368,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         onStateChanged(oldState, state);
     }
 
-    /**
-     * @return The current state.
-     */
-    private State getState() {
-        return mState;
-    }
-
-    //TODO: Fix when to be advertising and when to be discovering in order to prevent frequent drops of connections.
     /**
      * State has changed.
      *
@@ -409,8 +406,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
     }
 
-
-
     /**
      * The device has moved. We need to decide if it was intentional or not.
      */
@@ -434,8 +429,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) { }
-
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
 
     /**
      * Vibrates the phone.
@@ -490,15 +485,14 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         }
     }
 
-
     public void onProfileClick(MenuItem mi) {
         // handle click here
         rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
-
         Intent intent = new Intent(this, ProfileActivity.class);
         startActivity(intent);
     }
+
     public void onHistoryClick(MenuItem mi) {
         // handle click here
         rvAdapter.clear();
@@ -517,13 +511,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
-
         return true;
     }
 
@@ -539,10 +530,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 onProfileClick(item);
             case R.id.miDetails:
                 onDetailsClick(item);
+            default:
+                return super.onOptionsItemSelected(item);
 
         }
-
-        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -552,7 +543,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     protected String[] getRequiredPermissions() {
         return super.getRequiredPermissions();
     }
-
 
     /**
      * Queries the phone's contacts for their own profile, and returns their name. Used when
@@ -579,14 +569,12 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         return STRATEGY;
     }
 
-
     /**
      * {@see Handler#removeCallbacks(Runnable)}
      */
     protected void removeCallbacks(Runnable r) {
         mUiHandler.removeCallbacks(r);
     }
-
 
     @Override
     protected void logV(String msg) {
@@ -622,24 +610,14 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 //        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private static CharSequence toColor(String msg, int color) {
-        SpannableString spannable = new SpannableString(msg);
-        spannable.setSpan(new ForegroundColorSpan(color), 0, msg.length(), 0);
-        return spannable;
-    }
-
-    private static String generateRandomName() {
-        String name = "";
-        Random random = new Random();
-        for (int i = 0; i < 15; i++) {
-            name += random.nextInt(10);
-        }
-        return name;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> T pickRandomElem(Collection<T> collection) {
-        return (T) collection.toArray()[new Random().nextInt(collection.size())];
+    /**
+     * States that the UI goes through.
+     */
+    public enum State {
+        UNKNOWN,
+        DISCOVERING,
+        ADVERTISING,
+        CONNECTED
     }
 
     /**
@@ -662,16 +640,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         @Override
         public void onAnimationRepeat(Animator animator) {
         }
-    }
-
-    /**
-     * States that the UI goes through.
-     */
-    public enum State {
-        UNKNOWN,
-        DISCOVERING,
-        ADVERTISING,
-        CONNECTED
     }
 }
 

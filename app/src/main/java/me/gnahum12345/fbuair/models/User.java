@@ -56,13 +56,19 @@ public class User {
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
         user.name = json.getString("name");
-        user.organization = json.getString("organization");
         user.phoneNumber = json.getString("phoneNumber");
         user.email = json.getString("email");
-        user.facebookURL = json.getString("facebookURL");
-        user.profileImage = stringToBitmap(json.getString("profileImage"));
-        user.instagramURL = json.getString("instagramURL");
-        user.linkedInURL = json.getString("linkedInURL");
+        try {
+            user.organization = json.getString("organization");
+            user.facebookURL = json.getString("facebookURL");
+            user.profileImage = stringToBitmap(json.getString("profileImage"));
+            user.instagramURL = json.getString("instagramURL");
+            user.linkedInURL = json.getString("linkedInURL");
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Log.e("USER_MODEL_TAG", "fromJson: media isn't there. ", e);
+        }
+
         return user;
 
     }

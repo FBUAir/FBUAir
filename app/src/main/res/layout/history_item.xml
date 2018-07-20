@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/ivFacebookIcon"
+        android:id="@+id/ivProfileImage"
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
@@ -21,7 +21,7 @@
         android:layout_width="239dp"
         android:layout_height="100dp"
         android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/ivFacebookIcon"
+        android:layout_toEndOf="@+id/ivProfileImage"
         android:ems="10"
         android:hint="Name"
         android:inputType="textPersonName"
