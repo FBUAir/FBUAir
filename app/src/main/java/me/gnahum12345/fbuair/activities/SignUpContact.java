@@ -1,19 +1,26 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Patterns;
 import android.view.View;
@@ -33,7 +40,7 @@ import java.io.InputStream;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
 
-public class SignUpContact extends AppCompatActivity{
+public class SignUpContact extends AppCompatActivity {
 
     EditText etName;
     EditText etOrganization;
@@ -65,7 +72,7 @@ public class SignUpContact extends AppCompatActivity{
         SharedPreferences sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String current_user = sharedPreferences.getString("current_user", null);
         if (current_user != null) {
-            Intent intent = new Intent(SignUpContact.this,DiscoverActivity.class);
+            Intent intent = new Intent(SignUpContact.this, DiscoverActivity.class);
             startActivity(intent);
             finish();
         }
@@ -120,8 +127,7 @@ public class SignUpContact extends AppCompatActivity{
         });
     }
 
-    //following are validity checkers
-    // checks if profile is valid before submitting. if not, sets invalid fields red
+    // checks if profile is valid before submitting. if not, shows error messages
     public boolean isValidContact(String name, String phone, String email){
         // clear previous errors
         clearErrors();

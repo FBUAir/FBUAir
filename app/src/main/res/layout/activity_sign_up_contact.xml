@@ -112,26 +112,6 @@
         android:layout_below="@+id/tvEmailError"
         app:srcCompat="@drawable/email_icon" />
 
-    <TextView
-        android:id="@+id/tvAsterisk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/etPhone"
-        android:layout_toEndOf="@+id/etPhone"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:textColor="@android:color/holo_red_dark"
-        tools:text="*" />
-
-    <TextView
-        android:id="@+id/tvAsterisk2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignTop="@+id/etName"
-        android:textAppearance="@android:style/TextAppearance.Large"
-        android:textColor="@android:color/holo_red_dark"
-        tools:text="*" />
-
     <ImageButton
         android:id="@+id/btnProfileImage"
         android:layout_width="100dp"
@@ -141,5 +121,25 @@
         android:background="@android:color/transparent"
         android:scaleType="centerCrop"
         android:src="@android:drawable/ic_menu_camera" />
+
+    <TextView
+        android:id="@+id/asterisk"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:text="*"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp" />
+
+    <TextView
+        android:id="@+id/asterisk2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvNameError"
+        android:text="*"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="14sp" />
 
 </RelativeLayout>
