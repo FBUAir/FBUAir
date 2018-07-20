@@ -1,10 +1,12 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.Manifest;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.content.OperationApplicationException;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,6 +15,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
@@ -22,7 +25,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -33,6 +35,10 @@ import me.gnahum12345.fbuair.models.User;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    // codes for options after adding contact
+    final static int SUCCESS = 1;
+    final static int PHONE_CONFLICT = 2;
+    final static int EMAIL_CONFLICT = 3;
     // views
     // user info views
     ImageView ivProfileImage;
@@ -40,7 +46,6 @@ public class DetailsActivity extends AppCompatActivity {
     TextView tvOrganization;
     TextView tvPhone;
     TextView tvEmail;
-
     // add contact views
     Button btAddContact;
     RelativeLayout rlContactOptions;
@@ -50,12 +55,10 @@ public class DetailsActivity extends AppCompatActivity {
     TextView tvViewConflict;
     TextView tvIgnoreConflict;
     TextView tvConflictMessage;
-
     // add on social media views
     Button btFacebook;
     Button btInstagram;
     Button btLinkedIn;
-
     // current profile and info
     User user;
     String name;
@@ -66,15 +69,9 @@ public class DetailsActivity extends AppCompatActivity {
     String facebookUrl;
     String linkedInUrl;
     String instagramUrl;
-
     // user contact IDs
     String contactId;
     String[] rawContactId;
-
-    // codes for options after adding contact
-    final static int SUCCESS = 1;
-    final static int PHONE_CONFLICT = 2;
-    final static int EMAIL_CONFLICT = 3;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -161,8 +158,7 @@ public class DetailsActivity extends AppCompatActivity {
         // show applicable social media buttons and set to redirect to profile URLs on click
         if (facebookUrl.isEmpty()) {
             btFacebook.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             btFacebook.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -174,8 +170,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         if (instagramUrl.isEmpty()) {
             btInstagram.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             btInstagram.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -187,8 +182,7 @@ public class DetailsActivity extends AppCompatActivity {
         }
         if (linkedInUrl.isEmpty()) {
             btLinkedIn.setVisibility(View.INVISIBLE);
-        }
-        else {
+        } else {
             btLinkedIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -199,6 +193,19 @@ public class DetailsActivity extends AppCompatActivity {
             });
         }
     }
+
+    // check if user has required permissions. if not, request them
+/*    boolean checkContactPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(new String[] {Manifest.permission.READ_CONTACTS}, MY_PERMISSIONS_REQUEST_READ_CONTACTS);
+        }
+        else if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_CONTACTS)
+                != PackageManager.PERMISSION_GRANTED)) {
+
+        }
+
+    }*/
 
     // adds given json user to contacts
     void addContact() throws JSONException {
@@ -261,16 +268,16 @@ public class DetailsActivity extends AppCompatActivity {
             // create the new contact
             ContentProviderResult[] results = getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
             // get created contact ID (for viewing)
-            final String[] projection = new String[] { ContactsContract.RawContacts.CONTACT_ID };
+            final String[] projection = new String[]{ContactsContract.RawContacts.CONTACT_ID};
             final Cursor cursor = getContentResolver().query(results[0].uri, projection, null, null, null);
             if (cursor != null && cursor.moveToNext()) {
                 contactId = String.valueOf(cursor.getLong(0));
                 cursor.close();
             }
             // get created raw contact ID (for undoing)
-            rawContactId = new String[] {String.valueOf(ContentUris.parseId(results[0].uri))};
+            rawContactId = new String[]{String.valueOf(ContentUris.parseId(results[0].uri))};
             // check if merge occured and notify user
-            if (merged (contactId)) {
+            if (merged(contactId)) {
                 Toast.makeText(this, "Contact was linked with duplicate", Toast.LENGTH_LONG).show();
             }
         } catch (RemoteException | OperationApplicationException e) {
@@ -365,7 +372,7 @@ public class DetailsActivity extends AppCompatActivity {
         // get URI path for given phone number
         Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
         // set columns to retrieve
-        String[] phoneNumberProjection = { ContactsContract.PhoneLookup._ID };
+        String[] phoneNumberProjection = {ContactsContract.PhoneLookup._ID};
         // lookup phone number
         Cursor cursor = getContentResolver().query(lookupUri, phoneNumberProjection, null, null, null);
         // if there is a result, return ID of matching contact
@@ -383,7 +390,7 @@ public class DetailsActivity extends AppCompatActivity {
         // get URI path for given email
         Uri lookupUri = Uri.withAppendedPath(CommonDataKinds.Email.CONTENT_LOOKUP_URI, Uri.encode(email));
         // set columns to retrieve
-        String[] emailProjection = { CommonDataKinds.Email.CONTACT_ID };
+        String[] emailProjection = {CommonDataKinds.Email.CONTACT_ID};
         // lookup email
         Cursor cursor = getContentResolver().query(lookupUri, emailProjection, null, null, null);
         // if there is a result, return ID of matching contact
@@ -401,7 +408,7 @@ public class DetailsActivity extends AppCompatActivity {
         // get URI path for given ID
         Uri lookupUri = ContactsContract.RawContacts.CONTENT_URI;
         // no columns needed
-        String[] projection = { ContactsContract.RawContacts.CONTACT_ID , ContactsContract.RawContacts._ID};
+        String[] projection = {ContactsContract.RawContacts.CONTACT_ID, ContactsContract.RawContacts._ID};
         // find where contact ID = user's contact id
         String selection = ContactsContract.RawContacts.CONTACT_ID + "=" + contactId;
         // lookup contact ID
@@ -421,8 +428,7 @@ public class DetailsActivity extends AppCompatActivity {
             if (show) {
                 rlContactOptions.setVisibility(View.VISIBLE);
                 btAddContact.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 rlContactOptions.setVisibility(View.GONE);
                 btAddContact.setVisibility(View.VISIBLE);
             }
@@ -432,14 +438,12 @@ public class DetailsActivity extends AppCompatActivity {
             if (show) {
                 if (optionsType == PHONE_CONFLICT) {
                     tvConflictMessage.setText(getResources().getString(R.string.phone_conflict_message));
-                }
-                else if (optionsType == EMAIL_CONFLICT) {
+                } else if (optionsType == EMAIL_CONFLICT) {
                     tvConflictMessage.setText(getResources().getString(R.string.email_conflict_message));
                 }
                 rlConflict.setVisibility(View.VISIBLE);
                 btAddContact.setVisibility(View.GONE);
-            }
-            else {
+            } else {
                 rlConflict.setVisibility(View.GONE);
                 btAddContact.setVisibility(View.VISIBLE);
             }

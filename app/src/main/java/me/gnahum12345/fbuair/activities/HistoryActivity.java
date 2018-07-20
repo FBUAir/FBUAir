@@ -11,12 +11,11 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.MenuItem;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 import me.gnahum12345.fbuair.FakeUsers;
@@ -25,7 +24,7 @@ import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;
 
 public class HistoryActivity extends AppCompatActivity {
-    public static ArrayList<String> listRandos = new ArrayList<>();
+    static JSONArray listRandos = new JSONArray();
     HistoryAdapter historyAdapter;
     ArrayList<User> contacts;
     RecyclerView rvUser;
@@ -36,25 +35,30 @@ public class HistoryActivity extends AppCompatActivity {
     //creating my shared preferences array of fake contacts
     public static void onContactAddClick(MenuItem mi) {
         JSONObject rando = createRando();
-        listRandos.add(rando.toString());
+        listRandos.put(rando);
         Log.d("addContacts", String.valueOf(listRandos));
     }
 
     public static JSONObject createRando() {
         FakeUsers fakeUsers = new FakeUsers();
 
-        ArrayList<JSONObject> listUsers = new ArrayList<JSONObject>();
-        listUsers.add(fakeUsers.jsonUser1);
-        listUsers.add(fakeUsers.jsonUser2);
-        listUsers.add(fakeUsers.jsonUser3);
-        listUsers.add(fakeUsers.jsonUser4);
-        listUsers.add(fakeUsers.jsonUser5);
-        listUsers.add(fakeUsers.jsonUser6);
-        listUsers.add(fakeUsers.jsonUser7);
-        listUsers.add(fakeUsers.jsonUser8);
+        JSONArray listUsers = new JSONArray();
+        listUsers.put(fakeUsers.jsonUser1);
+        listUsers.put(fakeUsers.jsonUser2);
+        listUsers.put(fakeUsers.jsonUser3);
+        listUsers.put(fakeUsers.jsonUser4);
+        listUsers.put(fakeUsers.jsonUser5);
+        listUsers.put(fakeUsers.jsonUser6);
+        listUsers.put(fakeUsers.jsonUser7);
+        listUsers.put(fakeUsers.jsonUser8);
 
         Random random = new Random();
-        JSONObject rando = listUsers.get(random.nextInt(listUsers.size()));
+        JSONObject rando = null;
+        try {
+            rando = (JSONObject) listUsers.get(random.nextInt(listUsers.length()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         return rando;
     }
 
@@ -72,7 +76,7 @@ public class HistoryActivity extends AppCompatActivity {
                 // Make sure you call swipeContainer.setRefreshing(false)
                 // once the network request has completed successfully.
                 historyAdapter.clear();
-                getHistory();
+                //getHistory();
                 swipeContainer.setRefreshing(false);
             }
         });
@@ -89,59 +93,51 @@ public class HistoryActivity extends AppCompatActivity {
         rvUser.setLayoutManager(new LinearLayoutManager(this));
         rvUser.setAdapter(historyAdapter);
 
+        addHistory();
         getHistory();
     }
 
-    public void addSharedPreferences(SharedPreferences.Editor editor, List list) throws IOException {
-        editor.putString("history", ObjectSerializer.serialize((Serializable) list));
+    public void addSharedPreferences(SharedPreferences.Editor editor, String list) {
+        editor.putString("history", list);
         editor.commit();
     }
 
-    public void getHistory() {
-
+    public void addHistory() {
         sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedpreferences.edit();
 
         //adding to the shared preferences
-        try {
-            addSharedPreferences(editor, listRandos);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        addSharedPreferences(editor, listRandos.toString());
 
-        //reading from the shared preferences
-        try {
-            listRandos = (ArrayList<String>) ObjectSerializer.deserialize(sharedpreferences.getString("history", ObjectSerializer.serialize(new ArrayList<String>())));
-            Log.d("history", String.valueOf(listRandos));
-            //populateHistory(listRandos);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
     }
 
-    //TODO
-    /**
-    public void populateHistory(List listRandos){
-       for (int i = 0; i<listRandos.size(); i++){
-            try {
+    public void getHistory() {
+        sharedpreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String json_array = sharedpreferences.getString("history", null);
+        try {
+            JSONArray history = new JSONArray(json_array);
+            populateHistory(history);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-                //TODO NEED TO MAKE LISTRANODS BE MADE OF JSONOBJECTS
-                JSONObject rando = (JSONObject) listRandos.get(i);
+    }
+
+    public void populateHistory(JSONArray history) {
+        for (int i = 0; i < history.length(); i++) {
+            try {
+                JSONObject rando = (JSONObject) history.get(i);
                 User user = User.fromJson(rando);
                 contacts.add(user);
-                HistoryAdapter.notifyItemInserted(contacts.size() - 1);
+                historyAdapter.notifyItemInserted(contacts.size() - 1);
 
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
 
         }
 
     }
-     **/
 
 
 }
