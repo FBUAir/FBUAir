@@ -33,7 +33,7 @@ public class HistoryActivity extends AppCompatActivity {
     private SwipeRefreshLayout swipeContainer;
 
     //creating my shared preferences array of fake contacts
-    public static void onContactAddClick(MenuItem mi) {
+    public static void onContactAddClick() {
         JSONObject rando = createRando();
         listRandos.put(rando);
         Log.d("addContacts", String.valueOf(listRandos));

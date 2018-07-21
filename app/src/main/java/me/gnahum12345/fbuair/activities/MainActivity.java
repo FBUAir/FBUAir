@@ -30,8 +30,7 @@ public class MainActivity extends AppCompatActivity {
     HistoryFragment historyFragment;*/
     ProfileFragment profileFragment;
 
-    // The list of fragments used in the view pager. They live in the activity and we pass them down
-    // to the adapter upon creation.
+    // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
 
     // A reference to our view pager.
@@ -95,8 +94,6 @@ public class MainActivity extends AppCompatActivity {
         bottomNavigation = findViewById(R.id.bottomNavigationView);
 
         // Handle the click for each item on the bottom navigation view.
-        // we then delegate this out to the view pager adapter such that it can switch the
-        // page which we are currently displaying
         bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -120,8 +117,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // The example view pager which we use in combination with the bottom navigation view to make
-    // a smooth horizontal sliding transition.
+    // The example view pager which we use in combination with the bottom navigation view to make a smooth horizontal sliding transition.
     static class Adapter extends FragmentStatePagerAdapter {
 
         // The list of fragments which we are going to be displaying in the view pager.
