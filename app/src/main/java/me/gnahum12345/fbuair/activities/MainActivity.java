@@ -19,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.fragments.DiscoverFragment;
+import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -28,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
 
     // fragments
-/*    DiscoverFragment discoverFragment;
-    HistoryFragment historyFragment;*/
+    DiscoverFragment discoverFragment;
+    HistoryFragment historyFragment;
     ProfileFragment profileFragment;
 
     // The list of fragments used in the view pager
@@ -55,13 +57,13 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         // instantiate fragments
-/*        discoverFragment = new DiscoverFragment();
-        historyFragment = new HistoryFragment();*/
+        discoverFragment = new DiscoverFragment();
+        historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
 
         // Create the fragments to be passed to the ViewPager
-/*        fragments.add(discoverFragment);
-        fragments.add(historyFragment);*/
+        fragments.add(discoverFragment);
+        fragments.add(historyFragment);
         fragments.add(profileFragment);
 
         // Grab a reference to our view pager.
