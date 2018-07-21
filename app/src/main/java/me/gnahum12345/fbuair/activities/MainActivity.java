@@ -1,5 +1,7 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -39,14 +41,18 @@ public class MainActivity extends AppCompatActivity {
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
+    // name of preferences file
+    public static final String MyPREFERENCES = "MyPrefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set actionbar to be toolbar and hide title at start
+        // set actionbar to be toolbar
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         // instantiate fragments
 /*        discoverFragment = new DiscoverFragment();
@@ -79,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 1:
                         bottomNavigation.setSelectedItemId(R.id.action_history);
+                        break;
                     case 2:
                         bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
