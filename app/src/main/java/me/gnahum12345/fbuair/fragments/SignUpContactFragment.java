@@ -27,6 +27,7 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
 import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
@@ -99,12 +100,19 @@ public class SignUpContactFragment extends Fragment {
                 final String phone = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 if (profileImage == null) {
-                    profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_profile);
+                    profileImage = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.default_profile);
                 }
-                // go to next sign up page and set variables if contact info is valid. if not, shows appropriate error messages
+                // go to next sign up page if contact info is valid
                 if (isValidContact(name, phone, email)) {
                     activity.profileImage = profileImage;
-                    activity.launchSignUpSocialMedia(name, organization, email, phone);
+                    User user = new User();
+                    user.setName(name);
+                    user.setOrganization(organization);
+                    user.setPhoneNumber(phone);
+                    user.setEmail(email);
+                    user.setProfileImage(profileImage);
+                    activity.launchSignUpSocialMedia(user);
                 }
             }
         });

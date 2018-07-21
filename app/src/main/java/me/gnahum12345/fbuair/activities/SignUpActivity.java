@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -14,10 +15,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import org.parceler.Parcels;
+
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
+import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utilities.Utility.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
@@ -58,6 +62,7 @@ public class SignUpActivity extends AppCompatActivity {
         // initialize first two fragments
         welcomeFragment = new WelcomeFragment();
         signUpContactFragment = new SignUpContactFragment();
+        signUpSocialMediaFragment = new SignUpSocialMediaFragment();
 
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
@@ -93,15 +98,10 @@ public class SignUpActivity extends AppCompatActivity {
     }
 
     // starts fragment to add social media profiles. passes in info from previous page
-    public void launchSignUpSocialMedia(String name, String organization, String phone, String email) {
-        SignUpSocialMediaFragment signUpSocialMediaFragment = new SignUpSocialMediaFragment();
-        Bundle userInfoBundle = new Bundle();
-        userInfoBundle.putString("name", name);
-        userInfoBundle.putString("organization", organization);
-        userInfoBundle.putString("phone", phone);
-        userInfoBundle.putString("email", email);
-        signUpSocialMediaFragment.setArguments(userInfoBundle);
-        this.signUpSocialMediaFragment = signUpSocialMediaFragment;
+    public void launchSignUpSocialMedia(User user) {
+        Bundle userBundle = new Bundle();
+        userBundle.putParcelable("user", Parcels.wrap(user));
+        signUpSocialMediaFragment.setArguments(userBundle);
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
     }
 }

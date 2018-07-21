@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
@@ -156,21 +157,9 @@ public class SignUpSocialMediaFragment extends Fragment {
 
     // creates java object user from class vars and saves user json object to sharedpreferences
     private void createProfile() throws JSONException {
-        // get info from last screen
-        Bundle userInfoBundle = getArguments();
-        String name = userInfoBundle.getString("name");
-        String organization = userInfoBundle.getString("organization");
-        String phone = userInfoBundle.getString("phone");
-        String email = userInfoBundle.getString("email");
-        Bitmap profileImage = activity.profileImage;
-
-        // create user object out of info
-        User user = new User();
-        user.setName(name);
-        user.setOrganization(organization);
-        user.setPhoneNumber(phone);
-        user.setEmail(email);
-        user.setProfileImage(profileImage);
+        // get user info from last screen
+        User user = Parcels.unwrap(getArguments().getParcelable("user"));
+        // add social media fields to user
         user.setFacebookURL(facebookUrl);
         user.setInstagramURL(instagramUrl);
         user.setLinkedInURL(linkedInUrl);

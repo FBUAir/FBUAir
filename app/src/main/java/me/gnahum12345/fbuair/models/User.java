@@ -14,14 +14,18 @@ import java.io.ByteArrayOutputStream;
 @Parcel
 public class User {
 
-    public String name;
-    public String organization;
-    public String phoneNumber;
-    public String email;
-    public Bitmap profileImage;
-    public String facebookURL;
-    public String instagramURL;
-    public String linkedInURL;
+    String name;
+    String organization;
+    String phoneNumber;
+    String email;
+    Bitmap profileImage;
+    String facebookURL;
+    String instagramURL;
+    String linkedInURL;
+
+    // empty constructor needed by the Parceler library
+    public User() {
+    }
 
     public String getName() { return name; }
 
