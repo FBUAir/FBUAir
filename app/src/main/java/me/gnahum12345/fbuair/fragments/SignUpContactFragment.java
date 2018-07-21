@@ -105,7 +105,6 @@ public class SignUpContactFragment extends Fragment {
                 }
                 // go to next sign up page if contact info is valid
                 if (isValidContact(name, phone, email)) {
-                    activity.profileImage = profileImage;
                     User user = new User();
                     user.setName(name);
                     user.setOrganization(organization);

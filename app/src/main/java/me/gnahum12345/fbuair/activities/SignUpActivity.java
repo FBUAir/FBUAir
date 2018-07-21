@@ -37,9 +37,6 @@ public class SignUpActivity extends AppCompatActivity {
     ImageView ivBack;
     Toolbar toolbar;
 
-    // store profile image as global var because too large to be passed in bundle
-    public Bitmap profileImage;
-
     FragmentManager fragmentManager;
 
     @Override
@@ -76,7 +73,7 @@ public class SignUpActivity extends AppCompatActivity {
         ivBack = findViewById(R.id.ivBack);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        tvTitle.setText("Sign up");
+        tvTitle.setText("Create Account");
         ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
