@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
-    // name of preferences file
-    public static final String MyPREFERENCES = "MyPrefs";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

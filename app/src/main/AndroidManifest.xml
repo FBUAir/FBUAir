@@ -32,19 +32,17 @@
             android:name=".activities.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".activities.DiscoverActivity">
+        </activity>
+        <activity android:name=".activities.HistoryActivity" />
+        <activity android:name=".activities.DetailsActivity" />
+        <activity android:name=".activities.SignUpActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.ProfileActivity" />
-        <activity android:name=".activities.HistoryActivity" />
-        <activity android:name=".activities.DetailsActivity" />
-        <activity android:name=".activities.SignUpContactActivity" />
-        <activity android:name=".activities.SignUpSocialMediaActivity" />
-        <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.WelcomeActivity" android:theme="@style/Theme.AppCompat.Light.NoActionBar"></activity>
     </application>
 
 </manifest>

@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="100dp"
-    tools:context=".activities.WelcomeActivity">
+    tools:context=".fragments.WelcomeFragment">
 
     <ImageView
         android:id="@+id/ivLogo"

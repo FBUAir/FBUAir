@@ -1,14 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragments.SignUpSocialMediaFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <EditText
+        android:id="@+id/etFacebookUrl"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvFacebookError"
+        android:layout_marginBottom="10dp"
+        android:layout_toEndOf="@+id/ivFacebook"
+        android:ems="10"
+        android:hint="Facebook Profile URL"
+        android:inputType="textUri"
+        android:textColor="@android:color/black" />
 
-</FrameLayout>
+    <TextView
+        android:id="@+id/tvFacebookError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="10dp"
+        android:text="fb url error"
+        android:textSize="12sp"
+        android:textColor="@android:color/holo_red_dark" />
+
+    <ImageView
+        android:id="@+id/ivFacebook"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvFacebookError"
+        app:srcCompat="@drawable/facebook_icon" />
+
+    <EditText
+        android:id="@+id/etLinkedInUrl"
+        android:layout_width="265dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etFacebookUrl"
+        android:layout_below="@+id/tvLinkedInError"
+        android:layout_marginBottom="10dp"
+        android:ems="10"
+        android:hint="LinkedIn Profile URL"
+        android:inputType="textUri"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvLinkedInError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etFacebookUrl"
+        android:text="linkedin url error"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/ivLinkedIn"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvLinkedInError"
+        app:srcCompat="@drawable/linked_in_logo" />
+
+    <EditText
+        android:id="@+id/etInstagramUrl"
+        android:layout_width="266dp"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/etFacebookUrl"
+        android:layout_below="@+id/tvInstagramError"
+        android:layout_marginStart="-1dp"
+        android:ems="10"
+        android:hint="Instagram Profile URL"
+        android:inputType="textUri"
+        android:textColor="@android:color/black" />
+
+    <TextView
+        android:id="@+id/tvInstagramError"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/etLinkedInUrl"
+        android:text="instagram url error"
+        android:textColor="@android:color/holo_red_dark"
+        android:textSize="12sp" />
+
+    <ImageView
+        android:id="@+id/ivInstagram"
+        android:layout_width="46dp"
+        android:layout_height="46dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/tvInstagramError"
+        app:srcCompat="@drawable/instagram_logo" />
+
+    <Button
+        android:id="@+id/btSubmit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:text="Create Profile" />
+
+    <TextView
+        android:id="@+id/tvSkip"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btSubmit"
+        android:layout_alignParentStart="true"
+        android:text="SKIP" />
+
+
+</RelativeLayout>

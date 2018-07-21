@@ -491,7 +491,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         // handle click here
         rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
-        Intent intent = new Intent(this, ProfileActivity.class);
+        // go to main activity since profile activity is now fragment
+        Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
 
