@@ -1,5 +1,7 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -17,6 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.fragments.DiscoverFragment;
+import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
 
 public class MainActivity extends AppCompatActivity {
@@ -26,8 +30,8 @@ public class MainActivity extends AppCompatActivity {
     android.support.v7.widget.Toolbar toolbar;
 
     // fragments
-/*    DiscoverFragment discoverFragment;
-    HistoryFragment historyFragment;*/
+    DiscoverFragment discoverFragment;
+    HistoryFragment historyFragment;
     ProfileFragment profileFragment;
 
     // The list of fragments used in the view pager
@@ -39,23 +43,27 @@ public class MainActivity extends AppCompatActivity {
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
+    // name of preferences file
+    public static final String MyPREFERENCES = "MyPrefs";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // set actionbar to be toolbar and hide title at start
+        // set actionbar to be toolbar
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         // instantiate fragments
-/*        discoverFragment = new DiscoverFragment();
-        historyFragment = new HistoryFragment();*/
+        discoverFragment = new DiscoverFragment();
+        historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
 
         // Create the fragments to be passed to the ViewPager
-/*        fragments.add(discoverFragment);
-        fragments.add(historyFragment);*/
+        fragments.add(discoverFragment);
+        fragments.add(historyFragment);
         fragments.add(profileFragment);
 
         // Grab a reference to our view pager.
@@ -79,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 1:
                         bottomNavigation.setSelectedItemId(R.id.action_history);
+                        break;
                     case 2:
                         bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
