@@ -526,10 +526,12 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 return true;
             case R.id.miHistory:
                 onHistoryClick(item);
+                return true;
             case R.id.miProfile:
                 onProfileClick(item);
             case R.id.miDetails:
                 //onDetailsClick(item);
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
