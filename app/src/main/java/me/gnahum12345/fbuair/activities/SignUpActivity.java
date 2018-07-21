@@ -104,6 +104,4 @@ public class SignUpActivity extends AppCompatActivity {
         this.signUpSocialMediaFragment = signUpSocialMediaFragment;
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
     }
-
-    onsave
 }
