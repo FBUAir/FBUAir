@@ -485,7 +485,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         }
     }
 
-    public void onProfileClick(MenuItem mi) {
+    public void launchProfile() {
         // handle click here
         rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
@@ -493,7 +493,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
-    public void onHistoryClick(MenuItem mi) {
+    public void launchHistory() {
         // handle click here
         rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
@@ -502,11 +502,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
-    public void onDetailsClick(MenuItem mi) {
+    public void launchDetails() {
         // handle click here
         rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
-
         Intent intent = new Intent(this, DetailsActivity.class);
         startActivity(intent);
     }
@@ -522,19 +521,19 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.miAddContact:
-                HistoryActivity.onContactAddClick(item);
+                HistoryActivity.onContactAddClick();
                 return true;
             case R.id.miHistory:
-                onHistoryClick(item);
+                launchHistory();
                 return true;
             case R.id.miProfile:
-                onProfileClick(item);
+                launchProfile();
+                return true;
             case R.id.miDetails:
                 //onDetailsClick(item);
                 return true;
             default:
-                return super.onOptionsItemSelected(item);
-
+                return false;
         }
     }
 
