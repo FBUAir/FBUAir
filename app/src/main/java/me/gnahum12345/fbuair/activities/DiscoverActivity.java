@@ -530,7 +530,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 launchProfile();
                 return true;
             case R.id.miDetails:
-                //launchDetails();
+                //onDetailsClick(item);
+                return true;
             default:
                 return false;
         }
