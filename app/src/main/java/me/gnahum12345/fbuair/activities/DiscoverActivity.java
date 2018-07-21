@@ -297,7 +297,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
     private void sendProfileUser(Endpoint endpoint) {
         ProfileUser profileUser = new ProfileUser(this);
-        Payload payload = Payload.fromBytes(profileUser.convertToString().getBytes());
+        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
         send(payload, endpoint);
     }
 
@@ -312,6 +312,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         // If we lost all our endpoints, then we should reset the state of our app and go back
         // to our initial state (discovering).
         deviceLst.remove(endpoint);
+        rvAdapter.remove(endpoint);
         rvAdapter.notifyDataSetChanged();
 
         if (getConnectedEndpoints().isEmpty()) {
@@ -380,9 +381,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         switch (newState) {
             case DISCOVERING:
                 // do nothing and fall through to advertising.
-            case ADVERTISING:
                 disconnectFromAllEndpoints();
                 startDiscovering();
+            case ADVERTISING:
+                disconnectFromAllEndpoints();
                 startAdvertising();
                 logD("I am advertising and discovering at the same time.");
                 break;

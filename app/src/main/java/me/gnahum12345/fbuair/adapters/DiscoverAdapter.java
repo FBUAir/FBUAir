@@ -11,11 +11,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONException;
+
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.ConnectionsActivity;
@@ -25,20 +29,23 @@ import me.gnahum12345.fbuair.models.ProfileUser;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder>{
 
-    // TODO 1: find a way s.t. we don't need a SET, MAP and LIST.
-    private Set<ConnectionsActivity.Endpoint> mDevices;
-    private List<ConnectionsActivity.Endpoint> mDeviceList;
-    private Map<ConnectionsActivity.Endpoint, ProfileUser> profileUserMap;
+    private TreeMap<ConnectionsActivity.Endpoint, String> mDevices;
 
     private Context mContext;
 
 
 
     public DiscoverAdapter(Set<ConnectionsActivity.Endpoint> devices) {
-        mDevices = devices;
-        mDeviceList = new ArrayList<>();
-        profileUserMap = new HashMap<>();
-        mDeviceList.addAll(mDevices);
+        mDevices = new TreeMap<>(new Comparator<ConnectionsActivity.Endpoint>() {
+            @Override
+            public int compare(ConnectionsActivity.Endpoint endpoint, ConnectionsActivity.Endpoint t1) {
+                return endpoint.getName().compareTo(t1.getName());
+            }
+        });
+
+        for (ConnectionsActivity.Endpoint e: devices) {
+            mDevices.put(e, "UPDATE ME");
+        }
     }
 
     @NonNull
@@ -54,31 +61,23 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
     public void add(ConnectionsActivity.Endpoint e) {
-        if (mDevices.add(e)) {
-            mDeviceList.add(e);
-        }
+        mDevices.put(e, "UPDATE ME");
     }
-
     public boolean remove(ConnectionsActivity.Endpoint e) {
-        if (mDevices.remove(e)) {
-            mDeviceList.remove(e);
-            return true;
-        }
-        return false;
+        mDevices.remove(e);
+        return true;
     }
 
     // TODO 2: find a way s.t. after a call to put the onBindViewholder is called and updates the image.
     public void put(ConnectionsActivity.Endpoint e, ProfileUser profileUser) {
-        if (profileUser.getName() == "" || profileUser.getName() == null) {
+        if (profileUser.getName() == null || profileUser.getName().isEmpty()) {
             return;
         }
-        profileUserMap.put(e, profileUser);
+        mDevices.put(e, profileUser.toString());
         notifyDataSetChanged();
     }
 
     public void clear() {
-        profileUserMap.clear();
-        mDeviceList.clear();
         mDevices.clear();
     }
 
@@ -86,15 +85,20 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
-        final ConnectionsActivity.Endpoint device = mDeviceList.get(i);
+        final ConnectionsActivity.Endpoint device = (ConnectionsActivity.Endpoint) mDevices.keySet().toArray()[i];
 
-        ProfileUser profileUser = profileUserMap.get(device);
+        ProfileUser profileUser = null;
+        try {
+            profileUser = ProfileUser.fromJSONString(mDevices.get(device));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if (profileUser != null) {
             viewHolder.mivProfilePic.setVisibility(View.VISIBLE);
             viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
-            viewHolder.mtvDeviceName.setText(device.getName());
+            viewHolder.mtvDeviceName.setText(parseName(device.getName()));
         }
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);
@@ -106,6 +110,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                 ((DiscoverActivity) mContext).sendToEndpoint(device);
             }
         });
+    }
+
+    private String parseName(String name) {
+        return name.split(mContext.getString(R.string.divider))[0];
     }
 
 

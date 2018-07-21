@@ -68,7 +68,8 @@ public class ProfileUser {
         this.ivProfileImage = ivProfileImage;
     }
 
-    public String convertToString() {
+    @Override
+    public String toString() {
         String bitmap = "";
         if (ivProfileImage != null) {
              bitmap = User.bitmapToString(ivProfileImage);
