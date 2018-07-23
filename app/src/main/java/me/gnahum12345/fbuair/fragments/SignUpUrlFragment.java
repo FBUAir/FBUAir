@@ -157,21 +157,15 @@ public class SignUpUrlFragment extends Fragment {
     // creates java object user from class vars and saves user json object to sharedpreferences
     private void createProfile() throws JSONException {
         // get user info from last screen
-        User user = Parcels.unwrap(getArguments().getParcelable("user"));
-        // add social media fields to user
-        user.setFacebookURL(facebookUrl);
-        user.setInstagramURL(instagramUrl);
-        user.setLinkedInURL(linkedInUrl);
-
-        // add user json string to shared preferences for persistence
-        SharedPreferences sharedPreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString("current_user", User.toJson(user).toString());
-        editor.commit();
-
-        // launch Main Activity
-        Intent intent = new Intent(activity, MainActivity.class);
-        startActivity(intent);
-        activity.finish();
+        User user;
+        if (getArguments() != null) {
+            user = Parcels.unwrap(getArguments().getParcelable("user"));
+            // add social media fields to user
+            user.setFacebookURL(facebookUrl);
+            user.setInstagramURL(instagramUrl);
+            user.setLinkedInURL(linkedInUrl);
+            // save profile and launch main activity
+            activity.launchMainActivity(user);
+        }
     }
 }

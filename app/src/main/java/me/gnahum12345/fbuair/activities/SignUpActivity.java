@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import org.json.JSONException;
 import org.parceler.Parcels;
 
 import java.util.ArrayList;
@@ -109,8 +110,25 @@ public class SignUpActivity extends AppCompatActivity {
     public void launchSignUpUrl(User user, ArrayList<String> platforms) {
         Bundle userBundle = new Bundle();
         userBundle.putParcelable("user", Parcels.wrap(user));
-        userBundle.putStringArrayList("user", platforms);
-        signUpSocialMediaFragment.setArguments(userBundle);
-        startFragment(signUpSocialMediaFragment, "signUpUrlFragment");
+        userBundle.putStringArrayList("platforms", platforms);
+        signUpUrlFragment.setArguments(userBundle);
+        startFragment(signUpUrlFragment, "signUpUrlFragment");
+    }
+
+    // saves user profile and starts main activity when sign up is finished
+    public void launchMainActivity(User user) {
+        // add user json string to shared preferences for persistence
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        try {
+            editor.putString("current_user", User.toJson(user).toString());
+            editor.commit();
+            // launch Main Activity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -16,9 +16,14 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import org.parceler.Parcels;
+
+import java.util.ArrayList;
+
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
+import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utilities.Utility;
 
 public class SignUpSocialMediaFragment extends Fragment {
@@ -31,6 +36,7 @@ public class SignUpSocialMediaFragment extends Fragment {
     public SignUpSocialMediaFragment() {
         // Required empty public constructor
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -38,7 +44,6 @@ public class SignUpSocialMediaFragment extends Fragment {
         binding = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sign_up_social_media, container, false);
         View view = binding.getRoot();
-        binding.ivFacebook.setOnClickListener(clickListener);
         return view;
     }
 
@@ -46,13 +51,26 @@ public class SignUpSocialMediaFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         activity = (SignUpActivity) getActivity();
+        // hide keyboard
         Utility.hideSoftKeyboard(activity);
+
+        // get info from last sign up screen
+        assert getArguments() != null;
+        final User user = Parcels.unwrap(getArguments().getParcelable("user"));
+
+        // CLICK HANDLERS
+        binding.btNext.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.launchSignUpUrl(user, new ArrayList<String>());
+            }
+        });
+
+        binding.tvSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.launchMainActivity(user);
+            }
+        });
     }
-
-    View.OnClickListener clickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-
-        }
-    };
 }
