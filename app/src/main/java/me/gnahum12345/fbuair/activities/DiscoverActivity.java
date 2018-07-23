@@ -62,7 +62,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
      * sample does exactly one thing, so we hardcode the ID.
      */
     private static final String SERVICE_ID =
-            "com.google.location.nearby.apps.walkietalkie.manual.SERVICE_ID";
+            // "com.google.location.nearby.apps.walkietalkie.manual.SERVICE_ID"; // TODO uncomment this code for more debugging.
+            "com.fbuair.apps.air.discovery.automatic.SERVICE_ID";
     /**
      * Listens to holding/releasing the volume rocker.
      */
@@ -71,14 +72,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 @Override
                 protected void onHold() {
                     logV("onHold");
-                    startRecording();
+//                    startRecording();
+                    sendToAll();
                 }
 
-                @Override
-                protected void onRelease() {
-                    logV("onRelease");
-                    stopRecording();
-                }
             };
     /**
      * A Handler that allows us to post back on to the UI thread. We use this to resume discovery
@@ -142,12 +139,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         return (T) collection.toArray()[new Random().nextInt(collection.size())];
     }
 
-    private void stopRecording() {
-        logV("stopPlaying()");
-
-    }
-
-    private void startRecording() {
+    private void sendToAll() {
         logV("startRecording()");
         String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
         send(Payload.fromBytes(senderInfo.getBytes()));
@@ -164,6 +156,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     @Override
     protected void updateAdapter(Endpoint endpoint) {
         deviceLst.remove(endpoint);
+        rvAdapter.remove(endpoint);
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -191,7 +184,9 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        mName = generateRandomName();
+        ProfileUser profileUser = new ProfileUser(this);
+
+        mName = profileUser.getName() + getString(R.string.divider) + generateRandomName();
     }
 
     @Override
@@ -248,8 +243,16 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
         // We found an advertiser!
-        if (!isConnecting()) {
+        logV("I discovered a new endpoint\n" +
+                String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
+
+        int result = endpoint.compareTo(mEndpoint);
+        logV(String.format("Comparing the 2 endpoints: %d", result));
+
+        if (result > 0) {
             connectToEndpoint(endpoint);
+            logV("I am connecting to a new endpoint\n" +
+                    String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
         }
     }
 
@@ -257,6 +260,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     protected void onDiscoveryFailed() {
         disconnectFromAllEndpoints();
         deviceLst.clear();
+        rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
 
         if (Constants.oneMoreTry()) {
@@ -268,7 +272,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             Constants.reset();
             setState(State.UNKNOWN);
-            disconnectFromAllEndpoints();
+            // No longer needed because in State.UNKNOWN, we disconnect, stop Discovering and Advertising.
+//            disconnectFromAllEndpoints();
             setState(State.DISCOVERING);
             setState(State.ADVERTISING);
         }
@@ -290,7 +295,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         sendProfileUser(endpoint);
         rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
-        rvAdapter.notifyItemChanged(deviceLst.size() - 1);
+        rvAdapter.notifyDataSetChanged(); //TODO make this more concrete.
+//        rvAdapter.notifyItemChanged(deviceLst.size() - 1);
         setState(State.CONNECTED);
     }
 
@@ -300,7 +306,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
         send(payload, endpoint);
     }
-
 
 
     @Override
@@ -381,22 +386,22 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         switch (newState) {
             case DISCOVERING:
                 // do nothing and fall through to advertising.
-                disconnectFromAllEndpoints();
-                startDiscovering();
             case ADVERTISING:
                 disconnectFromAllEndpoints();
+                startDiscovering();
                 startAdvertising();
                 logD("I am advertising and discovering at the same time.");
                 break;
             case CONNECTED:
                 removeCallbacks(mDiscoverRunnable);
                 logD("I connected but I'm still discovering and advertising");
-                if (isDiscovering()) {
-                    stopDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
+                if (!isDiscovering()) {
+                    startDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
                 }
                 if (!isAdvertising()) {
                     startAdvertising();
                 }
+
                 break;
             case UNKNOWN:
                 stopAllEndpoints();
@@ -423,10 +428,14 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
         double gForce = Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
-        if (gForce > SHAKE_THRESHOLD_GRAVITY && getState() == State.DISCOVERING) {
+        if (gForce > SHAKE_THRESHOLD_GRAVITY) {
             logD("Device shaken");
             vibrate();
-            setState(State.ADVERTISING);
+            logV("isAdvertising: " + isAdvertising());
+            logV("isDiscovering: " + isDiscovering());
+            logV("isConnecting: " + isConnecting());
+
+//            setState(State.ADVERTISING);
         }
     }
 
@@ -466,6 +475,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             try {
                 user = User.fromString(content);
                 userMade = true;
+                logV("userMade = true");
             } catch (JSONException e) {
                 e.printStackTrace();
                 logE("User cannot be created", e);
@@ -611,7 +621,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
     private void appendToLogs(CharSequence msg) {
-//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**

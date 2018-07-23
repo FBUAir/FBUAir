@@ -32,6 +32,7 @@
             android:name=".activities.MainActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
         <activity android:name=".activities.DiscoverActivity">
+
         </activity>
         <activity android:name=".activities.HistoryActivity" />
         <activity android:name=".activities.DetailsActivity" />

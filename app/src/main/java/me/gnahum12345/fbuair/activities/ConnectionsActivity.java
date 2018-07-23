@@ -1,8 +1,6 @@
 package me.gnahum12345.fbuair.activities;
 
 
-import android.support.v7.app.AppCompatActivity;
-
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -11,6 +9,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -48,10 +47,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * These permissions are required before connecting to Nearby Connections. Only {@link
      * Manifest.permission#ACCESS_COARSE_LOCATION} is considered dangerous, so the others should be
      * granted just by having them in our AndroidManfiest.xml
-     *
      */
     private static final String[] REQUIRED_PERMISSIONS =
-            new String[] {
+            new String[]{
                     Manifest.permission.BLUETOOTH,
                     Manifest.permission.BLUETOOTH_ADMIN,
                     Manifest.permission.ACCESS_WIFI_STATE,
@@ -61,38 +59,55 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
 
     private static final String TAG = "ConnectionsActivityTAG";
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
-
-    /** Our handler to Nearby Connections. */
-    private ConnectionsClient mConnectionsClient;
-
-    /** The devices we've discovered near us. */
+    /**
+     * The devices we've discovered near us.
+     */
     private final Map<String, Endpoint> mDiscoveredEndpoints = new HashMap<>();
-
     /**
      * The devices we have pending connections to. They will stay pending until we call {@link
      * #acceptConnection(Endpoint)} or {@link #rejectConnection(Endpoint)}.
      */
     private final Map<String, Endpoint> mPendingConnections = new HashMap<>();
-
     /**
      * The devices we are currently connected to. For advertisers, this may be large. For discoverers,
      * there will only be one entry in this map.
      */
     private final Map<String, Endpoint> mEstablishedConnections = new HashMap<>();
+    /**
+     * Callbacks for payloads (bytes of data) sent from another device to us.
+     */
+    private final PayloadCallback mPayloadCallback =
+            new PayloadCallback() {
+                @Override
+                public void onPayloadReceived(String endpointId, Payload payload) {
+                    logD(String.format("onPayloadReceived(endpointId=%s, payload=%s)", endpointId, payload));
+                    onReceive(mEstablishedConnections.get(endpointId), payload);
+                }
 
+                @Override
+                public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
+                    logD(
+                            String.format(
+                                    "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+                }
+            };
+    /**
+     * My endpoint is to optimistically connect devices and
+     * make them stable.
+     */
+    Endpoint mEndpoint = new Endpoint("4DS1", getName());   // TODO change to be a resonable id. (Perferably the actual id)
+    /**
+     * Our handler to Nearby Connections.
+     */
+    private ConnectionsClient mConnectionsClient;
     /**
      * True if we are asking a discovered device to connect to us. While we ask, we cannot ask another
      * device.
      */
     private boolean mIsConnecting = false;
-
-    /** True if we are discovering. */
-    private boolean mIsDiscovering = false;
-
-    /** True if we are advertising. */
-    private boolean mIsAdvertising = false;
-
-    /** Callbacks for connections to other devices. */
+    /**
+     * Callbacks for connections to other devices.
+     */
     private final ConnectionLifecycleCallback mConnectionLifecycleCallback =
             new ConnectionLifecycleCallback() {
                 @Override
@@ -133,32 +148,57 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                     disconnectedFromEndpoint(mEstablishedConnections.get(endpointId));
                 }
             };
+    /**
+     * True if we are discovering.
+     */
+    private boolean mIsDiscovering = false;
+    /**
+     * True if we are advertising.
+     */
+    private boolean mIsAdvertising = false;
 
-    /** Callbacks for payloads (bytes of data) sent from another device to us. */
-    private final PayloadCallback mPayloadCallback =
-            new PayloadCallback() {
-                @Override
-                public void onPayloadReceived(String endpointId, Payload payload) {
-                    logD(String.format("onPayloadReceived(endpointId=%s, payload=%s)", endpointId, payload));
-                    onReceive(mEstablishedConnections.get(endpointId), payload);
-                }
+    /**
+     * Transforms a {@link Status} into a English-readable message for logging.
+     *
+     * @param status The current status
+     * @return A readable String. eg. [404]File not found.
+     */
+    private static String toString(Status status) {
+        return String.format(
+                Locale.US,
+                "[%d]%s",
+                status.getStatusCode(),
+                status.getStatusMessage() != null
+                        ? status.getStatusMessage()
+                        : ConnectionsStatusCodes.getStatusCodeString(status.getStatusCode()));
+    }
 
-                @Override
-                public void onPayloadTransferUpdate(String endpointId, PayloadTransferUpdate update) {
-                    logD(
-                            String.format(
-                                    "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
-                }
-            };
+    /**
+     * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
+     * false}.
+     */
+    public static boolean hasPermissions(Context context, String... permissions) {
+        for (String permission : permissions) {
+            if (ContextCompat.checkSelfPermission(context, permission)
+                    != PackageManager.PERMISSION_GRANTED) {
+                return false;
+            }
+        }
+        return true;
+    }
 
-    /** Called when our Activity is first created. */
+    /**
+     * Called when our Activity is first created.
+     */
     @Override
-    protected void onCreate(@Nullable Bundle  savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mConnectionsClient = Nearby.getConnectionsClient(this);
     }
 
-    /** Called when our Activity has been made visible to the user. */
+    /**
+     * Called when our Activity has been made visible to the user.
+     */
     @Override
     protected void onStart() {
         super.onStart();
@@ -167,7 +207,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         }
     }
 
-    /** Called when the user has accepted (or denied) our permission request. */
+    /**
+     * Called when the user has accepted (or denied) our permission request.
+     */
     @CallSuper
     @Override
     public void onRequestPermissionsResult(
@@ -191,50 +233,61 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * we've found out if we successfully entered this mode.
      */
     protected void startAdvertising() {
-        mIsAdvertising = true;
-        final String localEndpointName = getName();
-
-        mConnectionsClient
-                .startAdvertising(
-                        localEndpointName,
-                        getServiceId(),
-                        mConnectionLifecycleCallback,
-                        new AdvertisingOptions(getStrategy()))
-                .addOnSuccessListener(
-                        new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unusedResult) {
-                                logV("Now advertising endpoint " + localEndpointName);
-                                onAdvertisingStarted();
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                mIsAdvertising = false;
-                                logW("startAdvertising() failed.", e);
-                                onAdvertisingFailed();
-                            }
-                        });
+        if (!mIsAdvertising) {
+            mIsAdvertising = true;
+            final String localEndpointName = getName();
+            mConnectionsClient
+                    .startAdvertising(
+                            localEndpointName,
+                            getServiceId(),
+                            mConnectionLifecycleCallback,
+                            new AdvertisingOptions(getStrategy()))
+                    .addOnSuccessListener(
+                            new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unusedResult) {
+                                    logV("Now advertising endpoint " + localEndpointName);
+                                    onAdvertisingStarted();
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    mIsAdvertising = false;
+                                    logW("startAdvertising() failed.", e);
+                                    onAdvertisingFailed();
+                                }
+                            });
+        }
     }
 
-    /** Stops advertising. */
+    /**
+     * Stops advertising.
+     */
     protected void stopAdvertising() {
         mIsAdvertising = false;
         mConnectionsClient.stopAdvertising();
     }
 
-    /** Returns {@code true} if currently advertising. */
+    /**
+     * Returns {@code true} if currently advertising.
+     */
     protected boolean isAdvertising() {
         return mIsAdvertising;
     }
 
-    /** Called when advertising successfully starts. Override this method to act on the event. */
-    protected void onAdvertisingStarted() {}
+    /**
+     * Called when advertising successfully starts. Override this method to act on the event.
+     */
+    protected void onAdvertisingStarted() {
+    }
 
-    /** Called when advertising fails to start. Override this method to act on the event. */
-    protected void onAdvertisingFailed() {}
+    /**
+     * Called when advertising fails to start. Override this method to act on the event.
+     */
+    protected void onAdvertisingFailed() {
+    }
 
     /**
      * Called when a pending connection with a remote endpoint is created. Use {@link ConnectionInfo}
@@ -246,7 +299,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         Toast.makeText(this, connectionInfo.getEndpointName(), Toast.LENGTH_SHORT).show();
     }
 
-    /** Accepts a connection request. */
+    /**
+     * Accepts a connection request.
+     */
     protected void acceptConnection(final Endpoint endpoint) {
         mConnectionsClient
                 .acceptConnection(endpoint.getId(), mPayloadCallback)
@@ -259,7 +314,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                         });
     }
 
-    /** Rejects a connection request. */
+    /**
+     * Rejects a connection request.
+     */
     protected void rejectConnection(Endpoint endpoint) {
         mConnectionsClient
                 .rejectConnection(endpoint.getId())
@@ -278,82 +335,102 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * out if we successfully entered this mode.
      */
     protected void startDiscovering() {
-        mIsDiscovering = true;
-        mDiscoveredEndpoints.clear();
-        mConnectionsClient
-                .startDiscovery(
-                        getServiceId(),
-                        new EndpointDiscoveryCallback() {
-                            @Override
-                            public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
-                                logD(
-                                        String.format(
-                                                "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
-                                                endpointId, info.getServiceId(), info.getEndpointName()));
+        if (!isDiscovering()) {
+            mIsDiscovering = true;
+            mDiscoveredEndpoints.clear();
 
-                                Toast.makeText(getApplicationContext(), "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
+            mConnectionsClient
+                    .startDiscovery(
+                            getServiceId(),
+                            new EndpointDiscoveryCallback() {
+                                @Override
+                                public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
+                                    logD(
+                                            String.format(
+                                                    "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
+                                                    endpointId, info.getServiceId(), info.getEndpointName()));
 
-                                if (getServiceId().equals(info.getServiceId())) {
-                                    Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
-                                    mDiscoveredEndpoints.put(endpointId, endpoint);
-                                    onEndpointDiscovered(endpoint);
+                                    Toast.makeText(getApplicationContext(), "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
+
+                                    if (getServiceId().equals(info.getServiceId())) {
+                                        Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
+                                        mDiscoveredEndpoints.put(endpointId, endpoint);
+                                        onEndpointDiscovered(endpoint);
+                                    }
                                 }
-                            }
 
-                            @Override
-                            public void onEndpointLost(String endpointId) {
-                                logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
-                            }
-                        },
-                        new DiscoveryOptions(getStrategy()))
-                .addOnSuccessListener(
-                        new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unusedResult) {
-                                onDiscoveryStarted();
-                            }
-                        })
-                .addOnFailureListener(
-                        new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                mIsDiscovering = false;
-                                logW("startDiscovering() failed.", e);
-                                onDiscoveryFailed();
-                            }
-                        });
+                                @Override
+                                public void onEndpointLost(String endpointId) {
+                                    logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
+                                }
+                            },
+                            new DiscoveryOptions(getStrategy()))
+                    .addOnSuccessListener(
+                            new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unusedResult) {
+                                    onDiscoveryStarted();
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    mIsDiscovering = false;
+                                    logW("startDiscovering() failed.", e);
+                                    onDiscoveryFailed();
+                                }
+                            });
+        }
+        mEndpoint = new Endpoint(Integer.toString(mConnectionsClient.getInstanceId()), getName());
+
     }
 
-    /** Stops discovery. */
+    /**
+     * Stops discovery.
+     */
     protected void stopDiscovering() {
         mIsDiscovering = false;
         mConnectionsClient.stopDiscovery();
     }
 
-    /** Returns {@code true} if currently discovering. */
+    /**
+     * Returns {@code true} if currently discovering.
+     */
     protected boolean isDiscovering() {
         return mIsDiscovering;
     }
 
-    /** Called when discovery successfully starts. Override this method to act on the event. */
-    protected void onDiscoveryStarted() {}
+    /**
+     * Called when discovery successfully starts. Override this method to act on the event.
+     */
+    protected void onDiscoveryStarted() {
+    }
 
-    /** Called when discovery fails to start. Override this method to act on the event. */
-    protected void onDiscoveryFailed() {}
+    /**
+     * Called when discovery fails to start. Override this method to act on the event.
+     */
+    protected void onDiscoveryFailed() {
+    }
 
     /**
      * Called when a remote endpoint is discovered. To connect to the device, call {@link
      * #connectToEndpoint(Endpoint)}.
      */
-    protected void onEndpointDiscovered(Endpoint endpoint) {}
+    protected void onEndpointDiscovered(Endpoint endpoint) {
+    }
 
-    /** Disconnects from the given endpoint. */
+    /**
+     * Disconnects from the given endpoint.
+     */
     protected void disconnect(Endpoint endpoint) {
         mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
         mEstablishedConnections.remove(endpoint.getId());
     }
 
-    /** Disconnects from all currently connected endpoints. */
+    /**
+     * Disconnects from all currently connected endpoints.
+     */
     protected void disconnectFromAllEndpoints() {
         for (Endpoint endpoint : mEstablishedConnections.values()) {
             mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
@@ -361,7 +438,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         mEstablishedConnections.clear();
     }
 
-    /** Resets and clears all state in Nearby Connections. */
+    /**
+     * Resets and clears all state in Nearby Connections.
+     */
     protected void stopAllEndpoints() {
         mConnectionsClient.stopAllEndpoints();
         mIsAdvertising = false;
@@ -396,7 +475,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                         });
     }
 
-    /** Returns {@code true} if we're currently attempting to connect to another device. */
+    /**
+     * Returns {@code true} if we're currently attempting to connect to another device.
+     */
     protected final boolean isConnecting() {
         return mIsConnecting;
     }
@@ -424,20 +505,30 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
 
     }
 
-    /** Called when someone has connected to us. Override this method to act on the event. */
-    protected void onEndpointConnected(Endpoint endpoint) {}
+    /**
+     * Called when someone has connected to us. Override this method to act on the event.
+     */
+    protected void onEndpointConnected(Endpoint endpoint) {
+    }
 
-    /** Called when someone has disconnected. Override this method to act on the event. */
-    protected void onEndpointDisconnected(Endpoint endpoint) {}
+    /**
+     * Called when someone has disconnected. Override this method to act on the event.
+     */
+    protected void onEndpointDisconnected(Endpoint endpoint) {
+    }
 
-    /** Returns a list of currently connected endpoints. */
+    /**
+     * Returns a list of currently connected endpoints.
+     */
     protected Set<Endpoint> getDiscoveredEndpoints() {
         Set<Endpoint> endpoints = new HashSet<>();
         endpoints.addAll(mDiscoveredEndpoints.values());
         return endpoints;
     }
 
-    /** Returns a list of currently connected endpoints. */
+    /**
+     * Returns a list of currently connected endpoints.
+     */
     protected Set<Endpoint> getConnectedEndpoints() {
         Set<Endpoint> endpoints = new HashSet<>();
         endpoints.addAll(mEstablishedConnections.values());
@@ -484,17 +575,18 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * If the payload failed to send, then make sure to update the adapter to no longer show that user.
      *
      * @param endpoint The sender.
-     *
-     * */
+     */
     protected void updateAdapter(Endpoint endpoint) {
     }
+
     /**
      * Someone connected to us has sent us data. Override this method to act on the event.
      *
      * @param endpoint The sender.
-     * @param payload The data.
+     * @param payload  The data.
      */
-    protected void onReceive(Endpoint endpoint, Payload payload) {}
+    protected void onReceive(Endpoint endpoint, Payload payload) {
+    }
 
     /**
      * An optional hook to pool any permissions the app needs with the permissions ConnectionsActivity
@@ -506,7 +598,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         return REQUIRED_PERMISSIONS;
     }
 
-    /** Returns the client's name. Visible to others when connecting. */
+    /**
+     * Returns the client's name. Visible to others when connecting.
+     */
     protected abstract String getName();
 
     /**
@@ -521,36 +615,6 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
      * connections are possible at the same time, as well as how much bandwidth is available for use.
      */
     protected abstract Strategy getStrategy();
-
-    /**
-     * Transforms a {@link Status} into a English-readable message for logging.
-     *
-     * @param status The current status
-     * @return A readable String. eg. [404]File not found.
-     */
-    private static String toString(Status status) {
-        return String.format(
-                Locale.US,
-                "[%d]%s",
-                status.getStatusCode(),
-                status.getStatusMessage() != null
-                        ? status.getStatusMessage()
-                        : ConnectionsStatusCodes.getStatusCodeString(status.getStatusCode()));
-    }
-
-    /**
-     * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
-     * false}.
-     */
-    public static boolean hasPermissions(Context context, String... permissions) {
-        for (String permission : permissions) {
-            if (ContextCompat.checkSelfPermission(context, permission)
-                    != PackageManager.PERMISSION_GRANTED) {
-                return false;
-            }
-        }
-        return true;
-    }
 
     @CallSuper
     protected void logV(String msg) {
@@ -577,11 +641,14 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         Log.e(TAG, msg, e);
     }
 
-    /** Represents a device we can talk to. */
-    public static class Endpoint {
-        @NonNull private final String id;
-        @NonNull private final String name;
-
+    /**
+     * Represents a device we can talk to.
+     */
+    public static class Endpoint implements Comparable {
+        @NonNull
+        private final String id;
+        @NonNull
+        private final String name;
 
 
         private Endpoint(@NonNull String id, @NonNull String name) {
@@ -616,6 +683,17 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         @Override
         public String toString() {
             return String.format("Endpoint{id=%s, name=%s}", id, name);
+        }
+
+        @Override
+        public int compareTo(@NonNull Object o) {
+            if (o instanceof Endpoint) {
+                Endpoint e = (Endpoint) o;
+                int result = getName().compareTo(e.getName());
+                return result == 0 ? 1 : result;
+            } else {
+                return -1;
+            }
         }
     }
 
