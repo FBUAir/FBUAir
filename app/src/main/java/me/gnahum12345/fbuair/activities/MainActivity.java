@@ -43,9 +43,6 @@ public class MainActivity extends AppCompatActivity {
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
-    // name of preferences file
-    public static final String MyPREFERENCES = "MyPrefs";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +73,8 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-            }
+            public void onPageScrolled
+                    (int position, float positionOffset, int positionOffsetPixels) { }
 
             @Override
             public void onPageSelected(int position) {
@@ -95,8 +92,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) {
-            }
+            public void onPageScrollStateChanged(int state) { }
         });
 
         // Grab a reference to our bottom navigation view
@@ -126,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    // The example view pager which we use in combination with the bottom navigation view to make a smooth horizontal sliding transition.
     static class Adapter extends FragmentStatePagerAdapter {
 
         // The list of fragments which we are going to be displaying in the view pager.

@@ -14,14 +14,18 @@ import java.io.ByteArrayOutputStream;
 @Parcel
 public class User {
 
-    public String name;
-    public String organization;
-    public String phoneNumber;
-    public String email;
-    public Bitmap profileImage;
-    public String facebookURL;
-    public String instagramURL;
-    public String linkedInURL;
+    String name;
+    String organization;
+    String phoneNumber;
+    String email;
+    Bitmap profileImage;
+    String facebookURL;
+    String instagramURL;
+    String linkedInURL;
+
+    // empty constructor needed by the Parceler library
+    public User() {
+    }
 
     public String getName() { return name; }
 
@@ -117,10 +121,10 @@ public class User {
     }
 
     public static String bitmapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos=new  ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b=baos.toByteArray();
-        String temp=Base64.encodeToString(b, Base64.DEFAULT);
+        byte [] b = baos.toByteArray();
+        String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
 }

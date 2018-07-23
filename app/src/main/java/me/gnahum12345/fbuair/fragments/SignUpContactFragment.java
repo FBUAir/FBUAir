@@ -1,39 +1,39 @@
-package me.gnahum12345.fbuair.activities;
+package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.TextUtils;
-import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.models.User;
 
-public class SignUpContactActivity extends AppCompatActivity {
+import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
 
-    // profile image to access in next activity (bitmap too large to pass via intent)
-    public static Bitmap profileImage;
-    final int REQUEST_IMAGE_SELECT = 1;
-    final int REQUEST_IMAGE_CAPTURE = 2;
+public class SignUpContactFragment extends Fragment {
+    // views
     EditText etName;
     EditText etOrganization;
     EditText etPhoneNumber;
@@ -43,44 +43,46 @@ public class SignUpContactActivity extends AppCompatActivity {
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
-    // filename for preferences
-    String MyPREFERENCES = "MyPrefs";
+
+    Bitmap profileImage;
     Dialog dialog;
 
-    // validity checkers
-    public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
-    }
+    final int REQUEST_IMAGE_SELECT = 1;
+    final int REQUEST_IMAGE_CAPTURE = 2;
 
-    public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
+    // reference to Sign Up Activity
+    SignUpActivity activity;
+
+    public SignUpContactFragment() {
+        // Required empty public constructor
     }
 
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up_contact);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_sign_up_contact, container, false);
+    }
 
-        // if user already signed up, take them to discover page
-        SharedPreferences sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String current_user = sharedPreferences.getString("current_user", null);
-        if (current_user != null) {
-            Intent intent = new Intent(SignUpContactActivity.this, DiscoverActivity.class);
-            startActivity(intent);
-            finish();
-        }
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        // get reference to activity
+        activity = (SignUpActivity) getActivity();
+
+        // show toolbar
+        activity.getSupportActionBar().show();
 
         // get references to views
-        etName = findViewById(R.id.etName);
-        etOrganization = findViewById(R.id.etOrganization);
-        etPhoneNumber = findViewById(R.id.etPhone);
-        etEmail = findViewById(R.id.etEmail);
-        btNext = findViewById(R.id.btNext);
-        btnProfileImage = findViewById(R.id.btnProfileImage);
+        etName = view.findViewById(R.id.etName);
+        etOrganization = view.findViewById(R.id.etOrganization);
+        etPhoneNumber = view.findViewById(R.id.etPhone);
+        etEmail = view.findViewById(R.id.etEmail);
+        btNext = view.findViewById(R.id.btNext);
+        btnProfileImage = view.findViewById(R.id.btnProfileImage);
 
-        tvNameError = findViewById(R.id.tvNameError);
-        tvEmailError = findViewById(R.id.tvEmailError);
-        tvPhoneError = findViewById(R.id.tvPhoneError);
+        tvNameError = view.findViewById(R.id.tvNameError);
+        tvEmailError = view.findViewById(R.id.tvEmailError);
+        tvPhoneError = view.findViewById(R.id.tvPhoneError);
 
         // clear placeholder text in errors
         clearErrors();
@@ -98,16 +100,18 @@ public class SignUpContactActivity extends AppCompatActivity {
                 final String phone = etPhoneNumber.getText().toString();
                 final String email = etEmail.getText().toString();
                 if (profileImage == null) {
-                    profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.default_profile);
+                    profileImage = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.default_profile);
                 }
-                // go to next sign up page if contact info is valid. if not, shows appropriate error messages
+                // go to next sign up page if contact info is valid
                 if (isValidContact(name, phone, email)) {
-                    Intent intent = new Intent(getBaseContext(), SignUpSocialMediaActivity.class);
-                    intent.putExtra("name", name);
-                    intent.putExtra("organization", organization);
-                    intent.putExtra("phone", phone);
-                    intent.putExtra("email", email);
-                    startActivity(intent);
+                    User user = new User();
+                    user.setName(name);
+                    user.setOrganization(organization);
+                    user.setPhoneNumber(phone);
+                    user.setEmail(email);
+                    user.setProfileImage(profileImage);
+                    activity.launchSignUpSocialMedia(user);
                 }
             }
         });
@@ -118,6 +122,7 @@ public class SignUpContactActivity extends AppCompatActivity {
                 showDialog();
             }
         });
+        super.onViewCreated(view, savedInstanceState);
     }
 
     // checks if profile is valid before submitting. if not, shows error messages
@@ -158,22 +163,22 @@ public class SignUpContactActivity extends AppCompatActivity {
         try {
             // if user captured image
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
-                bitmap = (Bitmap) data.getExtras().get("data");
+                bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 // set image icon to newly selected image
                 btnProfileImage.setImageBitmap(bitmap);
                 profileImage = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
-                InputStream stream = this.getContentResolver().openInputStream(
-                        data.getData());
+                InputStream stream = activity.getContentResolver().openInputStream(
+                        Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 profileImage = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
-                stream.close();
+                if (stream != null) {
+                    stream.close();
+                }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -181,7 +186,7 @@ public class SignUpContactActivity extends AppCompatActivity {
 
     public void showDialog() {
         CharSequence options[] = new CharSequence[]{"Select from pictures", "Capture picture"};
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Edit profile picture");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
@@ -216,7 +221,7 @@ public class SignUpContactActivity extends AppCompatActivity {
 
     public void launchImageCapture() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(getPackageManager()) != null) {
+        if (intent.resolveActivity(activity.getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
     }

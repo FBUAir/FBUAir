@@ -1,4 +1,4 @@
-package me.gnahum12345.fbuair;
+package me.gnahum12345.fbuair.utilities;
 
 import org.json.JSONException;
 import org.json.JSONObject;

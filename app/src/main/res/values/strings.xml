@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">FBUAir</string>
+    <string name="app_name">Air</string>
+    <string name="app_motto">All your profiles in one place.</string>
+    <!-- used in adding social media sign up screens -->
+    <string name="social_media_instructions">Add some social media platforms.</string>
+    <string name="request_platforms_message">Missing your favorite platform? Request it here.</string>
     <!-- profile sign up error messages -->
     <string name="bad_email_error">Enter a valid email address.</string>
     <string name="bad_fb_url_error">Enter a valid Facebook profile URL.</string>

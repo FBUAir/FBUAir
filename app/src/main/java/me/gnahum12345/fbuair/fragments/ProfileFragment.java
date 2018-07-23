@@ -34,9 +34,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.MainActivity;
-import me.gnahum12345.fbuair.activities.SignUpContactActivity;
+import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
+
+import static me.gnahum12345.fbuair.utilities.Utility.CURRENT_USER_KEY;
+import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidFacebookUrl;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidInstagramUrl;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidLinkedInUrl;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
 
 public class ProfileFragment extends Fragment {
     // views
@@ -49,6 +56,7 @@ public class ProfileFragment extends Fragment {
     EditText etInstagramUrl;
     Button btEditProfile;
     Button btSubmit;
+    Button btDeleteProfile;
     ImageButton btnProfileImage;
 
     TextView tvNameError;
@@ -72,8 +80,8 @@ public class ProfileFragment extends Fragment {
     String linkedInUrl;
     String instagramUrl;
 
-    // reference to main mainActivity
-    Activity mainActivity;
+    // reference to main activity
+    Activity activity;
 
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
@@ -96,10 +104,10 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         // get reference to main activity
-        mainActivity = getActivity();
+        activity = getActivity();
 
         // get shared preferences
-        sharedpreferences = mainActivity.getSharedPreferences(MainActivity.MyPREFERENCES, Context.MODE_PRIVATE);
+        sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
 
         // get references to views
         etName = view.findViewById(R.id.etName);
@@ -118,6 +126,7 @@ public class ProfileFragment extends Fragment {
         tvLinkedInError = view.findViewById(R.id.tvLinkedInError);
         btEditProfile = view.findViewById(R.id.btEditProfile);
         btSubmit = view.findViewById(R.id.btSubmit);
+        btDeleteProfile = view.findViewById(R.id.btDeleteProfile);
 
         // clear placeholder text in errors
         clearErrors();
@@ -126,7 +135,7 @@ public class ProfileFragment extends Fragment {
         try {
             setUserInfo();
         } catch (JSONException e) {
-            Toast.makeText(mainActivity, "json exception", Toast.LENGTH_LONG).show();
+            Toast.makeText(activity, "json exception", Toast.LENGTH_LONG).show();
         }
 
         // add formatter to phone number field
@@ -145,6 +154,16 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View view) {
                 saveProfile();
+            }
+        });
+
+        btDeleteProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SharedPreferences.Editor editor = sharedpreferences.edit();
+                editor.putString(CURRENT_USER_KEY, null);
+                editor.commit();
+                startActivity(new Intent(activity, SignUpActivity.class));
             }
         });
     }
@@ -167,10 +186,10 @@ public class ProfileFragment extends Fragment {
             btnProfileImage.setImageBitmap(user.getProfileImage());
         }
         else {
-            // go to sign up mainActivity if no current user
-            Intent intent = new Intent(mainActivity, SignUpContactActivity.class);
+            // go to sign up activity if no current user
+            Intent intent = new Intent(activity, SignUpActivity.class);
             startActivity(intent);
-            mainActivity.finish();
+            activity.finish();
         }
     }
     // saves user profile to be edit text fields if valid
@@ -240,27 +259,6 @@ public class ProfileFragment extends Fragment {
         return valid;
     }
 
-    // validity checkers
-    public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
-    }
-
-    public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
-    }
-
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-    public static boolean isValidInstagramUrl(String instagramUrlString) {
-        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
-    }
-
-    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
-        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
-    }
-
     // clear all error messages
     void clearErrors() {
         tvNameError.setText("");
@@ -305,7 +303,7 @@ public class ProfileFragment extends Fragment {
                 profileImageBitmap = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
-                InputStream stream = mainActivity.getContentResolver().openInputStream(
+                InputStream stream = activity.getContentResolver().openInputStream(
                         data.getData());
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
@@ -326,7 +324,7 @@ public class ProfileFragment extends Fragment {
     public void showDialog() {
         CharSequence options[] = new CharSequence[] {"Select from pictures", "Capture picture"};
 
-        AlertDialog.Builder builder = new AlertDialog.Builder(mainActivity);
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("Edit profile picture");
         builder.setItems(options, new DialogInterface.OnClickListener() {
             @Override
@@ -361,7 +359,7 @@ public class ProfileFragment extends Fragment {
 
     public void launchImageCapture() {
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (intent.resolveActivity(mainActivity.getPackageManager()) != null) {
+        if (intent.resolveActivity(activity.getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
     }

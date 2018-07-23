@@ -1,23 +1,31 @@
-package me.gnahum12345.fbuair.activities;
+package me.gnahum12345.fbuair.fragments;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import org.json.JSONException;
+import org.parceler.Parcels;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
 
-public class SignUpSocialMediaActivity extends AppCompatActivity {
+import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+
+public class SignUpUrlFragment extends Fragment {
     // views
     EditText etFacebookUrl;
     EditText etInstagramUrl;
@@ -26,46 +34,51 @@ public class SignUpSocialMediaActivity extends AppCompatActivity {
     TextView tvInstagramError;
     TextView tvLinkedInError;
     Button btSubmit;
+    TextView tvSkip;
 
-    // user info
-    String name;
-    String email;
-    String organization;
-    String phone;
-    Bitmap profileImage;
+    // user's profile URLs
     String facebookUrl;
     String linkedInUrl;
     String instagramUrl;
 
-    // preferences filename
-    String MyPREFERENCES = "MyPrefs";
+    SignUpActivity activity;
+
+    public SignUpUrlFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up_social_media);
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_sign_up_url, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        // get reference to activity
+        activity = (SignUpActivity) getActivity();
 
         // get references to views
-        etFacebookUrl = findViewById(R.id.etFacebookUrl);
-        etLinkedInUrl = findViewById(R.id.etLinkedInUrl);
-        etInstagramUrl = findViewById(R.id.etInstagramUrl);
-        tvFacebookError = findViewById(R.id.tvFacebookError);
-        tvInstagramError = findViewById(R.id.tvInstagramError);
-        tvLinkedInError = findViewById(R.id.tvLinkedInError);
-        btSubmit = findViewById(R.id.btSubmit);
+        etFacebookUrl = view.findViewById(R.id.etFacebookUrl);
+        etLinkedInUrl = view.findViewById(R.id.etLinkedInUrl);
+        etInstagramUrl = view.findViewById(R.id.etInstagramUrl);
+        tvFacebookError = view.findViewById(R.id.tvFacebookError);
+        tvInstagramError = view.findViewById(R.id.tvInstagramError);
+        tvLinkedInError = view.findViewById(R.id.tvLinkedInError);
+        tvSkip = view.findViewById(R.id.tvSkip);
+        btSubmit = view.findViewById(R.id.btSubmit);
 
         // hide error messages
         clearErrors();
 
-        // get info from last screen
-        Intent intent = getIntent();
-        name = intent.getStringExtra("name");
-        organization = intent.getStringExtra("organization");
-        phone = intent.getStringExtra("phone");
-        email = intent.getStringExtra("email");
-        profileImage = SignUpContactActivity.profileImage;
-
-        // create and save profile if valid
+        // create and save profile if valid when user presses submit
         btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -77,14 +90,25 @@ public class SignUpSocialMediaActivity extends AppCompatActivity {
                     // create profile and go to discover page if valid. if not, shows appropriate error messages
                     if (isValidSocialMedia()) {
                         createProfile();
-                        Intent intent = new Intent(getBaseContext(), DiscoverActivity.class);
-                        startActivity(intent);
-                        finish();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
 
+            }
+        });
+        // create profile without social media if user presses skip
+        tvSkip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    facebookUrl = "";
+                    linkedInUrl = "";
+                    instagramUrl = "";
+                    createProfile();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
@@ -130,23 +154,24 @@ public class SignUpSocialMediaActivity extends AppCompatActivity {
         tvLinkedInError.setText("");
     }
 
-    // creates java object user from class vars and saves json of user to sharedpreferences
+    // creates java object user from class vars and saves user json object to sharedpreferences
     private void createProfile() throws JSONException {
-        User user = new User();
-        user.setName(name);
-        user.setOrganization(organization);
-        user.setPhoneNumber(phone);
-        user.setEmail(email);
-        user.setProfileImage(profileImage);
+        // get user info from last screen
+        User user = Parcels.unwrap(getArguments().getParcelable("user"));
+        // add social media fields to user
         user.setFacebookURL(facebookUrl);
         user.setInstagramURL(instagramUrl);
         user.setLinkedInURL(linkedInUrl);
 
         // add user json string to shared preferences for persistence
-        SharedPreferences sharedPreferences = getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("current_user", User.toJson(user).toString());
         editor.commit();
-    }
 
+        // launch Main Activity
+        Intent intent = new Intent(activity, MainActivity.class);
+        startActivity(intent);
+        activity.finish();
+    }
 }
