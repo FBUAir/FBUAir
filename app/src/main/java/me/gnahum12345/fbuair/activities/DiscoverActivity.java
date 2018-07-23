@@ -31,6 +31,7 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -71,14 +72,10 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
                 @Override
                 protected void onHold() {
                     logV("onHold");
-                    startRecording();
+//                    startRecording();
+                    sendToAll();
                 }
 
-                @Override
-                protected void onRelease() {
-                    logV("onRelease");
-                    stopRecording();
-                }
             };
     /**
      * A Handler that allows us to post back on to the UI thread. We use this to resume discovery
@@ -142,12 +139,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         return (T) collection.toArray()[new Random().nextInt(collection.size())];
     }
 
-    private void stopRecording() {
-        logV("stopPlaying()");
-
-    }
-
-    private void startRecording() {
+    private void sendToAll() {
         logV("startRecording()");
         String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
         send(Payload.fromBytes(senderInfo.getBytes()));
@@ -164,6 +156,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     @Override
     protected void updateAdapter(Endpoint endpoint) {
         deviceLst.remove(endpoint);
+        rvAdapter.remove(endpoint);
         rvAdapter.notifyDataSetChanged();
     }
 
@@ -191,7 +184,9 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         mSensorManager = (SensorManager) getSystemService(SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 
-        mName = generateRandomName();
+        ProfileUser profileUser = new ProfileUser(this);
+
+        mName = profileUser.getName() + getString(R.string.divider) + generateRandomName();
     }
 
     @Override
@@ -257,6 +252,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     protected void onDiscoveryFailed() {
         disconnectFromAllEndpoints();
         deviceLst.clear();
+        rvAdapter.clear();
         rvAdapter.notifyDataSetChanged();
 
         if (Constants.oneMoreTry()) {
@@ -268,7 +264,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
             Constants.reset();
             setState(State.UNKNOWN);
-            disconnectFromAllEndpoints();
+            // No longer needed because in State.UNKNOWN, we disconnect, stop Discovering and Advertising.
+//            disconnectFromAllEndpoints();
             setState(State.DISCOVERING);
             setState(State.ADVERTISING);
         }
@@ -279,7 +276,13 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
         // A connection to another device has been initiated! We'll accept the connection immediately.
         super.onConnectionInitiated(endpoint, connectionInfo);
-        acceptConnection(endpoint);
+
+        int result = endpoint.compareTo(mEndpoint);
+        if (result > 1) {
+            acceptConnection(endpoint);
+        } else {
+            rejectConnection(endpoint);
+        }
     }
 
     @Override
@@ -381,10 +384,9 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         switch (newState) {
             case DISCOVERING:
                 // do nothing and fall through to advertising.
-                disconnectFromAllEndpoints();
-                startDiscovering();
             case ADVERTISING:
                 disconnectFromAllEndpoints();
+                startDiscovering();
                 startAdvertising();
                 logD("I am advertising and discovering at the same time.");
                 break;

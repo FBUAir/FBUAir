@@ -29,8 +29,10 @@ import com.google.android.gms.nearby.connection.Payload;
 import com.google.android.gms.nearby.connection.PayloadCallback;
 import com.google.android.gms.nearby.connection.PayloadTransferUpdate;
 import com.google.android.gms.nearby.connection.Strategy;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -91,6 +93,11 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
 
     /** True if we are advertising. */
     private boolean mIsAdvertising = false;
+
+    /** My endpoint is to optimistically connect devices and
+     * make them stable. */
+    Endpoint mEndpoint = new Endpoint("4DS1", getName());   // TODO change to be a resonable id. (Perferably the actual id)
+
 
     /** Callbacks for connections to other devices. */
     private final ConnectionLifecycleCallback mConnectionLifecycleCallback =
@@ -322,6 +329,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
                                 onDiscoveryFailed();
                             }
                         });
+
+        mEndpoint = new Endpoint(Integer.toString(mConnectionsClient.getInstanceId()), getName());
+
     }
 
     /** Stops discovery. */
@@ -578,10 +588,9 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
     }
 
     /** Represents a device we can talk to. */
-    public static class Endpoint {
+    public static class Endpoint implements Comparable {
         @NonNull private final String id;
         @NonNull private final String name;
-
 
 
         private Endpoint(@NonNull String id, @NonNull String name) {
@@ -616,6 +625,17 @@ public abstract class ConnectionsActivity extends AppCompatActivity {
         @Override
         public String toString() {
             return String.format("Endpoint{id=%s, name=%s}", id, name);
+        }
+
+        @Override
+        public int compareTo(@NonNull Object o) {
+            if (o instanceof Endpoint) {
+                Endpoint e = (Endpoint) o;
+                int result = getName().compareTo(e.getName());
+                return result == 0 ? 1 : result;
+            } else {
+                return -1;
+            }
         }
     }
 

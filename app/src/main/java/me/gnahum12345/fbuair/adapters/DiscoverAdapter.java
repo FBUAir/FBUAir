@@ -36,10 +36,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
 
     public DiscoverAdapter(Set<ConnectionsActivity.Endpoint> devices) {
+        // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E RANDOM).
         mDevices = new TreeMap<>(new Comparator<ConnectionsActivity.Endpoint>() {
             @Override
             public int compare(ConnectionsActivity.Endpoint endpoint, ConnectionsActivity.Endpoint t1) {
-                return endpoint.getName().compareTo(t1.getName());
+                return endpoint.compareTo(t1);
             }
         });
 
