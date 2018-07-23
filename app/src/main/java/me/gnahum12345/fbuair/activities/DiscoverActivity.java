@@ -31,7 +31,6 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Random;
 
@@ -63,7 +62,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
      * sample does exactly one thing, so we hardcode the ID.
      */
     private static final String SERVICE_ID =
-            "com.google.location.nearby.apps.walkietalkie.manual.SERVICE_ID";
+            // "com.google.location.nearby.apps.walkietalkie.manual.SERVICE_ID"; // TODO uncomment this code for more debugging.
+            "com.fbuair.apps.air.discovery.automatic.SERVICE_ID";
     /**
      * Listens to holding/releasing the volume rocker.
      */
@@ -243,8 +243,16 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     @Override
     protected void onEndpointDiscovered(Endpoint endpoint) {
         // We found an advertiser!
-        if (!isConnecting()) {
+        logV("I discovered a new endpoint\n" +
+                String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
+
+        int result = endpoint.compareTo(mEndpoint);
+        logV(String.format("Comparing the 2 endpoints: %d", result));
+
+        if (result > 0) {
             connectToEndpoint(endpoint);
+            logV("I am connecting to a new endpoint\n" +
+                    String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
         }
     }
 
@@ -276,13 +284,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
         // A connection to another device has been initiated! We'll accept the connection immediately.
         super.onConnectionInitiated(endpoint, connectionInfo);
-
-        int result = endpoint.compareTo(mEndpoint);
-        if (result > 1) {
-            acceptConnection(endpoint);
-        } else {
-            rejectConnection(endpoint);
-        }
+        acceptConnection(endpoint);
     }
 
     @Override
@@ -293,7 +295,8 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         sendProfileUser(endpoint);
         rvAdapter.add(endpoint);
         deviceLst.add(endpoint);
-        rvAdapter.notifyItemChanged(deviceLst.size() - 1);
+        rvAdapter.notifyDataSetChanged(); //TODO make this more concrete.
+//        rvAdapter.notifyItemChanged(deviceLst.size() - 1);
         setState(State.CONNECTED);
     }
 
@@ -303,7 +306,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
         send(payload, endpoint);
     }
-
 
 
     @Override
@@ -393,12 +395,13 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             case CONNECTED:
                 removeCallbacks(mDiscoverRunnable);
                 logD("I connected but I'm still discovering and advertising");
-                if (isDiscovering()) {
-                    stopDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
+                if (!isDiscovering()) {
+                    startDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
                 }
                 if (!isAdvertising()) {
                     startAdvertising();
                 }
+
                 break;
             case UNKNOWN:
                 stopAllEndpoints();
@@ -425,10 +428,14 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
 
         double gForce = Math.sqrt(gX * gX + gY * gY + gZ * gZ);
 
-        if (gForce > SHAKE_THRESHOLD_GRAVITY && getState() == State.DISCOVERING) {
+        if (gForce > SHAKE_THRESHOLD_GRAVITY) {
             logD("Device shaken");
             vibrate();
-            setState(State.ADVERTISING);
+            logV("isAdvertising: " + isAdvertising());
+            logV("isDiscovering: " + isDiscovering());
+            logV("isConnecting: " + isConnecting());
+
+//            setState(State.ADVERTISING);
         }
     }
 
@@ -468,6 +475,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
             try {
                 user = User.fromString(content);
                 userMade = true;
+                logV("userMade = true");
             } catch (JSONException e) {
                 e.printStackTrace();
                 logE("User cannot be created", e);
@@ -612,7 +620,7 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
     }
 
     private void appendToLogs(CharSequence msg) {
-//        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**

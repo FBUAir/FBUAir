@@ -114,7 +114,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
     private String parseName(String name) {
-        return name.split(mContext.getString(R.string.divider))[0];
+        String divider = mContext.getString(R.string.divider);
+        if (divider == null || divider.isEmpty()) {
+            return name;
+        } else {
+            return name.split(divider)[0];
+        }
     }
 
 
