@@ -40,7 +40,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         mDevices = new TreeMap<>(new Comparator<ConnectionsActivity.Endpoint>() {
             @Override
             public int compare(ConnectionsActivity.Endpoint endpoint, ConnectionsActivity.Endpoint t1) {
-                return endpoint.compareTo(t1);
+                return parseName(endpoint.getName()).compareTo(parseName(t1.getName()));
             }
         });
 
