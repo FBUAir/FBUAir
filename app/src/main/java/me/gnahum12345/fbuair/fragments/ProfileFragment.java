@@ -240,10 +240,6 @@ public class ProfileFragment extends Fragment {
             tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
             valid = false;
         }
-        if (phone.isEmpty()) {
-            tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
-            valid = false;
-        }
         if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
             tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
             valid = false;

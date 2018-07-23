@@ -1,8 +1,10 @@
 package me.gnahum12345.fbuair.utilities;
 
+import android.app.Activity;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.util.Patterns;
+import android.view.inputmethod.InputMethodManager;
 
 public class Utility {
     // shared preferences keys
@@ -26,5 +28,17 @@ public class Utility {
 
     public static boolean isValidLinkedInUrl(String linkedInUrlString) {
         return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
+    }
+
+    // hides keyboard
+    public static void hideSoftKeyboard(Activity activity) {
+        if (activity.getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager =
+                    (InputMethodManager) activity.getSystemService(
+                            Activity.INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(
+                    activity.getCurrentFocus().getWindowToken(), 0);
+        }
+
     }
 }

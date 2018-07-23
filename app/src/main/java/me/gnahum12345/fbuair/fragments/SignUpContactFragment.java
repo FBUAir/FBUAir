@@ -129,7 +129,7 @@ public class SignUpContactFragment extends Fragment {
     public boolean isValidContact(String name, String phone, String email) {
         // clear previous errors
         clearErrors();
-        // check fields and set appropriate error messages
+        // check fields and show appropriate error messages
         boolean valid = true;
         if (name.isEmpty()) {
             tvNameError.setText(getResources().getString(R.string.no_name_error));
@@ -139,12 +139,8 @@ public class SignUpContactFragment extends Fragment {
             tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
-        if (!isValidPhoneNumber(phone)) {
+        if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
             tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
-            valid = false;
-        }
-        if (phone.isEmpty()) {
-            tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
             valid = false;
         }
         return valid;
