@@ -6,111 +6,444 @@
     android:layout_height="match_parent"
     tools:context=".fragments.SignUpSocialMediaFragment">
 
-    <EditText
-        android:id="@+id/etFacebookUrl"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tvFacebookError"
-        android:layout_marginBottom="10dp"
-        android:layout_toEndOf="@+id/ivFacebook"
-        android:ems="10"
-        android:hint="Facebook Profile URL"
-        android:inputType="textUri"
-        android:textColor="@android:color/black" />
-
     <TextView
-        android:id="@+id/tvFacebookError"
+        android:id="@+id/tvInstructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="10dp"
-        android:text="fb url error"
-        android:textSize="12sp"
-        android:textColor="@android:color/holo_red_dark" />
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="5dp"
+        android:text="@string/social_media_instructions"
+        android:textSize="16sp" />
 
-    <ImageView
-        android:id="@+id/ivFacebook"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvFacebookError"
-        app:srcCompat="@drawable/facebook_icon" />
-
-    <EditText
-        android:id="@+id/etLinkedInUrl"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/etFacebookUrl"
-        android:layout_below="@+id/tvLinkedInError"
-        android:layout_marginBottom="10dp"
-        android:ems="10"
-        android:hint="LinkedIn Profile URL"
-        android:inputType="textUri"
-        android:textColor="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tvLinkedInError"
+    <TableLayout
+        android:id="@+id/tlIcons"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etFacebookUrl"
-        android:text="linkedin url error"
-        android:textColor="@android:color/holo_red_dark"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/tvInstructions">
+
+        <TableRow>
+            <LinearLayout
+                android:id="@+id/llFacebook"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivFacebook"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Facebook"
+                    android:src="@drawable/ic_facebook" />
+
+                <TextView
+                    android:id="@+id/tvFacebook"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Facebook" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llInstagram"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivInstagram"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Instagram"
+                    android:src="@drawable/ic_instagram" />
+
+                <TextView
+                    android:id="@+id/tvInstagram"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Instagram" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llTwitter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivTwitter"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Twitter"
+                    android:src="@drawable/ic_twitter" />
+
+                <TextView
+                    android:id="@+id/tvTwitter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Twitter" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSnapchat"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivSnapchat"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Snapchat"
+                    android:src="@drawable/ic_snapchat" />
+
+                <TextView
+                    android:id="@+id/tvSnapchat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Snapchat" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow>
+
+            <LinearLayout
+                android:id="@+id/llLinkedIn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivLinkedIn"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="LinkedIn"
+                    android:src="@drawable/ic_linkedin" />
+
+                <TextView
+                    android:id="@+id/tvLinkedIn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="LinkedIn" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llGoogle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivGoogle"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Google"
+                    android:src="@drawable/ic_google" />
+
+                <TextView
+                    android:id="@+id/tvGoogle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Google" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llWhatsApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivWhatsApp"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="WhatsApp"
+                    android:src="@drawable/ic_whatsapp" />
+
+                <TextView
+                    android:id="@+id/tvWhatsApp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="WhatsApp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llYoutube"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivYoutube"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Youtube"
+                    android:src="@drawable/ic_youtube" />
+
+                <TextView
+                    android:id="@+id/tvYoutube"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Youtube" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow>
+
+            <LinearLayout
+                android:id="@+id/llReddit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivReddit"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Reddit"
+                    android:src="@drawable/ic_reddit" />
+
+                <TextView
+                    android:id="@+id/tvReddit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Reddit" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llPinterest"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivPinterest"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Pinterest"
+                    android:src="@drawable/ic_pinterest" />
+
+                <TextView
+                    android:id="@+id/tvPinterest"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Pinterest" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llTumblr"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivTumblr"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Tumblr"
+                    android:src="@drawable/ic_tumblr" />
+
+                <TextView
+                    android:id="@+id/tvTumblr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Tumblr" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llSoundcloud"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivSoundcloud"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Soundcloud"
+                    android:src="@drawable/ic_soundcloud" />
+
+                <TextView
+                    android:id="@+id/tvSoundcloud"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Soundcloud" />
+
+            </LinearLayout>
+
+        </TableRow>
+
+        <TableRow>
+
+            <LinearLayout
+                android:id="@+id/llGithub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivGithub"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center"
+                    android:contentDescription="Github"
+                    android:src="@drawable/ic_github" />
+
+                <TextView
+                    android:id="@+id/tvGithub"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="Github" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llDeviantart"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivDeviantart"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Deviantart"
+                    android:src="@drawable/ic_deviantart" />
+
+                <TextView
+                    android:id="@+id/tvDeviantart"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Deviantart" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llDribbble"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivDribbble"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Dribbble"
+                    android:src="@drawable/ic_dribbble" />
+
+                <TextView
+                    android:id="@+id/tvDribbble"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Dribbble" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/llBehance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_margin="5dp">
+
+                <ImageView
+                    android:id="@+id/ivBehance"
+                    android:layout_width="75dp"
+                    android:layout_height="75dp"
+                    android:layout_gravity="center_horizontal"
+                    android:contentDescription="Behance"
+                    android:src="@drawable/ic_behance" />
+
+                <TextView
+                    android:id="@+id/tvBehance"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:text="Behance" />
+
+            </LinearLayout>
+        </TableRow>
+    </TableLayout>
+
+    <TextView
+        android:id="@+id/tvRequestPlatform"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/btNext"
+        android:layout_centerHorizontal="true"
+        android:text="@string/request_platforms_message"
         android:textSize="12sp" />
-
-    <ImageView
-        android:id="@+id/ivLinkedIn"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvLinkedInError"
-        app:srcCompat="@drawable/linked_in_logo" />
-
-    <EditText
-        android:id="@+id/etInstagramUrl"
-        android:layout_width="266dp"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/etFacebookUrl"
-        android:layout_below="@+id/tvInstagramError"
-        android:layout_marginStart="-1dp"
-        android:ems="10"
-        android:hint="Instagram Profile URL"
-        android:inputType="textUri"
-        android:textColor="@android:color/black" />
-
-    <TextView
-        android:id="@+id/tvInstagramError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etLinkedInUrl"
-        android:text="instagram url error"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="12sp" />
-
-    <ImageView
-        android:id="@+id/ivInstagram"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvInstagramError"
-        app:srcCompat="@drawable/instagram_logo" />
-
-    <Button
-        android:id="@+id/btSubmit"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:text="Create Profile" />
 
     <TextView
         android:id="@+id/tvSkip"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/btSubmit"
+        android:layout_alignBaseline="@+id/btNext"
         android:layout_alignParentStart="true"
+        android:layout_gravity="center_vertical"
         android:text="SKIP" />
 
-
+    <Button
+        android:id="@+id/btNext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:text="Next" />
 </RelativeLayout>

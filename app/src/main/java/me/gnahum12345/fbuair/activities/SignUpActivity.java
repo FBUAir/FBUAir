@@ -3,8 +3,6 @@ package me.gnahum12345.fbuair.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -17,9 +15,12 @@ import android.support.v7.widget.Toolbar;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
+
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
+import me.gnahum12345.fbuair.fragments.SignUpUrlFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.models.User;
 
@@ -30,6 +31,7 @@ public class SignUpActivity extends AppCompatActivity {
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
     SignUpSocialMediaFragment signUpSocialMediaFragment;
+    SignUpUrlFragment signUpUrlFragment;
     WelcomeFragment welcomeFragment;
 
     // menu items
@@ -53,13 +55,14 @@ public class SignUpActivity extends AppCompatActivity {
             finish();
         }
 
-        // get reference to and configure toolbar
+        // configure toolbar
         configureToolbar();
 
-        // initialize first two fragments
+        // initialize fragments
         welcomeFragment = new WelcomeFragment();
         signUpContactFragment = new SignUpContactFragment();
         signUpSocialMediaFragment = new SignUpSocialMediaFragment();
+        signUpUrlFragment = new SignUpUrlFragment();
 
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
@@ -100,5 +103,14 @@ public class SignUpActivity extends AppCompatActivity {
         userBundle.putParcelable("user", Parcels.wrap(user));
         signUpSocialMediaFragment.setArguments(userBundle);
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
+    }
+
+    // starts fragment to add urls for selected platforms. passes in info from previous page
+    public void launchSignUpUrl(User user, ArrayList<String> platforms) {
+        Bundle userBundle = new Bundle();
+        userBundle.putParcelable("user", Parcels.wrap(user));
+        userBundle.putStringArrayList("user", platforms);
+        signUpSocialMediaFragment.setArguments(userBundle);
+        startFragment(signUpSocialMediaFragment, "signUpUrlFragment");
     }
 }
