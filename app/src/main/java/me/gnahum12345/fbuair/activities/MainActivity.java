@@ -2,8 +2,7 @@ package me.gnahum12345.fbuair.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.databinding.adapters.SearchViewBindingAdapter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -14,10 +13,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.Toolbar;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,11 +25,13 @@ import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener{
 
-    // references to bottom navigation bar and toolbar
+    // views
     BottomNavigationView bottomNavigation;
     android.support.v7.widget.Toolbar toolbar;
+    SearchView svSearch;
 
     // fragments
     DiscoverFragment discoverFragment;
@@ -131,12 +130,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        // Get the intent, verify the action and get the query
-        Intent intent = getIntent();
-        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
-            String query = intent.getStringExtra(SearchManager.QUERY);
-            //searchHistory(query);
-        }
+        // associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        svSearch = findViewById(R.id.svSearch);
+        svSearch.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        svSearch.setSubmitButtonEnabled(true);
+        svSearch.setOnQueryTextListener(this);
     }
 
     static class Adapter extends FragmentStatePagerAdapter {
@@ -163,5 +164,16 @@ public class MainActivity extends AppCompatActivity {
 
     void clearMenus() {
         historyMenu.setVisibility(View.GONE);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        historyFragment.historyAdapter.getFilter().filter(query);
+        return true;
     }
 }

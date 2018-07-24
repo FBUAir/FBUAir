@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -34,7 +36,7 @@ public class HistoryFragment extends Fragment {
         // Required empty public constructor
     }
 
-    HistoryAdapter historyAdapter;
+    public HistoryAdapter historyAdapter;
     ArrayList<User> history;
     RecyclerView rvUser;
     SharedPreferences sharedpreferences;

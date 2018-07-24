@@ -10,11 +10,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.parceler.Parcels;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,13 +26,18 @@ import me.gnahum12345.fbuair.activities.DetailsActivity;
 import me.gnahum12345.fbuair.models.User;
 
 
-public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder> {
+public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder>
+        implements Filterable {
 
-    private List<User> mContacts;
-    private Context mContext;
+    private List<User> history;
+    private List<User> filteredHistory;
+    private HistoryFilter historyFilter;
+    private Context context;
 
-    public HistoryAdapter(List<User> contacts) {
-        mContacts = contacts;
+    public HistoryAdapter(List<User> history) {
+        this.history = history;
+        this.filteredHistory = history;
+        getFilter();
     }
 
     //TODO ADD TIMESTAMPS
@@ -44,10 +52,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int i) {
-        mContext = holder.getContext();
-        LayoutInflater inflater = LayoutInflater.from(mContext);
-
-
+        context = holder.getContext();
+        LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.history_item, holder, false);
         // return a new viewHolder,
         return new ViewHolder(contactView);
@@ -55,19 +61,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        User contact = mContacts.get(position);
+        User contact = filteredHistory.get(position);
         viewHolder.tvName.setText(contact.getName());
         viewHolder.ivProfileImage.setImageBitmap(contact.getProfileImage());
     }
 
     public void clear() {
-        mContacts.clear();
+        filteredHistory.clear();
         notifyDataSetChanged();
     }
 
     @Override
     public int getItemCount() {
-        return mContacts.size();
+        return filteredHistory.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -78,24 +84,65 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         public ViewHolder(@NonNull View view) {
             super(view);
-            tvName = (TextView) view.findViewById(R.id.tvName);
-            tvTime = (TextView) view.findViewById(R.id.tvTime);
-            ivProfileImage = (ImageView) view.findViewById(R.id.ivProfileImage);
+            tvName = view.findViewById(R.id.tvName);
+            tvTime = view.findViewById(R.id.tvTime);
+            ivProfileImage = view.findViewById(R.id.ivProfileImage);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Log.d("go to details", "went to details");
                     int position = getAdapterPosition();
-                    User user = mContacts.get(position);
-                    Intent i = new Intent(mContext, DetailsActivity.class);
+                    User user = history.get(position);
+                    Intent i = new Intent(context, DetailsActivity.class);
                     i.putExtra(User.class.getSimpleName(), Parcels.wrap(user));
-                    mContext.startActivity(i);
+                    context.startActivity(i);
 
                 }
             });
         }
 
+    }
+
+    // get filter
+    @Override
+    public Filter getFilter() {
+        if (historyFilter == null) {
+            historyFilter = new HistoryFilter();
+        }
+        return historyFilter;
+    }
+
+    // filter history for searching
+    private class HistoryFilter extends Filter {
+
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            FilterResults filterResults = new FilterResults();
+            if (constraint!=null && constraint.length()>0) {
+                ArrayList<User> filteredList = new ArrayList<>();
+                // search content in history
+                for (User user : history) {
+                    if (user.getName().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        filteredList.add(user);
+                    }
+                }
+                filterResults.count = filteredList.size();
+                filterResults.values = filteredList;
+            } else {
+                filterResults.count = history.size();
+                filterResults.values = history;
+            }
+            return filterResults;
+        }
+
+        // notify ui of filtering
+        @SuppressWarnings("unchecked")
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            filteredHistory = (ArrayList<User>) results.values;
+            notifyDataSetChanged();
+        }
     }
 
 }
