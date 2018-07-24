@@ -24,6 +24,9 @@ import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidFacebookUrl;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidInstagramUrl;
+import static me.gnahum12345.fbuair.utilities.Utility.isValidLinkedInUrl;
 
 public class SignUpUrlFragment extends Fragment {
     // views
@@ -86,29 +89,20 @@ public class SignUpUrlFragment extends Fragment {
                 facebookUrl = etFacebookUrl.getText().toString();
                 linkedInUrl = etLinkedInUrl.getText().toString();
                 instagramUrl = etInstagramUrl.getText().toString();
-                try {
-                    // create profile and go to discover page if valid. if not, shows appropriate error messages
-                    if (isValidSocialMedia()) {
-                        createProfile();
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                // create profile and go to discover page if valid. if not, shows appropriate error messages
+                if (isValidSocialMedia()) {
+                    createProfile();
                 }
-
             }
         });
         // create profile without social media if user presses skip
         tvSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                try {
-                    facebookUrl = "";
-                    linkedInUrl = "";
-                    instagramUrl = "";
-                    createProfile();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
+                facebookUrl = "";
+                linkedInUrl = "";
+                instagramUrl = "";
+                createProfile();
             }
         });
     }
@@ -134,19 +128,6 @@ public class SignUpUrlFragment extends Fragment {
         return valid;
     }
 
-    // checks for valid profile URLs
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-    public static boolean isValidInstagramUrl(String instagramUrlString) {
-        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
-    }
-
-    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
-        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
-    }
-
     // clears error textviews
     void clearErrors() {
         tvFacebookError.setText("");
@@ -155,7 +136,7 @@ public class SignUpUrlFragment extends Fragment {
     }
 
     // creates java object user from class vars and saves user json object to sharedpreferences
-    private void createProfile() throws JSONException {
+    private void createProfile() {
         // get user info from last screen
         User user;
         if (getArguments() != null) {

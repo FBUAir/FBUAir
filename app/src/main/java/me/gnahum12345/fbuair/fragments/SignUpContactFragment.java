@@ -103,7 +103,7 @@ public class SignUpContactFragment extends Fragment {
                     profileImage = BitmapFactory.decodeResource(getResources(),
                             R.drawable.default_profile);
                 }
-                // go to next sign up page if contact info is valid
+                // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
                     User user = new User();
                     user.setName(name);

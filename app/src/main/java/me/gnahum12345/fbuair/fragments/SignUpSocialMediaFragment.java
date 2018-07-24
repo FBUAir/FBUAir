@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import org.parceler.Parcels;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
@@ -62,7 +63,7 @@ public class SignUpSocialMediaFragment extends Fragment {
         binding.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                activity.launchSignUpUrl(user, new ArrayList<String>());
+                activity.launchMainActivity(user);
             }
         });
 

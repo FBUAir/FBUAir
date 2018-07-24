@@ -106,15 +106,6 @@ public class SignUpActivity extends AppCompatActivity {
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
     }
 
-    // starts fragment to add urls for selected platforms. passes in info from previous page
-    public void launchSignUpUrl(User user, ArrayList<String> platforms) {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", Parcels.wrap(user));
-        userBundle.putStringArrayList("platforms", platforms);
-        signUpUrlFragment.setArguments(userBundle);
-        startFragment(signUpUrlFragment, "signUpUrlFragment");
-    }
-
     // saves user profile and starts main activity when sign up is finished
     public void launchMainActivity(User user) {
         // add user json string to shared preferences for persistence

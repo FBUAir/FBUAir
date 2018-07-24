@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import org.parceler.Parcels;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,8 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.DetailsActivity;
 import me.gnahum12345.fbuair.models.User;
+import static me.gnahum12345.fbuair.utilities.Utility.dateFormatter;
+import static me.gnahum12345.fbuair.utilities.Utility.getRelativeTimeAgo;
 
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder>
@@ -40,15 +43,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         getFilter();
     }
 
-    //TODO ADD TIMESTAMPS
-    public static String getRelativeTimeAgo(Date date) {
-        String relativeDate;
-        long dateMillis = date.getTime();
-        relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
-                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
-        return relativeDate;
-    }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int i) {
@@ -61,9 +55,18 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        User contact = filteredHistory.get(position);
-        viewHolder.tvName.setText(contact.getName());
-        viewHolder.ivProfileImage.setImageBitmap(contact.getProfileImage());
+        User user = filteredHistory.get(position);
+        viewHolder.tvName.setText(user.getName());
+        viewHolder.ivProfileImage.setImageBitmap(user.getProfileImage());
+        String relativeTimeString;
+        try {
+            relativeTimeString =
+                    getRelativeTimeAgo(dateFormatter.parse(user.getTimeAddedToHistory()));
+        } catch (ParseException e) {
+            e.printStackTrace();
+            relativeTimeString  = "";
+        }
+        viewHolder.tvTime.setText(relativeTimeString);
     }
 
     public void clear() {
@@ -97,7 +100,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                     Intent i = new Intent(context, DetailsActivity.class);
                     i.putExtra(User.class.getSimpleName(), Parcels.wrap(user));
                     context.startActivity(i);
-
                 }
             });
         }

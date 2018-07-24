@@ -23,6 +23,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -47,7 +48,6 @@ public class DetailsActivity extends AppCompatActivity {
     final static int EMAIL_CONFLICT = 3;
     // request codes for permissions results
     final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
-    // views
     // user info views
     ImageView ivProfileImage;
     TextView tvName;
@@ -82,8 +82,6 @@ public class DetailsActivity extends AppCompatActivity {
     String[] rawContactId;
     // whether user granted Contacts permissions
     boolean permissionGranted;
-    // whether user checked "Never ask again". Disables Add Contact functionality
-    boolean permissionDeniedForever = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,12 +115,12 @@ public class DetailsActivity extends AppCompatActivity {
                 == PackageManager.PERMISSION_GRANTED;
 
         // display selected user's info
-        user = (User) Parcels.unwrap(getIntent().getParcelableExtra(User.class.getSimpleName()));
+        user = Parcels.unwrap(getIntent().getParcelableExtra(User.class.getSimpleName()));
         setInfo();
 
 
         // CLICK HANDLERS
-        // add contact when add contact button is clicked
+        // add contact when add contact button is clicked if they have required permissions
         btAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -134,10 +132,6 @@ public class DetailsActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                }
-                // if user is missing permission and opted to not show Permissions request again, show them message to go to Settings to change
-                else if (permissionDeniedForever) {
-                    showPermissionDeniedForeverDialog();
                 }
             }
         });
@@ -259,9 +253,9 @@ public class DetailsActivity extends AppCompatActivity {
         if (!permissionGranted) {
             boolean showRationale = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS) ||
                     shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS);
-            // user checked "never ask again", disable add contact functionality
+            // user checked "never ask again", show them message to go to Settings to change
             if (!showRationale) {
-                permissionDeniedForever = true;
+                showPermissionDeniedForeverDialog();
             }
             // user denied but didn't press press "never ask again". show rationale and request permission again
             else {

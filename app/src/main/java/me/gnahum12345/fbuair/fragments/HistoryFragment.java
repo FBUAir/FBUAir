@@ -14,20 +14,23 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Filter;
-import android.widget.Filterable;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utilities.FakeUsers;
+
+import static me.gnahum12345.fbuair.utilities.Utility.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utilities.Utility.dateFormatter;
 
 
 public class HistoryFragment extends Fragment {
@@ -81,15 +84,18 @@ public class HistoryFragment extends Fragment {
         rvUser.setLayoutManager(new LinearLayoutManager(activity));
         rvUser.setAdapter(historyAdapter);
 
-        // add fake history to shared preferences
+        // clear old history and add fake users to history
+        clearHistory();
         FakeUsers fakeUsers = new FakeUsers();
-        JSONArray fakeHistory;
+        JSONObject[] fakeHistory;
         try {
-            fakeHistory = new JSONArray(new JSONObject[]
-                    {fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
+            fakeHistory = new JSONObject[] {
+                    fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
                             fakeUsers.jsonUser4, fakeUsers.jsonUser5, fakeUsers.jsonUser6,
-                            fakeUsers.jsonUser7, fakeUsers.jsonUser8});
-            addHistory(fakeHistory.toString());
+                            fakeUsers.jsonUser7, fakeUsers.jsonUser8};
+            for (JSONObject jsonUser : fakeHistory) {
+                addToHistory(User.fromJson(jsonUser));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -98,29 +104,61 @@ public class HistoryFragment extends Fragment {
         populateHistory();
     }
 
-    // commits given history JSON array string to shared preferences
-    public void addHistory(String historyJSONString) {
-        sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString("history", historyJSONString);
-        editor.commit();
-    }
-
-    // populates recycler view with history from shared preferences
-    public void populateHistory() {
-        // get history from shared preferences
-        sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        JSONArray historyJSONArray;
-        // add each user from the history to the dataset
+    // adds a given user to history, noting the time (to be called right after sharing data)
+    void addToHistory(User user) {
+        sharedpreferences =
+                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        JSONArray historyJSONArray = getHistory();
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         try {
-            historyJSONArray = new JSONArray(sharedpreferences.getString("history", null));
-            for (int i = 0; i < historyJSONArray.length(); i++) {
-                User user = User.fromJson(historyJSONArray.getJSONObject(i));
-                history.add(user);
-                historyAdapter.notifyItemInserted(history.size() - 1);
-            }
+            historyJSONArray.put(User.toJson(user));
         } catch (JSONException e) {
             e.printStackTrace();
         }
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(HISTORY_KEY, historyJSONArray.toString());
+        editor.commit();
+    }
+
+    // gets history from shared preferences. return empty json array if no history has been added
+    JSONArray getHistory() {
+        sharedpreferences =
+                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        String historyArrayString = sharedpreferences.getString(HISTORY_KEY, null);
+        if (historyArrayString == null) {
+            return new JSONArray();
+        }
+        else {
+            try {
+                return new JSONArray(historyArrayString);
+            } catch (JSONException e) {
+                return new JSONArray();
+            }
+        }
+    }
+
+
+    // populates recycler view with history from shared preferences
+    public void populateHistory() {
+        JSONArray historyJSONArray = getHistory();
+        for (int i = 0; i < historyJSONArray.length(); i++) {
+            User user = null;
+            try {
+                user = User.fromJson(historyJSONArray.getJSONObject(i));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            history.add(user);
+            historyAdapter.notifyItemInserted(history.size() - 1);
+        }
+    }
+
+    // clears history
+    void clearHistory() {
+        sharedpreferences =
+                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putString(HISTORY_KEY, null);
+        editor.commit();
     }
 }

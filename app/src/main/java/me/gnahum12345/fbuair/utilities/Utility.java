@@ -3,13 +3,19 @@ package me.gnahum12345.fbuair.utilities;
 import android.app.Activity;
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Utility {
     // shared preferences keys
     public static final String PREFERENCES_FILE_NAME_KEY = "MyPrefs";
     public static final String CURRENT_USER_KEY = "current_user";
+    public static final String HISTORY_KEY = "history";
 
     // validity checkers for sign up
     public static boolean isValidEmail(CharSequence email) {
@@ -32,13 +38,24 @@ public class Utility {
 
     // hides keyboard
     public static void hideSoftKeyboard(Activity activity) {
-        if (activity.getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager =
-                    (InputMethodManager) activity.getSystemService(
-                            Activity.INPUT_METHOD_SERVICE);
+        InputMethodManager inputMethodManager =
+                (InputMethodManager) activity.getSystemService(
+                        Activity.INPUT_METHOD_SERVICE);
+        if (activity.getCurrentFocus() != null && inputMethodManager != null) {
             inputMethodManager.hideSoftInputFromWindow(
                     activity.getCurrentFocus().getWindowToken(), 0);
         }
+    }
 
+    // JSON date string formatter
+    public static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    // gets relative time from json format date
+    public static String getRelativeTimeAgo(Date date) {
+        String relativeDate;
+        long dateMillis = date.getTime();
+        relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
+                System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
+        return relativeDate;
     }
 }
