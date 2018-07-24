@@ -115,7 +115,7 @@ public class HistoryFragment extends Fragment {
             for (int i = 0; i < historyJSONArray.length(); i++) {
                 User user = User.fromJson(historyJSONArray.getJSONObject(i));
                 history.add(user);
-                historyAdapter.notifyDataSetChanged();
+                historyAdapter.notifyItemInserted(history.size() - 1);
             }
         } catch (JSONException e) {
             e.printStackTrace();

@@ -236,7 +236,7 @@ public class ProfileFragment extends Fragment {
             tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
-        if (!isValidPhoneNumber(phone)) {
+        if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
             tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
             valid = false;
         }

@@ -1,6 +1,8 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,12 +13,15 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.Adapter;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toolbar;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
@@ -33,6 +38,9 @@ public class MainActivity extends AppCompatActivity {
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
+
+    // menus
+    RelativeLayout historyMenu;
 
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
@@ -51,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayShowTitleEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(true);
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -69,6 +77,9 @@ public class MainActivity extends AppCompatActivity {
         // Instantiate our Adapter which we will use in our ViewPager
         adapter = new Adapter(getSupportFragmentManager(), fragments);
 
+        // get references to menus
+        historyMenu = findViewById(R.id.historyMenu);
+
         // Attach our adapter to our view pager.
         viewPager.setAdapter(adapter);
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -78,12 +89,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int position) {
+                clearMenus();
                 switch (position) {
                     case 0:
                         bottomNavigation.setSelectedItemId(R.id.action_discover);
                         break;
                     case 1:
                         bottomNavigation.setSelectedItemId(R.id.action_history);
+                        historyMenu.setVisibility(View.VISIBLE);
                         break;
                     case 2:
                         bottomNavigation.setSelectedItemId(R.id.action_profile);
@@ -104,15 +117,12 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_discover:
-                        // Set the item to the first item in our list (discover)
                         viewPager.setCurrentItem(0);
                         return true;
                     case R.id.action_history:
-                        // Set the item to the first item in our list (history)
                         viewPager.setCurrentItem(1);
                         return true;
                     case R.id.action_profile:
-                        // Set the current item to the third item in our list (profile)
                         viewPager.setCurrentItem(2);
                         return true;
                     default:
@@ -120,6 +130,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        // Get the intent, verify the action and get the query
+        Intent intent = getIntent();
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            //searchHistory(query);
+        }
     }
 
     static class Adapter extends FragmentStatePagerAdapter {
@@ -142,5 +159,9 @@ public class MainActivity extends AppCompatActivity {
         public int getCount() {
             return fragments.size();
         }
+    }
+
+    void clearMenus() {
+        historyMenu.setVisibility(View.GONE);
     }
 }

@@ -35,7 +35,7 @@
         android:layout_height="46dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tvFacebookError"
-        app:srcCompat="@drawable/facebook_icon" />
+        app:srcCompat="@drawable/ic_facebook" />
 
     <EditText
         android:id="@+id/etLinkedInUrl"
@@ -65,7 +65,7 @@
         android:layout_height="46dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tvLinkedInError"
-        app:srcCompat="@drawable/linked_in_logo" />
+        app:srcCompat="@drawable/ic_linkedin" />
 
     <EditText
         android:id="@+id/etInstagramUrl"
@@ -95,7 +95,7 @@
         android:layout_height="46dp"
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tvInstagramError"
-        app:srcCompat="@drawable/instagram_logo" />
+        app:srcCompat="@drawable/ic_instagram" />
 
     <Button
         android:id="@+id/btSubmit"
