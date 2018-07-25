@@ -64,7 +64,7 @@
         android:visibility="gone">
 
         <ImageView
-            android:id="@+id/ivCheck"
+            android:id="@+id/ivFacebookCheck"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentTop="true"
@@ -75,7 +75,7 @@
             android:id="@+id/tvView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/ivCheck"
+            android:layout_below="@id/ivFacebookCheck"
             android:layout_centerHorizontal="true"
             android:text="VIEW IN CONTACTS"
             android:textColor="@android:color/holo_blue_light" />

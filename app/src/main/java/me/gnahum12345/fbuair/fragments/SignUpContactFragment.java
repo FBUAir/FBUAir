@@ -29,8 +29,8 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
+import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
+import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class SignUpContactFragment extends Fragment {
     // views
@@ -103,7 +103,7 @@ public class SignUpContactFragment extends Fragment {
                     profileImage = BitmapFactory.decodeResource(getResources(),
                             R.drawable.default_profile);
                 }
-                // go to next sign up page if contact info is valid
+                // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
                     User user = new User();
                     user.setName(name);
@@ -129,7 +129,7 @@ public class SignUpContactFragment extends Fragment {
     public boolean isValidContact(String name, String phone, String email) {
         // clear previous errors
         clearErrors();
-        // check fields and set appropriate error messages
+        // check fields and show appropriate error messages
         boolean valid = true;
         if (name.isEmpty()) {
             tvNameError.setText(getResources().getString(R.string.no_name_error));
@@ -139,12 +139,8 @@ public class SignUpContactFragment extends Fragment {
             tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
-        if (!isValidPhoneNumber(phone)) {
+        if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
             tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
-            valid = false;
-        }
-        if (phone.isEmpty()) {
-            tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
             valid = false;
         }
         return valid;

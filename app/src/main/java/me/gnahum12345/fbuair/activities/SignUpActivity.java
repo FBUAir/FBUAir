@@ -13,9 +13,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.support.v7.widget.Toolbar;
 
+import org.json.JSONException;
 import org.parceler.Parcels;
-
-import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
@@ -24,8 +23,8 @@ import me.gnahum12345.fbuair.fragments.SignUpUrlFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utilities.Utility.CURRENT_USER_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class SignUpActivity extends AppCompatActivity {
     // fragments to be used
@@ -105,12 +104,20 @@ public class SignUpActivity extends AppCompatActivity {
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
     }
 
-    // starts fragment to add urls for selected platforms. passes in info from previous page
-    public void launchSignUpUrl(User user, ArrayList<String> platforms) {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", Parcels.wrap(user));
-        userBundle.putStringArrayList("user", platforms);
-        signUpSocialMediaFragment.setArguments(userBundle);
-        startFragment(signUpSocialMediaFragment, "signUpUrlFragment");
+    // saves user profile and starts main activity when sign up is finished
+    public void launchMainActivity(User user) {
+        // add user json string to shared preferences for persistence
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        try {
+            editor.putString("current_user", User.toJson(user).toString());
+            editor.commit();
+            // launch Main Activity
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+            finish();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 }

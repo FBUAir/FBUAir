@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:background="@android:color/holo_blue_light"
+        android:background="@color/color_white"
         android:minHeight="?attr/actionBarSize"
         android:theme="?attr/actionBarTheme">
 
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="10dp"
-                android:layout_toRightOf="@id/ivBack"
+                android:layout_toEndOf="@id/ivBack"
                 android:text="Title"
                 android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
 
@@ -48,6 +48,21 @@
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="15dp"
                 android:src="@drawable/ic_check" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/historyMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <SearchView
+                android:id="@+id/svSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
@@ -65,6 +80,23 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
-        android:background="@android:color/holo_blue_light"
-        app:menu="@menu/bottom_navigation_menu"/>
+        android:background="@color/color_white"
+        app:itemIconTint="@drawable/nav_colors"
+        app:itemTextColor="@drawable/nav_colors"
+        app:menu="@menu/bottom_navigation_menu" />
+
+    <View
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/toolbar"/>
+
+    <View
+        android:id="@+id/horizontalLine2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_above="@id/bottomNavigationView"/>
+
 </RelativeLayout>

@@ -22,10 +22,10 @@ public class User {
     String facebookURL;
     String instagramURL;
     String linkedInURL;
+    String timeAddedToHistory;
 
     // empty constructor needed by the Parceler library
-    public User() {
-    }
+    public User() { }
 
     public String getName() { return name; }
 
@@ -43,6 +43,8 @@ public class User {
 
     public Bitmap getProfileImage() { return profileImage; }
 
+    public String getTimeAddedToHistory() { return timeAddedToHistory; }
+
     public void setProfileImage(Bitmap profileImage) { this.profileImage = profileImage; }
 
     public void setName(String name) { this.name = name; }
@@ -59,17 +61,20 @@ public class User {
 
     public void setLinkedInURL(String linkedInURL) { this.linkedInURL = linkedInURL; }
 
+    public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
+
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
-        user.name = json.getString("name");
-        user.phoneNumber = json.getString("phoneNumber");
-        user.email = json.getString("email");
         try {
-            user.organization = json.getString("organization");
-            user.facebookURL = json.getString("facebookURL");
+            user.name = json.getString("name");
+            user.phoneNumber = json.optString("phoneNumber");
+            user.email = json.optString("email");
+            user.organization = json.optString("organization");
+            user.facebookURL = json.optString("facebookURL");
             user.profileImage = stringToBitmap(json.getString("profileImage"));
-            user.instagramURL = json.getString("instagramURL");
-            user.linkedInURL = json.getString("linkedInURL");
+            user.instagramURL = json.optString("instagramURL");
+            user.linkedInURL = json.optString("linkedInURL");
+            user.timeAddedToHistory = json.optString("timeAddedToHistory");
         } catch (JSONException e) {
             e.printStackTrace();
             Log.e("USER_MODEL_TAG", "fromJson: media isn't there. ", e);
@@ -93,6 +98,7 @@ public class User {
         String facebookURL = user.getFacebookURL();
         String instagramURL = user.getInstagramURL();
         String linkedInURL = user.getLinkedInURL();
+        String timeAddedToHistory = user.getTimeAddedToHistory();
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -103,6 +109,7 @@ public class User {
         json.put("profileImage", profileImageString);
         json.put("instagramURL", instagramURL);
         json.put("linkedInURL", linkedInURL);
+        json.put("timeAddedToHistory", timeAddedToHistory);
 
         Log.d("toJson", json.toString());
         return json;
@@ -121,9 +128,10 @@ public class User {
     }
 
     public static String bitmapToString(Bitmap bitmap){
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, baos);
-        byte [] b = baos.toByteArray();
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        if (bitmap == null) return "";
+        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
+        byte [] b = stream.toByteArray();
         String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }

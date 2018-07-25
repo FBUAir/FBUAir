@@ -15,8 +15,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.text.TextUtils;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,13 +35,13 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utilities.Utility.CURRENT_USER_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidFacebookUrl;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidInstagramUrl;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidLinkedInUrl;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
+import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
+import static me.gnahum12345.fbuair.utils.Utils.isValidFacebookUrl;
+import static me.gnahum12345.fbuair.utils.Utils.isValidInstagramUrl;
+import static me.gnahum12345.fbuair.utils.Utils.isValidLinkedInUrl;
+import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class ProfileFragment extends Fragment {
     // views
@@ -236,12 +234,8 @@ public class ProfileFragment extends Fragment {
             tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
-        if (!isValidPhoneNumber(phone)) {
+        if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
             tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
-            valid = false;
-        }
-        if (phone.isEmpty()) {
-            tvPhoneError.setText(getResources().getString(R.string.no_phone_error));
             valid = false;
         }
         if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
