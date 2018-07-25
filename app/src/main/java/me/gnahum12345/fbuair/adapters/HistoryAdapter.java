@@ -2,10 +2,8 @@ package me.gnahum12345.fbuair.adapters;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +12,11 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.parceler.Parcels;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.DetailsActivity;
-import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;

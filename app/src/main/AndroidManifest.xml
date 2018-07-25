@@ -39,7 +39,6 @@
         </activity>
         <activity android:name=".activities.DiscoverActivity"/>
         <activity android:name=".activities.HistoryActivity" />
-        <activity android:name=".activities.DetailsActivity" />
         <activity
             android:name=".activities.SignUpActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">

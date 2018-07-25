@@ -515,14 +515,6 @@ public class DiscoverActivity extends ConnectionsActivity implements SensorEvent
         startActivity(intent);
     }
 
-    public void launchDetails() {
-        // handle click here
-        rvAdapter.clear();
-        rvAdapter.notifyDataSetChanged();
-        Intent intent = new Intent(this, DetailsActivity.class);
-        startActivity(intent);
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

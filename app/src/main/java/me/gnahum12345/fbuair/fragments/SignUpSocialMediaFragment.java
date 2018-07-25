@@ -21,7 +21,7 @@ public class SignUpSocialMediaFragment extends Fragment {
     // reference to activity
     SignUpActivity activity;
 
-    // data binding to skip find view by id
+    // data bind to skip find view by id
     FragmentSignUpSocialMediaBinding binding;
 
     public SignUpSocialMediaFragment() {
