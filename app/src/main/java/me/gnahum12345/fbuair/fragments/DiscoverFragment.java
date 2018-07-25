@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import java.nio.charset.MalformedInputException;
 import java.util.HashSet;
 
 import me.gnahum12345.fbuair.R;
@@ -68,13 +69,12 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
         rvDevicesView = view.findViewById(R.id.rvDevicesView);
-        rvAdapter = new DiscoverAdapter();
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 
         rvDevicesView.setLayoutManager(layoutManager);
         rvDevicesView.setAdapter(rvAdapter);
-
+        ((MainActivity) mContext).connectService.addListener(this);
         return view;
     }
 
@@ -83,6 +83,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         super.onAttach(context);
         mContext = context;
         mListener = (MainActivity) context;
+        rvAdapter = new DiscoverAdapter();
+
     }
 
 

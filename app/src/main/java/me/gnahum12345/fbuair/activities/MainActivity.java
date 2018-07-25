@@ -133,6 +133,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 }
             }
         });
+        connectService.addListener(discoverFragment);
     }
 
     private void startConnectionService() {

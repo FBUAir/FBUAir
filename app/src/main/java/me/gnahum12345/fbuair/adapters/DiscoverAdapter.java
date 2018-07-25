@@ -122,7 +122,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
     private String parseName(String name) {
-        String divider = mContext.getString(R.string.divider);
+//        String divider = ((MainActivity) mContext).getString(R.string.divider);
+        // TODO: figure out why this is a null pointer.
+        String divider = mContext.getResources().getString(R.string.divider);
         if (divider == null || divider.isEmpty()) {
             return name;
         } else {
