@@ -35,13 +35,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.DiscoverActivity;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.ProfileUser;
@@ -65,7 +65,7 @@ public class ConnectionService {
                     Manifest.permission.ACCESS_COARSE_LOCATION,
             };
 
-    private static final String TAG = "ConnectionService";
+    private static final String TAG = "ConnectionServiceTAG";
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final Strategy STRATEGY = Strategy.P2P_CLUSTER;
     private static final String SERVICE_ID =
@@ -82,7 +82,12 @@ public class ConnectionService {
      * there will only be one entry in this map.
      */
     private final Map<String, Endpoint> mEstablishedConnections = new HashMap<>();
-    private Context mContext; // TODO: see if needed.
+
+
+    private ProfileUser mProfileUser;
+    private List<ConnectionListener> listeners = new ArrayList<>();
+    private Context mContext;
+
     /**
      * Callbacks for payloads sent form another device to us.
      */
@@ -120,19 +125,8 @@ public class ConnectionService {
      * Our handler to Nearby Connections.
      */
     private ConnectionsClient mConnectionsClient;
-    /**
-     * Listens to holding/releasing the volume rocker.
-     */
-    private final GestureDetector mGestureDetector =
-            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
-                @Override
-                protected void onHold() {
-                    logV("onHold");
-//                    startRecording();
-                    sendToAll();
-                }
 
-            };
+
     /**
      * True if we are asking a discovered device to connect to us. While we ask, we cannot ask another
      * device.
@@ -189,23 +183,19 @@ public class ConnectionService {
                     disconnectedFromEndpoint(mEstablishedConnections.get(endpointId));
                 }
             };
+    /**
+     * True if we media is a feature added.
+     */
+    private boolean mIsMedia = false;
 
-    ProfileUser mProfileUser;
     // TODO: give parameters to the constructor so everything can flow smoothly.
     public ConnectionService(Context context) {
         mContext = context;
         mConnectionsClient = Nearby.getConnectionsClient(mContext);
         // Set the media volume to max.
-        ((MainActivity) mContext).setVolumeControlStream(AudioManager.STREAM_MUSIC);
-        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        mOriginalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        audioManager.setStreamVolume(
-                AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
-
         mProfileUser = new ProfileUser(context);
         mName = mProfileUser.getName() + context.getString(R.string.divider) + generateRandomName();
     }
-
 
 
     private static CharSequence toColor(String msg, int color) {
@@ -250,39 +240,55 @@ public class ConnectionService {
         send(Payload.fromBytes(senderInfo.getBytes()));
     }
 
-    public void sendToEndpoint(Endpoint endpoint) {
-        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String current_user = sharedpreferences.getString("current_user", null);
-
-        send(Payload.fromBytes(current_user.getBytes()), endpoint);
-    }
-
-    public void stopMedia() {
-        // Restore the original volume.
-        AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
-        audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
-        ((MainActivity) mContext).setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
-    }
-
-    //TODO: call in main activity.
-    public void onBackPressed() {
-        if (getState() == State.CONNECTED) {
-            stopAdvertising();
-            stopDiscovering();
-            setState(State.DISCOVERING);
+    private void setState(State newState) {
+        if (mState == newState) {
+            logW("State set to " + newState + " but already in that state");
             return;
         }
-    }
-
-    private State getState() {
-        return mState;
-    }
-
-    private void setState(State newState) {
+        logD("state set to " + newState);
+        State oldState = mState;
         mState = newState;
+        onStateChanged(oldState, mState);
     }
 
+    /**
+     * State has changed.
+     *
+     * @param oldState The previous state we were in. Clean up anything related to this state.
+     * @param newState The new state we're now in. Prepare the UI for this state.
+     */
+    private void onStateChanged(State oldState, State newState) {
+        // Update Nearby Connections to the new state.
+        // Update Nearby Connections to the new state.
+        switch (newState) {
+            case DISCOVERING:
+                // do nothing and fall through to advertising.
+            case ADVERTISING:
+                disconnectFromAllEndpoints();
+                startDiscovering();
+                startAdvertising();
+                logD("I am advertising and discovering at the same time.");
+                break;
+            case CONNECTED:
+//                removeCallbacks(mDiscoverRunnable);
+                // TODO remove callback somehow.
+                logD("I connected but I'm still discovering and advertising");
+                if (!isDiscovering()) {
+                    startDiscovering(); // If connected, don't look for more connections... transfer payload... disconnect then continue...
+                }
+                if (!isAdvertising()) {
+                    startAdvertising();
+                }
+                break;
+            case UNKNOWN:
+                stopAllEndpoints();
+                break;
+            default:
+                // no-op
+                break;
+        }
 
+    }
 
     /**
      * Called when a pending connection with a remote endpoint is created. Use {@link ConnectionInfo}
@@ -295,60 +301,12 @@ public class ConnectionService {
         acceptConnection(endpoint);
     }
 
-    /**
-     * Sets the device to advertising mode. It will broadcast to other devices in discovery mode.
-     * Either {@link #onAdvertisingStarted()} or {@link #onAdvertisingFailed()} will be called once
-     * we've found out if we successfully entered this mode.
-     */
-    public void startAdvertising() {
-        if (!mIsAdvertising) {
-            mIsAdvertising = true;
-            final String localEndpointName = getName();
-            mConnectionsClient
-                    .startAdvertising(
-                            localEndpointName,
-                            getServiceId(),
-                            mConnectionLifecycleCallback,
-                            new AdvertisingOptions(getStrategy()))
-                    .addOnSuccessListener(
-                            new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unusedResult) {
-                                    logV("Now advertising endpoint " + localEndpointName);
-                                    onAdvertisingStarted();
-                                }
-                            })
-                    .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    mIsAdvertising = false;
-                                    logW("startAdvertising() failed.", e);
-                                    onAdvertisingFailed();
-                                }
-                            });
-        }
-    }
-
-    /**
-     * Stops advertising.
-     */
-    public void stopAdvertising() {
-        mIsAdvertising = false;
-        mConnectionsClient.stopAdvertising();
-    }
-
-    /**
-     * Returns {@code true} if currently advertising.
-     */
-    protected boolean isAdvertising() {
-        return mIsAdvertising;
-    }
 
     /**
      * Called when advertising successfully starts. Override this method to act on the event.
      */
     protected void onAdvertisingStarted() {
+
     }
 
     /**
@@ -388,77 +346,6 @@ public class ConnectionService {
                         });
     }
 
-    /**
-     * Sets the device to discovery mode. It will now listen for devices in advertising mode. Either
-     * {@link #onDiscoveryStarted()} or {@link #onDiscoveryFailed()} will be called once we've found
-     * out if we successfully entered this mode.
-     */
-    protected void startDiscovering() {
-        if (!isDiscovering()) {
-            mIsDiscovering = true;
-            mDiscoveredEndpoints.clear();
-
-            mConnectionsClient
-                    .startDiscovery(
-                            getServiceId(),
-                            new EndpointDiscoveryCallback() {
-                                @Override
-                                public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
-                                    logD(
-                                            String.format(
-                                                    "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
-                                                    endpointId, info.getServiceId(), info.getEndpointName()));
-
-                                    Toast.makeText(mContext, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
-
-                                    if (getServiceId().equals(info.getServiceId())) {
-                                        Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
-                                        mDiscoveredEndpoints.put(endpointId, endpoint);
-                                        onEndpointDiscovered(endpoint);
-                                    }
-                                }
-
-                                @Override
-                                public void onEndpointLost(String endpointId) {
-                                    logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
-                                }
-                            },
-                            new DiscoveryOptions(getStrategy()))
-                    .addOnSuccessListener(
-                            new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void unusedResult) {
-                                    onDiscoveryStarted();
-                                }
-                            })
-                    .addOnFailureListener(
-                            new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    mIsDiscovering = false;
-                                    logW("startDiscovering() failed.", e);
-                                    onDiscoveryFailed();
-                                }
-                            });
-        }
-        mEndpoint = new Endpoint(Integer.toString(mConnectionsClient.getInstanceId()), getName());
-
-    }
-
-    /**
-     * Stops discovery.
-     */
-    protected void stopDiscovering() {
-        mIsDiscovering = false;
-        mConnectionsClient.stopDiscovery();
-    }
-
-    /**
-     * Returns {@code true} if currently discovering.
-     */
-    protected boolean isDiscovering() {
-        return mIsDiscovering;
-    }
 
     /**
      * Called when discovery successfully starts. Override this method to act on the event.
@@ -499,6 +386,7 @@ public class ConnectionService {
      */
     protected void disconnect(Endpoint endpoint) {
         mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
+        updateListenersEndpoint(endpoint, false);
         mEstablishedConnections.remove(endpoint.getId());
     }
 
@@ -507,6 +395,7 @@ public class ConnectionService {
      */
     protected void disconnectFromAllEndpoints() {
         for (Endpoint endpoint : mEstablishedConnections.values()) {
+            updateListenersEndpoint(endpoint, false);
             mConnectionsClient.disconnectFromEndpoint(endpoint.getId());
         }
         mEstablishedConnections.clear();
@@ -549,12 +438,6 @@ public class ConnectionService {
                         });
     }
 
-    /**
-     * Returns {@code true} if we're currently attempting to connect to another device.
-     */
-    protected final boolean isConnecting() {
-        return mIsConnecting;
-    }
 
     private void connectedToEndpoint(Endpoint endpoint) {
         logD(String.format("connectedToEndpoint(endpoint=%s)", endpoint));
@@ -577,6 +460,12 @@ public class ConnectionService {
         disconnect(endpoint);
         connectedToEndpoint(endpoint);
 
+        if (getState() == State.DISCOVERING && !getDiscoveredEndpoints().isEmpty()) {
+            connectToEndpoint(pickRandomElem(getDiscoveredEndpoints()));
+        }
+        stopAdvertising();
+        stopDiscovering();
+        setState(State.DISCOVERING);
     }
 
     /**
@@ -585,7 +474,7 @@ public class ConnectionService {
     protected void onEndpointConnected(Endpoint endpoint) {
         Toast.makeText(mContext, mContext.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
         sendProfileUser(endpoint);
-        //TODO update listeners.
+        updateListenersEndpoint(endpoint, true);
     }
 
     protected void sendProfileUser(Endpoint endpoint) {
@@ -600,7 +489,7 @@ public class ConnectionService {
     protected void onEndpointDisconnected(Endpoint endpoint) {
         Toast.makeText(mContext, mContext.getString(R.string.toast_disconnected, endpoint.getName()), Toast.LENGTH_SHORT).show();
         //TODO update listeners.
-
+        updateListenersEndpoint(endpoint, false);
         if (getConnectedEndpoints().isEmpty()) {
             stopDiscovering();
             stopAdvertising();
@@ -650,7 +539,7 @@ public class ConnectionService {
 
     }
 
-    public void send(Payload payload, final Endpoint endpoint) {
+    public void send(final Payload payload, final Endpoint endpoint) {
 
         //TODO: CHECK THAT THE GIVEN STRING IS THE ID AND NOT THE NAME.
         mConnectionsClient.sendPayload(endpoint.getId(), payload)
@@ -658,19 +547,10 @@ public class ConnectionService {
                     @Override
                     public void onFailure(@NonNull Exception e) {
                         logW("sendPayload() Failed given an endpoint", e);
-                        updateAdapter(endpoint);
                     }
                 });
     }
 
-    /**
-     * If the payload failed to send, then make sure to update the adapter to no longer show that user.
-     *
-     * @param endpoint The sender.
-     */
-    protected void updateAdapter(Endpoint endpoint) {
-
-    }
 
     /**
      * Someone connected to us has sent us data. Override this method to act on the event.
@@ -695,7 +575,8 @@ public class ConnectionService {
                 user = User.fromString(content);
                 userMade = true;
                 logV("userMade = true");
-                //TODO: update listeners to deal with the user.
+                // update listeners to deal with the user.
+                updateListener(endpoint, user);
             } catch (JSONException e) {
                 e.printStackTrace();
                 logE("User cannot be created", e);
@@ -706,7 +587,8 @@ public class ConnectionService {
             if (!userMade) {
                 try {
                     profileUser = ProfileUser.fromJSONString(content);
-                    // TODO: UPdate listeners to deal with the profile
+                    // Update listeners to deal with the profile
+                    updateListener(endpoint, profileUser);
                 } catch (JSONException e) {
                     e.printStackTrace();
                     logE("The file wasn't a profile either", e);
@@ -721,7 +603,7 @@ public class ConnectionService {
      *
      * @return All permissions required for the app to properly function.
      */
-    protected String[] getRequiredPermissions() {
+    public static String[] getRequiredPermissions() {
         return REQUIRED_PERMISSIONS;
     }
 
@@ -731,7 +613,7 @@ public class ConnectionService {
     }
 
     private String getServiceId() {
-        return ""; //TODO: Fix it to return service id.
+        return SERVICE_ID;
     }
 
     private String getName() {
@@ -739,36 +621,246 @@ public class ConnectionService {
     }
 
 
-    /**
-     * TODO: put in activity.
-     * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
-     * false}.
-     */
-//    public static boolean hasPermissions(Context context, String... permissions) {
-//        for (String permission : permissions) {
-//            if (ContextCompat.checkSelfPermission(context, permission)
-//                    != PackageManager.PERMISSION_GRANTED) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
+    /***********************************************************************************************
+     *                 Public functions for anyone who wants networking service                     *
+     ***********************************************************************************************/
 
-//    @Override TODO: put in Activity.
-//    public void onRequestPermissionsResult(
-//            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        if (requestCode == REQUEST_CODE_REQUIRED_PERMISSIONS) {
-//            for (int grantResult : grantResults) {
-//                if (grantResult == PackageManager.PERMISSION_DENIED) {
-//                    Toast.makeText(mContext, R.string.error_missing_permissions, Toast.LENGTH_LONG).show();
-//
-//                    return;
-//                }
-//            }
-//            recreate();
-//        }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//    }
+    public State getState() {
+        return mState;
+    }
+
+    /**
+     * Listens to holding/releasing the volume rocker.
+     */
+    public final GestureDetector mGestureDetector =
+            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
+                @Override
+                protected void onHold() {
+                    logV("onHold");
+                    sendToAll();
+                }
+
+            };
+    /**
+     * Sets the device to advertising mode. It will broadcast to other devices in discovery mode.
+     * Either {@link #onAdvertisingStarted()} or {@link #onAdvertisingFailed()} will be called once
+     * we've found out if we successfully entered this mode.
+     */
+    public void startAdvertising() {
+        if (!mIsAdvertising) {
+            mIsAdvertising = true;
+            final String localEndpointName = getName();
+            mConnectionsClient
+                    .startAdvertising(
+                            localEndpointName,
+                            getServiceId(),
+                            mConnectionLifecycleCallback,
+                            new AdvertisingOptions(getStrategy()))
+                    .addOnSuccessListener(
+                            new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unusedResult) {
+                                    logV("Now advertising endpoint " + localEndpointName);
+                                    onAdvertisingStarted();
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    mIsAdvertising = false;
+                                    logW("startAdvertising() failed.", e);
+                                    onAdvertisingFailed();
+                                }
+                            });
+        }
+    }
+
+    /**
+     * Stops advertising.
+     */
+    public void stopAdvertising() {
+        mIsAdvertising = false;
+        mConnectionsClient.stopAdvertising();
+    }
+
+    //TODO: possibly make this public
+
+    /**
+     * Returns {@code true} if currently advertising.
+     */
+    protected boolean isAdvertising() {
+        return mIsAdvertising;
+    }
+
+    /**
+     * Returns {@code true} if currently discovering.
+     */
+    protected boolean isDiscovering() {
+        return mIsDiscovering;
+    }
+
+    /**
+     * Returns {@code true} if we're currently attempting to connect to another device.
+     */
+    protected final boolean isConnecting() {
+        return mIsConnecting;
+    }
+
+    /**
+     * Sets the device to discovery mode. It will now listen for devices in advertising mode. Either
+     * {@link #onDiscoveryStarted()} or {@link #onDiscoveryFailed()} will be called once we've found
+     * out if we successfully entered this mode.
+     */
+    public void startDiscovering() {
+        if (!isDiscovering()) {
+            mIsDiscovering = true;
+            mDiscoveredEndpoints.clear();
+
+            mConnectionsClient
+                    .startDiscovery(
+                            getServiceId(),
+                            new EndpointDiscoveryCallback() {
+                                @Override
+                                public void onEndpointFound(String endpointId, DiscoveredEndpointInfo info) {
+                                    logD(
+                                            String.format(
+                                                    "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
+                                                    endpointId, info.getServiceId(), info.getEndpointName()));
+
+                                    Toast.makeText(mContext, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
+
+                                    if (getServiceId().equals(info.getServiceId())) {
+                                        Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
+                                        mDiscoveredEndpoints.put(endpointId, endpoint);
+                                        onEndpointDiscovered(endpoint);
+                                    }
+                                }
+
+                                @Override
+                                public void onEndpointLost(String endpointId) {
+                                    logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
+                                }
+                            },
+                            new DiscoveryOptions(getStrategy()))
+                    .addOnSuccessListener(
+                            new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unusedResult) {
+                                    onDiscoveryStarted();
+                                }
+                            })
+                    .addOnFailureListener(
+                            new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    mIsDiscovering = false;
+                                    logW("startDiscovering() failed.", e);
+                                    onDiscoveryFailed();
+                                }
+                            });
+        } else {
+            mEndpoint = new Endpoint(Integer.toString(mConnectionsClient.getInstanceId()), getName());
+        }
+    }
+
+    /**
+     * Stops discovery.
+     */
+    public void stopDiscovering() {
+        mIsDiscovering = false;
+        mConnectionsClient.stopDiscovery();
+    }
+
+    public void startMedia() {
+        if (!mIsMedia) {
+            mIsMedia = true;
+            ((MainActivity) mContext).setVolumeControlStream(AudioManager.STREAM_MUSIC);
+            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            mOriginalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+            audioManager.setStreamVolume(
+                    AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+        }
+    }
+
+    public void stopMedia() {
+        if (mIsMedia) {
+            mIsMedia = false;
+            // Restore the original volume.
+            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
+            ((MainActivity) mContext).setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+        }
+    }
+
+    //TODO: call in main activity.
+    public void onBackPressed() {
+        if (getState() == State.CONNECTED) {
+            disconnectFromAllEndpoints();
+            stopAdvertising();
+            stopDiscovering();
+            setState(State.DISCOVERING);
+            return;
+        }
+    }
+
+    public boolean addListener(ConnectionListener listener) {
+        return listeners.add(listener);
+    }
+
+    public boolean removeListener(ConnectionListener listener) {
+        return listeners.remove(listener);
+    }
+
+    // TODO: make a way for the listeners to use this function.
+    public void sendToEndpoint(Endpoint endpoint) {
+        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        String current_user = sharedpreferences.getString("current_user", null);
+
+        send(Payload.fromBytes(current_user.getBytes()), endpoint);
+    }
+
+
+    /***********************************************************************************************
+     *                             Functions for listeners                                         *
+     ***********************************************************************************************/
+
+    /**
+     * If the payload failed to send, then make sure to update the adapter to no longer show that user.
+     *
+     * @param endpoint The sender.
+     */
+    private void updateListener(Endpoint endpoint, Object userData) {
+        // TODO: loop through the listeners and update each one
+
+        for (ConnectionListener listener : listeners) {
+            listener.updateEndpoint(endpoint, userData, (userData instanceof ProfileUser));
+        }
+    }
+
+    /**
+     * Informing that the endpoint is either added or removed.
+     *
+     * @Param endpoint which is the endpoint
+     * @Param adding which is true if adding, or false if its removing.
+     */
+    private void updateListenersEndpoint(Endpoint endpoint, boolean adding) {
+        //TODO: loop through the listeners and add the endpoint.
+        if (adding) {
+            for (ConnectionListener listener : listeners) {
+                listener.addEndpoint(endpoint);
+            }
+        } else {
+            for (ConnectionListener listener : listeners) {
+                listener.removeEndpoint(endpoint);
+            }
+        }
+    }
+
+
+
+
+
     private void logV(String msg) {
         Log.v(TAG, msg);
         appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_verbose)));

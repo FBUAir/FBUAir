@@ -174,4 +174,9 @@ public class SignUpUrlFragment extends Fragment {
         startActivity(intent);
         activity.finish();
     }
+
+    @Override
+    public void setArguments(@Nullable Bundle args) {
+        super.setArguments(args);
+    }
 }
