@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +18,13 @@ import org.parceler.Parcels;
 
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.DetailsActivity;
 import me.gnahum12345.fbuair.models.User;
-import static me.gnahum12345.fbuair.utilities.Utility.dateFormatter;
-import static me.gnahum12345.fbuair.utilities.Utility.getRelativeTimeAgo;
+import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
+import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
 
 
 public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHolder>

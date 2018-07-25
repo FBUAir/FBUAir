@@ -17,7 +17,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Random;
 
-import me.gnahum12345.fbuair.utilities.FakeUsers;
+import me.gnahum12345.fbuair.utils.FakeUsers;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;

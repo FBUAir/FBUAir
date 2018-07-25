@@ -25,8 +25,7 @@ public class User {
     String timeAddedToHistory;
 
     // empty constructor needed by the Parceler library
-    public User() {
-    }
+    public User() { }
 
     public String getName() { return name; }
 

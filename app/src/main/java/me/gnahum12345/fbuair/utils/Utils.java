@@ -1,7 +1,6 @@
-package me.gnahum12345.fbuair.utilities;
+package me.gnahum12345.fbuair.utils;
 
 import android.app.Activity;
-import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Patterns;
@@ -11,7 +10,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class Utility {
+public class Utils {
     // shared preferences keys
     public static final String PREFERENCES_FILE_NAME_KEY = "MyPrefs";
     public static final String CURRENT_USER_KEY = "current_user";

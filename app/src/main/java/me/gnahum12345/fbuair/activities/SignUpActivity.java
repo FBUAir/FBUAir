@@ -16,8 +16,6 @@ import android.support.v7.widget.Toolbar;
 import org.json.JSONException;
 import org.parceler.Parcels;
 
-import java.util.ArrayList;
-
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
@@ -25,8 +23,8 @@ import me.gnahum12345.fbuair.fragments.SignUpUrlFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utilities.Utility.CURRENT_USER_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class SignUpActivity extends AppCompatActivity {
     // fragments to be used

@@ -29,8 +29,8 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utilities.Utility.isValidEmail;
-import static me.gnahum12345.fbuair.utilities.Utility.isValidPhoneNumber;
+import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
+import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class SignUpContactFragment extends Fragment {
     // views

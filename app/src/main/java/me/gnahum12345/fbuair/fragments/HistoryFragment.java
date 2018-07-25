@@ -21,16 +21,15 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utilities.FakeUsers;
+import me.gnahum12345.fbuair.utils.FakeUsers;
 
-import static me.gnahum12345.fbuair.utilities.Utility.HISTORY_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.PREFERENCES_FILE_NAME_KEY;
-import static me.gnahum12345.fbuair.utilities.Utility.dateFormatter;
+import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 
 public class HistoryFragment extends Fragment {

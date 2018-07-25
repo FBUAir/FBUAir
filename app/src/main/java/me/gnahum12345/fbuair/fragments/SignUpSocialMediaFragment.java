@@ -1,31 +1,21 @@
 package me.gnahum12345.fbuair.fragments;
 
-import android.app.Activity;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import org.parceler.Parcels;
-
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utilities.Utility;
+import me.gnahum12345.fbuair.utils.Utils;
 
 public class SignUpSocialMediaFragment extends Fragment {
     // reference to activity
@@ -53,7 +43,7 @@ public class SignUpSocialMediaFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         activity = (SignUpActivity) getActivity();
         // hide keyboard
-        Utility.hideSoftKeyboard(activity);
+        Utils.hideSoftKeyboard(activity);
 
         // get info from last sign up screen
         assert getArguments() != null;
