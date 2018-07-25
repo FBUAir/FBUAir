@@ -17,10 +17,12 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
+import in.srain.cube.views.GridViewWithHeaderAndFooter;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.adapters.IconAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
+import me.gnahum12345.fbuair.databinding.IconsFooterBinding;
 import me.gnahum12345.fbuair.models.Icon;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.Utils;
@@ -28,6 +30,8 @@ import me.gnahum12345.fbuair.utils.Utils;
 public class SignUpSocialMediaFragment extends Fragment {
     // reference to activity
     SignUpActivity activity;
+
+    ViewGroup container;
 
     User user;
 
@@ -41,6 +45,7 @@ public class SignUpSocialMediaFragment extends Fragment {
 
     // data bind to skip find view by id
     FragmentSignUpSocialMediaBinding bind;
+    IconsFooterBinding bindFooter;
 
     public SignUpSocialMediaFragment() {
         // Required empty public constructor
@@ -53,6 +58,7 @@ public class SignUpSocialMediaFragment extends Fragment {
         bind = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sign_up_social_media, container, false);
         View view = bind.getRoot();
+        this.container = container;
         return view;
     }
 
@@ -63,6 +69,14 @@ public class SignUpSocialMediaFragment extends Fragment {
         // hide keyboard
         Utils.hideSoftKeyboard(activity);
 
+        GridViewWithHeaderAndFooter gridView = (GridViewWithHeaderAndFooter) bind.gvIcons;
+
+        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
+        bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.icons_footer, container,
+                false);
+        View footerView = bindFooter.getRoot();
+        gridView.addFooterView(footerView);
+
         icons = makeIcons(socialMediaNames);
         iconAdapter = new IconAdapter(getContext(), icons);
         bind.gvIcons.setAdapter(iconAdapter);
@@ -71,16 +85,16 @@ public class SignUpSocialMediaFragment extends Fragment {
         if (getArguments() != null) {
             user = Parcels.unwrap(getArguments().getParcelable("user"));
         }
-
         // CLICK HANDLERS
-        bind.btNext.setOnClickListener(new View.OnClickListener() {
+        footerView.findViewById(R.id.btNext);
+        bindFooter.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 activity.launchMainActivity(user);
             }
         });
 
-        bind.tvSkip.setOnClickListener(new View.OnClickListener() {
+        bindFooter.tvSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 activity.launchMainActivity(user);
