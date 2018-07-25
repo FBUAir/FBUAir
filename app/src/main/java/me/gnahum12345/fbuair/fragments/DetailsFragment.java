@@ -59,6 +59,13 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        // get reference to context
+        this.context = context;
+        super.onAttach(context);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -73,9 +80,8 @@ public class DetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // get references to activity and context
+        // get reference to activity
         activity = getActivity();
-        context = getContext();
 
         // check whether user granted contacts permissions
         permissionGranted = ContextCompat.checkSelfPermission(activity,

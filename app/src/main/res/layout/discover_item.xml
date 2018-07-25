@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <!--TODO: Make the image circular.-->
+    <!--TODO: Make the drawable circular.-->
     <ImageView
         android:id="@+id/ivProfilePic"
         android:layout_width="100dp"
