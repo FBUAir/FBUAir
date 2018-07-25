@@ -21,12 +21,15 @@ import java.util.List;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.models.User;
 
 public class MainActivity extends AppCompatActivity
-        implements SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener{
+        implements SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
 
     // views
     BottomNavigationView bottomNavigation;
@@ -37,6 +40,13 @@ public class MainActivity extends AppCompatActivity
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
+    DetailsFragment detailsFragment;
+
+    // fragment position aliases
+    final static int DISCOVER_FRAGMENT = 0;
+    final static int HISTORY_FRAGMENT = 1;
+    final static int PROFILE_FRAGMENT = 2;
+    final static int DETAILS_FRAGMENT = 3;
 
     // menus
     RelativeLayout historyMenu;
@@ -64,11 +74,13 @@ public class MainActivity extends AppCompatActivity
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
+        detailsFragment = new DetailsFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
+        fragments.add(detailsFragment);
 
         // Grab a reference to our view pager.
         viewPager = findViewById(R.id.viewPager);
@@ -90,14 +102,14 @@ public class MainActivity extends AppCompatActivity
             public void onPageSelected(int position) {
                 clearMenus();
                 switch (position) {
-                    case 0:
+                    case DISCOVER_FRAGMENT:
                         bottomNavigation.setSelectedItemId(R.id.action_discover);
                         break;
-                    case 1:
+                    case HISTORY_FRAGMENT:
                         bottomNavigation.setSelectedItemId(R.id.action_history);
                         historyMenu.setVisibility(View.VISIBLE);
                         break;
-                    case 2:
+                    case PROFILE_FRAGMENT:
                         bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
                 }
@@ -116,13 +128,13 @@ public class MainActivity extends AppCompatActivity
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_discover:
-                        viewPager.setCurrentItem(0);
+                        viewPager.setCurrentItem(DISCOVER_FRAGMENT);
                         return true;
                     case R.id.action_history:
-                        viewPager.setCurrentItem(1);
+                        viewPager.setCurrentItem(HISTORY_FRAGMENT);
                         return true;
                     case R.id.action_profile:
-                        viewPager.setCurrentItem(2);
+                        viewPager.setCurrentItem(PROFILE_FRAGMENT);
                         return true;
                     default:
                         return false;
@@ -160,6 +172,12 @@ public class MainActivity extends AppCompatActivity
         public int getCount() {
             return fragments.size();
         }
+    }
+
+    // opens details screen for passed in user
+    public void launchDetails(User user) {
+        fragments.set(DETAILS_FRAGMENT, DetailsFragment.newInstance(user));
+        viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
     }
 
     void clearMenus() {

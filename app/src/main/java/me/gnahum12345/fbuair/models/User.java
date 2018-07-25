@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.models;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -77,7 +76,6 @@ public class User {
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
         } catch (JSONException e) {
             e.printStackTrace();
-            Log.e("USER_MODEL_TAG", "fromJson: media isn't there. ", e);
         }
 
         return user;
@@ -111,7 +109,6 @@ public class User {
         json.put("linkedInURL", linkedInURL);
         json.put("timeAddedToHistory", timeAddedToHistory);
 
-        Log.d("toJson", json.toString());
         return json;
 
     }
