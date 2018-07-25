@@ -22,6 +22,7 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.DetailsActivity;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
@@ -34,6 +35,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<User> filteredHistory;
     private HistoryFilter historyFilter;
     private Context context;
+    private LaunchDetailsListener launchDetailsListener;
+
+    public interface LaunchDetailsListener {
+        void launchDetails(User user);
+    }
 
     public HistoryAdapter(List<User> history) {
         this.history = history;
@@ -47,6 +53,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         context = holder.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.history_item, holder, false);
+        // get listener
+        try {
+            launchDetailsListener = ((LaunchDetailsListener) context);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
+        }
         // return a new viewHolder,
         return new ViewHolder(contactView);
     }
@@ -83,7 +95,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView tvTime;
         public ImageView ivProfileImage;
 
-        public ViewHolder(@NonNull View view) {
+        ViewHolder(@NonNull View view) {
             super(view);
             tvName = view.findViewById(R.id.tvName);
             tvTime = view.findViewById(R.id.tvTime);
@@ -92,12 +104,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Log.d("go to details", "went to details");
                     int position = getAdapterPosition();
                     User user = history.get(position);
-                    Intent i = new Intent(context, DetailsActivity.class);
-                    i.putExtra(User.class.getSimpleName(), Parcels.wrap(user));
-                    context.startActivity(i);
+                    launchDetailsListener.launchDetails(user);
                 }
             });
         }

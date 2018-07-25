@@ -1,7 +1,9 @@
-package me.gnahum12345.fbuair.activities;
+package me.gnahum12345.fbuair.fragments;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -10,11 +12,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -24,13 +29,18 @@ import android.widget.Toast;
 import org.parceler.Parcels;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.DetailsActivity;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 
-import static me.gnahum12345.fbuair.utils.ContactUtils.*;
+public class DetailsFragment extends Fragment {
 
-public class DetailsActivity extends AppCompatActivity {
+    public DetailsFragment() {
+        // Required empty public constructor
+    }
 
+    Activity activity;
+    Context context;
     // request codes for permissions results
     final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
     // whether user granted Contacts permissions
@@ -59,40 +69,64 @@ public class DetailsActivity extends AppCompatActivity {
     // user contact IDs
     String contactId;
     String rawContactId;
-    AddContactResult addContactResult;
+    ContactUtils.AddContactResult addContactResult;
 
+    // data binding
+    // FragmentDetailsBinding binding;
+
+    public static DetailsFragment newInstance(User user) {
+        Bundle args = new Bundle();
+        args.putParcelable("user", Parcels.wrap(user));
+        DetailsFragment fragment = new DetailsFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_details, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // get references to activity and context
+        activity = getActivity();
+        context = getContext();
+
         // get references to views
-        ivProfileImage = findViewById(R.id.ivImage);
-        tvName = findViewById(R.id.tvName);
-        tvOrganization = findViewById(R.id.tvOrganization);
-        tvPhone = findViewById(R.id.tvPhone);
-        tvEmail = findViewById(R.id.tvEmail);
-        btFacebook = findViewById(R.id.btFacebook);
-        btInstagram = findViewById(R.id.btInstagram);
-        btLinkedIn = findViewById(R.id.btLinkedIn);
-        btAddContact = findViewById(R.id.btAddContact);
-        rlContactOptions = findViewById(R.id.rlContactOptions);
-        tvUndo = findViewById(R.id.tvUndo);
-        tvView = findViewById(R.id.tvView);
-        rlConflict = findViewById(R.id.rlConflict);
-        tvViewConflict = findViewById(R.id.tvViewConflict);
-        tvIgnoreConflict = findViewById(R.id.tvIgnoreConflict);
-        tvConflictMessage = findViewById(R.id.tvConflictMessage);
+        ivProfileImage = view.findViewById(R.id.ivImage);
+        tvName = view.findViewById(R.id.tvName);
+        tvOrganization = view.findViewById(R.id.tvOrganization);
+        tvPhone = view.findViewById(R.id.tvPhone);
+        tvEmail = view.findViewById(R.id.tvEmail);
+        btFacebook = view.findViewById(R.id.btFacebook);
+        btInstagram = view.findViewById(R.id.btInstagram);
+        btLinkedIn = view.findViewById(R.id.btLinkedIn);
+        btAddContact = view.findViewById(R.id.btAddContact);
+        rlContactOptions = view.findViewById(R.id.rlContactOptions);
+        tvUndo = view.findViewById(R.id.tvUndo);
+        tvView = view.findViewById(R.id.tvView);
+        rlConflict = view.findViewById(R.id.rlConflict);
+        tvViewConflict = view.findViewById(R.id.tvViewConflict);
+        tvIgnoreConflict = view.findViewById(R.id.tvIgnoreConflict);
+        tvConflictMessage = view.findViewById(R.id.tvConflictMessage);
 
         // check whether user granted contacts permissions
-        permissionGranted = ContextCompat.checkSelfPermission(this,
+        permissionGranted = ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.READ_CONTACTS)
-                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(activity,
                 Manifest.permission.WRITE_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED;
 
         // get passed in user
-        user = Parcels.unwrap(getIntent().getParcelableExtra(User.class.getSimpleName()));
-        setInfo();
+        if (getArguments() != null) {
+            user = Parcels.unwrap(getArguments().getParcelable("user"));
+            setInfo();
+        }
 
         // CLICK HANDLERS
         // add contact when add contact button is clicked if they have required permissions
@@ -100,8 +134,8 @@ public class DetailsActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (requestPermissionsIfNeeded()) {
-                    addContactResult = findConflict(getBaseContext(), user);
-                    if (addContactResult.getResultCode() == SUCCESS) {
+                    addContactResult = ContactUtils.findConflict(getContext(), user);
+                    if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
                         addContact(user);
                     }
                 }
@@ -112,8 +146,8 @@ public class DetailsActivity extends AppCompatActivity {
         tvUndo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                undo(getBaseContext(), rawContactId);
-                showOptions(SUCCESS, false);
+                ContactUtils.undo(context, rawContactId);
+                showOptions(ContactUtils.SUCCESS, false);
             }
         });
 
@@ -121,7 +155,7 @@ public class DetailsActivity extends AppCompatActivity {
         tvView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewContact(getBaseContext(), contactId);
+                ContactUtils.viewContact(context, contactId);
             }
         });
 
@@ -129,11 +163,11 @@ public class DetailsActivity extends AppCompatActivity {
         tvIgnoreConflict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showOptions(PHONE_CONFLICT, false);
-                showOptions(EMAIL_CONFLICT, false);
+                showOptions(ContactUtils.PHONE_CONFLICT, false);
+                showOptions(ContactUtils.EMAIL_CONFLICT, false);
                 addContact(user);
                 // display options to undo and view
-                showOptions(SUCCESS, true);
+                showOptions(ContactUtils.SUCCESS, true);
             }
         });
 
@@ -141,7 +175,7 @@ public class DetailsActivity extends AppCompatActivity {
         tvViewConflict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                viewContact(getBaseContext(), addContactResult.getContactId());
+                ContactUtils.viewContact(context, addContactResult.getContactId());
             }
         });
     }
@@ -193,10 +227,51 @@ public class DetailsActivity extends AppCompatActivity {
         }
     }
 
+    // override addContact from utilities to also show appropriate messages and options
+    void addContact(User user) {
+        String ids[] = ContactUtils.addContact(context, user);
+        showOptions(ContactUtils.SUCCESS, true);
+        contactId = ids[0];
+        rawContactId = ids[1];
+        if (ContactUtils.mergeOccurred(context, contactId)) {
+            Toast.makeText(context, "Contact was linked with duplicate", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    // PERMISSIONS STUFF
+    // show appropriate options after adding contact based on whether it was successful or there was a conflict
+    public void showOptions(int resultCode, boolean show) {
+        // show options for no conflict
+        if (resultCode == ContactUtils.SUCCESS) {
+            if (show) {
+                rlContactOptions.setVisibility(View.VISIBLE);
+                btAddContact.setVisibility(View.GONE);
+            } else {
+                rlContactOptions.setVisibility(View.GONE);
+                btAddContact.setVisibility(View.VISIBLE);
+            }
+        }
+        // show options for conflict
+        else {
+            if (show) {
+                if (resultCode == ContactUtils.PHONE_CONFLICT) {
+                    tvConflictMessage.setText(getResources().getString(R.string.phone_conflict_message));
+                } else if (resultCode == ContactUtils.EMAIL_CONFLICT) {
+                    tvConflictMessage.setText(getResources().getString(R.string.email_conflict_message));
+                }
+                rlConflict.setVisibility(View.VISIBLE);
+                btAddContact.setVisibility(View.GONE);
+            } else {
+                rlConflict.setVisibility(View.GONE);
+                btAddContact.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
     // requests permissions if needed and returns true if permission is granted
     boolean requestPermissionsIfNeeded() {
         if (!permissionGranted) {
-            ActivityCompat.requestPermissions(this,
+            ActivityCompat.requestPermissions(activity,
                     new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
                     MY_PERMISSIONS_REQUEST_CONTACTS);
             return false;
@@ -206,7 +281,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     // show rationale for needing contact permissions and offer to request permissions again
     void showPermissionsRationale() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage(R.string.contact_permissions_rationale)
                 .setTitle("Permission Denied")
                 .setPositiveButton("I'm Sure", new DialogInterface.OnClickListener() {
@@ -218,7 +293,7 @@ public class DetailsActivity extends AppCompatActivity {
                 .setNegativeButton("Re-Try", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ActivityCompat.requestPermissions(DetailsActivity.this,
+                        ActivityCompat.requestPermissions(activity,
                                 new String[]{Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
                                 MY_PERMISSIONS_REQUEST_CONTACTS);
                     }
@@ -250,7 +325,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     // allow user to go to settings to manually grant permissions if denied and pressed "Never show again"
     void showPermissionDeniedForeverDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setMessage("Go to App Permissions in Settings to change this.")
                 .setTitle("Missing Contact Permissions")
                 // go to settings if user wants to
@@ -267,45 +342,5 @@ public class DetailsActivity extends AppCompatActivity {
                     }
                 });
         builder.show();
-    }
-
-    // override addContact from utilities to also show appropriate messages and options
-    void addContact(User user) {
-        String ids[] = ContactUtils.addContact(this, user);
-        showOptions(SUCCESS, true);
-        contactId = ids[0];
-        rawContactId = ids[1];
-        if (mergeOccurred(this, contactId)) {
-            Toast.makeText(this, "Contact was linked with duplicate", Toast.LENGTH_LONG).show();
-        }
-    }
-
-    // show appropriate options after adding contact based on whether it was successful or there was a conflict
-    public void showOptions(int optionsType, boolean show) {
-        // show options for no conflict
-        if (optionsType == SUCCESS) {
-            if (show) {
-                rlContactOptions.setVisibility(View.VISIBLE);
-                btAddContact.setVisibility(View.GONE);
-            } else {
-                rlContactOptions.setVisibility(View.GONE);
-                btAddContact.setVisibility(View.VISIBLE);
-            }
-        }
-        // show options for conflict
-        else {
-            if (show) {
-                if (optionsType == PHONE_CONFLICT) {
-                    tvConflictMessage.setText(getResources().getString(R.string.phone_conflict_message));
-                } else if (optionsType == EMAIL_CONFLICT) {
-                    tvConflictMessage.setText(getResources().getString(R.string.email_conflict_message));
-                }
-                rlConflict.setVisibility(View.VISIBLE);
-                btAddContact.setVisibility(View.GONE);
-            } else {
-                rlConflict.setVisibility(View.GONE);
-                btAddContact.setVisibility(View.VISIBLE);
-            }
-        }
     }
 }

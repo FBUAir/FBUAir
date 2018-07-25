@@ -66,7 +66,6 @@ public class HistoryFragment extends Fragment {
                 historyAdapter.clear();
                 populateHistory();
                 swipeContainer.setRefreshing(false);
-                Log.d("refresh", "refreshingggg");
             }
         });
 
