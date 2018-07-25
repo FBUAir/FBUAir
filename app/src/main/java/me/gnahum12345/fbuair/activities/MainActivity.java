@@ -2,6 +2,8 @@ package me.gnahum12345.fbuair.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.databinding.adapters.SearchViewBindingAdapter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -11,7 +13,12 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.MenuItem;
+import android.widget.Adapter;
+import android.widget.ImageView;
+import android.widget.Toast;
+import android.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -27,11 +34,14 @@ import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.services.ConnectionService;
 
-public class MainActivity extends AppCompatActivity
-        implements SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
+public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
 
-    // views
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    // references to bottom navigation bar and toolbar
+
     BottomNavigationView bottomNavigation;
     android.support.v7.widget.Toolbar toolbar;
     SearchView svSearch;
@@ -48,6 +58,8 @@ public class MainActivity extends AppCompatActivity
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
 
+    //Connection Service.
+    public ConnectionService connectService;
     // menus
     RelativeLayout historyMenu;
 
@@ -65,6 +77,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // set up ConnectionService
+        connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
+        //TODO: delete this.
+        connectService.inputData();
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -141,6 +157,37 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        connectService.addListener(discoverFragment);
+    }
+
+    private void startConnectionService() {
+        connectService.startDiscovering();
+        connectService.startAdvertising();
+        connectService.startMedia();
+    }
+
+    private void stopConnectionService() {
+        connectService.stopAdvertising();
+        connectService.stopDiscovering();
+        connectService.stopMedia();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        stopConnectionService();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        startConnectionService();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        connectService.onBackPressed();
 
         // associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager)
@@ -173,6 +220,24 @@ public class MainActivity extends AppCompatActivity
             return fragments.size();
         }
     }
+
+
+    // Feature to send eveything at once.
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (connectService.getState() == ConnectionService.State.CONNECTED &&
+                connectService.mGestureDetector.onKeyEvent(event)) {
+            return true;
+        }
+        return super.dispatchKeyEvent(event);
+    }
+
+    @Override
+    public void onPermissionsNotGranted() {
+        //change fragments to ask for permissions.
+        requestPermissions(connectService.getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
+    }
+
 
     // opens details screen for passed in user
     public void launchDetails(User user) {
