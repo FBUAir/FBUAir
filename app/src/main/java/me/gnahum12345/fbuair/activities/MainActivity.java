@@ -59,7 +59,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set up ConnectionService
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
-
+        //TODO: delete this.
+        connectService.inputData();
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -117,7 +118,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (item.getItemId()) {
                     case R.id.action_discover:
                         // Set the item to the first item in our list (discover)
-                        startConnectionService();
                         viewPager.setCurrentItem(0);
                         return true;
                     case R.id.action_history:
@@ -202,22 +202,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void onPermissionsNotGranted() {
         //change fragments to ask for permissions.
+        requestPermissions(connectService.getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
 
-    //TODO possibly place inside the other fragment.
-    @Override //TODO: put in Activity.
-    public void onRequestPermissionsResult(
-            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == REQUEST_CODE_REQUIRED_PERMISSIONS) {
-            for (int grantResult : grantResults) {
-                if (grantResult == PackageManager.PERMISSION_DENIED) {
-                    Toast.makeText(this, R.string.error_missing_permissions, Toast.LENGTH_LONG).show();
 
-                    return;
-                }
-            }
-            recreate();
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-    }
 }

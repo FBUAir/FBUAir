@@ -11,4 +11,11 @@
         android:layout_height="match_parent"
         android:id="@+id/rvDevicesView" />
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tvRVEmptyView"
+        android:textSize="25sp"
+        android:text="I can't seem to find anyone nearby...."
+        android:visibility="gone" />
 </FrameLayout>

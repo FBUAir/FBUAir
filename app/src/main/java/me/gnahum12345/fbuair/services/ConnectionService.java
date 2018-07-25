@@ -3,6 +3,8 @@ package me.gnahum12345.fbuair.services;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
@@ -597,15 +599,7 @@ public class ConnectionService {
         }
     }
 
-    /**
-     * An optional hook to pool any permissions the app needs with the permissions ConnectionService
-     * will request.
-     *
-     * @return All permissions required for the app to properly function.
-     */
-    public static String[] getRequiredPermissions() {
-        return REQUIRED_PERMISSIONS;
-    }
+
 
 
     private Strategy getStrategy() {
@@ -624,6 +618,16 @@ public class ConnectionService {
     /***********************************************************************************************
      *                 Public functions for anyone who wants networking service                     *
      ***********************************************************************************************/
+
+    /**
+     * An optional hook to pool any permissions the app needs with the permissions ConnectionService
+     * will request.
+     *
+     * @return All permissions required for the app to properly function.
+     */
+    public static String[] getRequiredPermissions() {
+        return REQUIRED_PERMISSIONS;
+    }
 
     public State getState() {
         return mState;
@@ -820,6 +824,26 @@ public class ConnectionService {
         send(Payload.fromBytes(current_user.getBytes()), endpoint);
     }
 
+    //TODO: Delete this function...
+    public void inputData() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        User user = new User();
+        user.setName("MY NAME");
+        user.setEmail("GNAHUM!@#$%^@Gmail.com");
+        user.setFacebookURL("FACEBOOK.COM/PROFILE=13141341");
+        user.setOrganization("SOME ORGANIZATION");
+        user.setProfileImage(BitmapFactory.decodeResource(mContext.getResources(),
+                R.drawable.default_profile));
+        try {
+            editor.putString("current_user", user.toJson(user).toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+    }
+
 
     /***********************************************************************************************
      *                             Functions for listeners                                         *
@@ -948,6 +972,10 @@ public class ConnectionService {
         public int compareTo(@NonNull Object o) {
             if (o instanceof Endpoint) {
                 Endpoint e = (Endpoint) o;
+                //TODO: delete this.
+                if (e.getName() == null) {
+                    return 1;
+                }
                 int result = getName().compareTo(e.getName());
                 return result == 0 ? 1 : result;
             } else {

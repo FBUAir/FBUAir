@@ -13,7 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.nio.charset.MalformedInputException;
 import java.util.HashSet;
@@ -34,12 +37,19 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private RecyclerView rvDevicesView;
     private HashSet<ConnectionService.Endpoint> deviceLst;
     private DiscoverAdapter rvAdapter;
-
+    private boolean hasInit = false;
     private DiscoverFragmentListener mListener;
+    private TextView tvRVEmpty;
 
     public DiscoverFragment() {
         // Required empty public constructor
     }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+    }
+
 
     /**
      * TODO: put in activity.
@@ -62,14 +72,18 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         // Inflate the layout for this fragment
         if (!hasPermissions(mContext, ConnectionService.getRequiredPermissions())) {
             //TODO: show reasoning for why we need permissions and request them;
-            mListener.onPermissionsNotGranted();
-            return null;
+            permissionsNotGranted();
+
         }
+        hasInit = true;
 
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
+        tvRVEmpty = view.findViewById(R.id.tvRVEmptyView);
         rvDevicesView = view.findViewById(R.id.rvDevicesView);
 
+        tvRVEmpty.setVisibility(View.VISIBLE);
+        rvDevicesView.setVisibility(View.GONE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 
         rvDevicesView.setLayoutManager(layoutManager);
@@ -82,9 +96,13 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     public void onAttach(Context context) {
         super.onAttach(context);
         mContext = context;
-        mListener = (MainActivity) context;
-        rvAdapter = new DiscoverAdapter();
-
+        if (context instanceof DiscoverFragmentListener) {
+            mListener =  (DiscoverFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+        }
+        rvAdapter = new DiscoverAdapter(mContext);
     }
 
 
@@ -94,6 +112,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     public void updateEndpoint(ConnectionService.Endpoint endpoint, Object userData, boolean isProfile) {
         if (isProfile) {
             rvAdapter.put(endpoint, ((ProfileUser) userData));
+            rvAdapter.notifyDataSetChanged();
         } else {
             if (userData instanceof User) {
                 User user = (User) userData;
@@ -110,15 +129,45 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     @Override
     public void addEndpoint(ConnectionService.Endpoint endpoint) {
         rvAdapter.add(endpoint);
+        tvRVEmpty.setVisibility(View.GONE);
+        rvDevicesView.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void removeEndpoint(ConnectionService.Endpoint endpoint) {
         rvAdapter.remove(endpoint);
+        if (rvAdapter.isEmpty()) {
+            rvDevicesView.setVisibility(View.GONE);
+            tvRVEmpty.setVisibility(View.VISIBLE);
+        }
     }
 
     public interface DiscoverFragmentListener {
         public void onPermissionsNotGranted();
+    }
+
+    private void permissionsNotGranted() {
+        String[] permissions = ((MainActivity) mContext).connectService.getRequiredPermissions();
+        //TODO: put dialog here.
+        requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
+    }
+
+
+    //TODO possibly place inside the other fragment.
+    @Override //TODO: put in Activity.
+    public void onRequestPermissionsResult(
+            int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == REQUEST_CODE_REQUIRED_PERMISSIONS) {
+            for (int grantResult : grantResults) {
+                if (grantResult == PackageManager.PERMISSION_DENIED) {
+                    Toast.makeText(mContext, R.string.error_missing_permissions, Toast.LENGTH_LONG).show();
+
+                    return;
+                }
+            }
+            ((MainActivity) mContext).recreate();
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
 

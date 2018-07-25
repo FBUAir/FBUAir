@@ -29,8 +29,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     private Context mContext;
 
 
-    public DiscoverAdapter() {
-        // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E RANDOM).
+    public DiscoverAdapter(Context context) {
+        mContext = context;
+        // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E ALPHABETICALLY).
+        // TODO: initialize mContext somehow here.
         mDevices = new TreeMap<>(new Comparator<Endpoint>() {
             @Override
             public int compare(Endpoint endpoint, Endpoint t1) {
@@ -40,7 +42,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
 
-    public DiscoverAdapter(Set<Endpoint> devices) {
+    public DiscoverAdapter(Set<Endpoint> devices, Context context) {
+        mContext = context;
         // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E RANDOM).
         mDevices = new TreeMap<>(new Comparator<Endpoint>() {
             @Override
@@ -57,7 +60,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int i) {
-        mContext = viewGroup.getContext();
         LayoutInflater inflater = LayoutInflater.from(mContext);
 
         // create the view using the item_movie layout.
@@ -122,7 +124,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
     private String parseName(String name) {
-//        String divider = ((MainActivity) mContext).getString(R.string.divider);
         // TODO: figure out why this is a null pointer.
         String divider = mContext.getResources().getString(R.string.divider);
         if (divider == null || divider.isEmpty()) {
@@ -132,6 +133,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         }
     }
 
+    public boolean isEmpty() {
+        return getItemCount() == 0;
+    }
 
     @Override
     public int getItemCount() {
