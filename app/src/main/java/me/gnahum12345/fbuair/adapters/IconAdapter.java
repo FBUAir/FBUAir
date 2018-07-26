@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.models.Icon;
 
 // adapter for social media icons during sign up
@@ -18,6 +20,8 @@ public class IconAdapter extends BaseAdapter {
     // list of icons and context
     List<Icon> icons;
     Context context;
+
+    IconClickedListener iconClickedListener;
 
     // Clean all elements of the recycler
     public void clear() {
@@ -29,6 +33,16 @@ public class IconAdapter extends BaseAdapter {
     public IconAdapter(Context context, List<Icon> icons) {
         this.context = context;
         this.icons = icons;
+        try {
+            iconClickedListener = (IconClickedListener) context;
+        } catch (ClassCastException e) {
+            Log.e("IconAdapter", "Fragment must implement IconClickedListener") ;
+        }
+    }
+
+    public interface IconClickedListener {
+        void addMedia(Icon icon);
+        void removeMedia(Icon icon);
     }
 
     @Override
@@ -71,7 +85,7 @@ public class IconAdapter extends BaseAdapter {
         TextView tvIconName;
         ImageView ivCheck;
 
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             // perform findViewById lookups
             ivIconImage = itemView.findViewById(R.id.ivIconImage);
             ivCheck = itemView.findViewById(R.id.ivCheck);
@@ -85,9 +99,15 @@ public class IconAdapter extends BaseAdapter {
         public void onClick(View view) {
             // get item position
             int position = (int) view.getTag(R.id.POSITION_KEY);
-            // get the icon at the position from icons array
+            // get the icon at the position from icons array and toggle its selected
             Icon icon;
             icon = icons.get(position);
+            if (icon.isSelected()) {
+                iconClickedListener.addMedia(icon);
+            } else {
+                iconClickedListener.removeMedia(icon);
+            }
         }
     }
+
 }

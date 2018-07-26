@@ -4,6 +4,7 @@
     <!-- used in adding social media sign up screens -->
     <string name="social_media_instructions">Add some social media platforms.</string>
     <string name="request_platforms_message">Missing your favorite platform? Request it here.</string>
+    <string name="remove_social_media_confirmation">Are you sure you want to remove</string>
     <!-- profile sign up error messages -->
     <string name="bad_email_error">Enter a valid email address.</string>
     <string name="bad_fb_url_error">Enter a valid Facebook profile URL.</string>

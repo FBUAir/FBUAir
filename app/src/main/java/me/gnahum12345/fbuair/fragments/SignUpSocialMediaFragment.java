@@ -27,7 +27,7 @@ import me.gnahum12345.fbuair.models.Icon;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.Utils;
 
-public class SignUpSocialMediaFragment extends Fragment {
+public class SignUpSocialMediaFragment extends Fragment{
     // reference to activity
     SignUpActivity activity;
 
@@ -35,8 +35,7 @@ public class SignUpSocialMediaFragment extends Fragment {
 
     User user;
 
-    GridView gvIcons;
-    IconAdapter iconAdapter;
+    public IconAdapter iconAdapter;
     List<Icon> icons;
     // make sure drawable resource "ic_[social media name (lowercase)]" exists
     String[] socialMediaNames = {"Facebook", "Instagram", "Twitter", "Snapchat", "LinkedIn", "Google",
@@ -69,14 +68,14 @@ public class SignUpSocialMediaFragment extends Fragment {
         // hide keyboard
         Utils.hideSoftKeyboard(activity);
 
-        GridViewWithHeaderAndFooter gridView = (GridViewWithHeaderAndFooter) bind.gvIcons;
-
+        // set footer (buttons for skip and next) in grid view
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.icons_footer, container,
                 false);
         View footerView = bindFooter.getRoot();
-        gridView.addFooterView(footerView);
+        bind.gvIcons.addFooterView(footerView);
 
+        // create icons list with supported social media platforms and create adapter
         icons = makeIcons(socialMediaNames);
         iconAdapter = new IconAdapter(getContext(), icons);
         bind.gvIcons.setAdapter(iconAdapter);
@@ -85,6 +84,7 @@ public class SignUpSocialMediaFragment extends Fragment {
         if (getArguments() != null) {
             user = Parcels.unwrap(getArguments().getParcelable("user"));
         }
+
         // CLICK HANDLERS
         footerView.findViewById(R.id.btNext);
         bindFooter.btNext.setOnClickListener(new View.OnClickListener() {

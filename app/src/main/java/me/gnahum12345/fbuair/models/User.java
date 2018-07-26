@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 
 @Parcel
 public class User {
@@ -22,6 +23,7 @@ public class User {
     String instagramURL;
     String linkedInURL;
     String timeAddedToHistory;
+    ArrayList<SocialMedia> socialMediaList = new ArrayList<>();
 
     // empty constructor needed by the Parceler library
     public User() { }
@@ -61,6 +63,28 @@ public class User {
     public void setLinkedInURL(String linkedInURL) { this.linkedInURL = linkedInURL; }
 
     public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
+
+    public ArrayList<SocialMedia> getSocialMediaList() {
+        return socialMediaList;
+    }
+
+    public void addSocialMedia (SocialMedia socialMedia) {
+        socialMediaList.add(socialMedia);
+    }
+
+    // removes social media by object
+    public void removeSocialMedia (SocialMedia socialMedia) {
+        socialMediaList.remove(socialMedia);
+    }
+
+    // removes social media by name
+    public void removeSocialMedia (String socialMediaName) {
+        for (SocialMedia socialMedia : socialMediaList) {
+            if (socialMedia.getIcon().getName().equals(socialMediaName)) {
+                socialMediaList.remove(socialMedia);
+            }
+        }
+    }
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();

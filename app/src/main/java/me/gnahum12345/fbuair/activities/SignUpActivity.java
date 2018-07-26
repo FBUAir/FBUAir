@@ -1,6 +1,8 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.Fragment;
@@ -17,16 +19,18 @@ import org.json.JSONException;
 import org.parceler.Parcels;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.adapters.IconAdapter;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.SignUpUrlFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
+import me.gnahum12345.fbuair.models.Icon;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
-public class SignUpActivity extends AppCompatActivity {
+public class SignUpActivity extends AppCompatActivity implements IconAdapter.IconClickedListener {
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
     SignUpSocialMediaFragment signUpSocialMediaFragment;
@@ -37,6 +41,9 @@ public class SignUpActivity extends AppCompatActivity {
     TextView tvTitle;
     ImageView ivBack;
     Toolbar toolbar;
+
+    // user signing up
+    public User user;
 
     FragmentManager fragmentManager;
 
@@ -119,5 +126,33 @@ public class SignUpActivity extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    // prompts user to enter social media profile url and returns true if user does so successfully
+    @Override
+    public void addMedia(final Icon icon) {
+    }
+
+    // checks if user wants to remove social media and returns true after deleting
+    @Override
+    public void removeMedia(final Icon icon) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString
+                (R.string.remove_social_media_confirmation) + " " + icon.getName() + "?")
+                .setTitle("Remove " + icon.getName())
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        user.removeSocialMedia(icon.getName());
+                        icon.setSelected(false);
+                        signUpSocialMediaFragment.iconAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    }
+                });
+        builder.show();
     }
 }

@@ -39,6 +39,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         this.history = history;
         this.filteredHistory = history;
         getFilter();
+        // try to get listener
+        try {
+            launchDetailsListener = ((LaunchDetailsListener) context);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
+        }
     }
 
     @NonNull
@@ -47,12 +53,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         context = holder.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.history_item, holder, false);
-        // get listener
-        try {
-            launchDetailsListener = ((LaunchDetailsListener) context);
-        } catch (ClassCastException e) {
-            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
-        }
         // return a new viewHolder,
         return new ViewHolder(contactView);
     }
