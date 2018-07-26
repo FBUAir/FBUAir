@@ -146,7 +146,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     }
 
     public void notifyAdapter() {
-        rvAdapter.notifyDataSetChanged();
+
     }
 
     public interface DiscoverFragmentListener {

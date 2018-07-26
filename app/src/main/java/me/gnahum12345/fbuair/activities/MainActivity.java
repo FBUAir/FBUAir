@@ -52,7 +52,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 protected void onHold() {
                     connectService.sendToAll();
                 }
-
             };
 
     // fragments
@@ -91,9 +90,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         userManager = UserManager.getInstance();
         userManager.loadContacts(this);
         // set up ConnectionService
-        connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
-        //TODO: delete this.
-        connectService.inputData();
+        connectService = new ConnectionService(this);
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -246,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // Feature to send eveything at once.
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (connectService.getState() == ConnectionService.State.CONNECTED &&
+        if (!discoverFragment.adapter.isEmpty() &&
                 mGestureDetector.onKeyEvent(event)) {
             return true;
         }

@@ -100,7 +100,9 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
-        setId();
+        if (getId() == null || getId().isEmpty()) {
+            setId();
+        }
     }
 
     public void setOrganization(String organization) { this.organization = organization; }

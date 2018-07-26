@@ -108,8 +108,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
-            String name = parseName(device.getName());
-            viewHolder.mtvDeviceName.setText(name);
+            String deviceName = parseName(device.getName());
+            viewHolder.mtvDeviceName.setText(deviceName);
         }
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);
