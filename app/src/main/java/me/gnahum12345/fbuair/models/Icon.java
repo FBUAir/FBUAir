@@ -4,9 +4,9 @@ import android.graphics.drawable.Drawable;
 
 public class Icon {
 
-    Drawable drawable;
-    String name;
-    boolean selected = false;
+    private Drawable drawable;
+    private String name;
+    private boolean added = false;
 
     public Drawable getDrawable() {
         return drawable;
@@ -16,12 +16,12 @@ public class Icon {
         this.drawable = drawable;
     }
 
-    public boolean isSelected() {
-        return selected;
+    public boolean isAdded() {
+        return added;
     }
 
-    public void setSelected(boolean selected) {
-        this.selected = selected;
+    public void setAdded(boolean added) {
+        this.added = added;
     }
 
     public String getName() {

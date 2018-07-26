@@ -58,10 +58,6 @@ public class User {
 
     public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
 
-    public void setInstagramURL(String instagramURL) { this.instagramURL = instagramURL; }
-
-    public void setLinkedInURL(String linkedInURL) { this.linkedInURL = linkedInURL; }
-
     public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
 
     public ArrayList<SocialMedia> getSocialMediaList() {

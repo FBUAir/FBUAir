@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:focusable="true"
     android:focusableInTouchMode="true"
-    tools:context=".activities.ProfileActivity">
+    tools:context=".fragments.ProfileFragment">
 
     <ScrollView
         android:layout_width="wrap_content"
@@ -256,6 +256,14 @@
                 android:layout_below="@id/etInstagramUrl"
                 android:layout_alignParentStart="true"
                 android:text="Delete Profile" />
+
+            <TextView
+                android:id="@+id/tvSocialMedias"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:text="TextView" />
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

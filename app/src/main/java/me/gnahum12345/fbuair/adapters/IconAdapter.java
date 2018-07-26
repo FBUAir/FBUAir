@@ -12,16 +12,16 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
+import me.gnahum12345.fbuair.interfaces.OnIconClickedListener;
 import me.gnahum12345.fbuair.models.Icon;
 
 // adapter for social media icons during sign up
 public class IconAdapter extends BaseAdapter {
     // list of icons and context
-    List<Icon> icons;
-    Context context;
+    private List<Icon> icons;
+    private Context context;
 
-    IconClickedListener iconClickedListener;
+    private OnIconClickedListener onIconClickedListener;
 
     // Clean all elements of the recycler
     public void clear() {
@@ -29,20 +29,15 @@ public class IconAdapter extends BaseAdapter {
         notifyDataSetChanged();
     }
 
-    // pass in the user posts array in the constructor
+    // pass the icons list in the constructor
     public IconAdapter(Context context, List<Icon> icons) {
         this.context = context;
         this.icons = icons;
         try {
-            iconClickedListener = (IconClickedListener) context;
+            onIconClickedListener = (OnIconClickedListener) context;
         } catch (ClassCastException e) {
-            Log.e("IconAdapter", "Fragment must implement IconClickedListener") ;
+            Log.e("IconAdapter", "Fragment must implement OnIconClickedListener") ;
         }
-    }
-
-    public interface IconClickedListener {
-        void addMedia(Icon icon);
-        void removeMedia(Icon icon);
     }
 
     @Override
@@ -74,7 +69,7 @@ public class IconAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
         viewHolder.ivIconImage.setImageDrawable(icon.getDrawable());
         viewHolder.tvIconName.setText(icon.getName());
-        viewHolder.ivCheck.setVisibility(icon.isSelected() ? View.VISIBLE : View.GONE);
+        viewHolder.ivCheck.setVisibility(icon.isAdded() ? View.VISIBLE : View.GONE);
         return view;
     }
 
@@ -102,10 +97,10 @@ public class IconAdapter extends BaseAdapter {
             // get the icon at the position from icons array and toggle its selected
             Icon icon;
             icon = icons.get(position);
-            if (icon.isSelected()) {
-                iconClickedListener.addMedia(icon);
+            if (icon.isAdded()) {
+                onIconClickedListener.removeMedia(icon);
             } else {
-                iconClickedListener.removeMedia(icon);
+                onIconClickedListener.addMedia(icon);
             }
         }
     }

@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // set up ConnectionService
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
         //TODO: delete this.
-        connectService.inputData();
+        //connectService.inputData();
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);

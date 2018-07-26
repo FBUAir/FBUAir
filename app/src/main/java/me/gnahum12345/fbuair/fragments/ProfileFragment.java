@@ -30,9 +30,12 @@ import org.json.JSONObject;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
+import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
@@ -64,6 +67,8 @@ public class ProfileFragment extends Fragment {
     TextView tvInstagramError;
     TextView tvLinkedInError;
 
+    TextView tvSocialMedias;
+
     // shared preferences
     SharedPreferences sharedpreferences;
 
@@ -90,7 +95,7 @@ public class ProfileFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
@@ -105,7 +110,9 @@ public class ProfileFragment extends Fragment {
         activity = getActivity();
 
         // get shared preferences
-        sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        if (activity != null) {
+            sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        }
 
         // get references to views
         etName = view.findViewById(R.id.etName);
@@ -125,6 +132,7 @@ public class ProfileFragment extends Fragment {
         btEditProfile = view.findViewById(R.id.btEditProfile);
         btSubmit = view.findViewById(R.id.btSubmit);
         btDeleteProfile = view.findViewById(R.id.btDeleteProfile);
+        tvSocialMedias = view.findViewById(R.id.tvSocialMedias);
 
         // clear placeholder text in errors
         clearErrors();
@@ -182,6 +190,14 @@ public class ProfileFragment extends Fragment {
             etInstagramUrl.setText(user.getInstagramURL());
             etLinkedInUrl.setText(user.getLinkedInURL());
             btnProfileImage.setImageBitmap(user.getProfileImage());
+            String socialMedias = "SOCIALMEDIAS\n";
+            for (SocialMedia socialMedia : user.getSocialMediaList()) {
+                socialMedias = socialMedias +
+                        "Name: " + socialMedia.getIcon().getName() +
+                        " Username: " + socialMedia.getUsername() +
+                        " Url: " + socialMedia.getProfileUrl() + "\n";
+            }
+            tvSocialMedias.setText(socialMedias);
         }
         else {
             // go to sign up activity if no current user
@@ -206,7 +222,6 @@ public class ProfileFragment extends Fragment {
             user.setPhoneNumber(phone);
             user.setEmail(email);
             user.setOrganization(organization);
-            user.setFacebookURL(facebookUrl);
             if (profileImageBitmap != null)
                 user.setProfileImage(profileImageBitmap);;
             // save changes to shared preferences
@@ -224,36 +239,9 @@ public class ProfileFragment extends Fragment {
     public boolean isValidProfile() {
         // clear previous errors
         clearErrors();
-        // check fields and set appropriate error messages
-        boolean valid = true;
-        if (name.isEmpty()) {
-            tvNameError.setText(getResources().getString(R.string.no_name_error));
-            valid = false;
-        }
-        if (!email.isEmpty() && !isValidEmail(email)) {
-            tvEmailError.setText(getResources().getString(R.string.bad_email_error));
-            valid = false;
-        }
-        if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
-            tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
-            valid = false;
-        }
-        if (!facebookUrl.isEmpty() && !isValidFacebookUrl(facebookUrl)) {
-            tvFacebookError.setText(getResources().getString(R.string.bad_fb_url_error));
-            valid = false;
-        }
-        if (!linkedInUrl.isEmpty() && !isValidLinkedInUrl(linkedInUrl)) {
-            tvLinkedInError.setText(getResources().getString(R.string.bad_linked_in_url_error));
-            valid = false;
-        }
-        if (!instagramUrl.isEmpty() && !isValidInstagramUrl(instagramUrl)) {
-            tvInstagramError.setText(getResources().getString(R.string.bad_instagram_url_error));
-            valid = false;
-        }
-        return valid;
+        return true;
     }
 
-    // clear all error messages
     void clearErrors() {
         tvNameError.setText("");
         tvPhoneError.setText("");
@@ -298,17 +286,15 @@ public class ProfileFragment extends Fragment {
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = activity.getContentResolver().openInputStream(
-                        data.getData());
+                        Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 profileImageBitmap = bitmap;
                 btnProfileImage.setImageBitmap(bitmap);
-
-
-                stream.close();
+                if (stream != null) {
+                    stream.close();
+                }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

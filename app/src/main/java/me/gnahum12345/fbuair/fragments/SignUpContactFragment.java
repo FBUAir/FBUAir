@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -14,13 +15,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -29,6 +27,7 @@ import java.util.Objects;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
+import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
@@ -45,10 +44,23 @@ public class SignUpContactFragment extends Fragment {
     // reference to Sign Up Activity
     SignUpActivity activity;
 
+    OnSignUpScreenChangeListener onSignUpScreenChangeListener;
+
     FragmentSignUpContactBinding bind;
 
     public SignUpContactFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        try {
+            onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
+        } catch (ClassCastException e) {
+                Log.e("SignUpContactFragment",
+                        "Sign Up Activity must implement onSignUpScreenChangeListener");
+        }
+        super.onAttach(context);
     }
 
     @Override
@@ -57,8 +69,7 @@ public class SignUpContactFragment extends Fragment {
         // Inflate the layout for this fragment
         bind = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sign_up_contact, container, false);
-        View view = bind.getRoot();
-        return view;
+        return bind.getRoot();
     }
 
     @Override
@@ -67,7 +78,9 @@ public class SignUpContactFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
 
         // show toolbar
-        activity.getSupportActionBar().show();
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).show();
+        }
 
         // clear placeholder text in errors
         clearErrors();
@@ -90,14 +103,14 @@ public class SignUpContactFragment extends Fragment {
                 }
                 // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
-                    User user = new User();
+                    User user = activity.user;
                     user.setName(name);
                     user.setOrganization(organization);
                     user.setPhoneNumber(phone);
                     user.setEmail(email);
                     user.setProfileImage(profileImage);
-                    activity.launchSignUpSocialMedia(user);
                     activity.user = user;
+                    onSignUpScreenChangeListener.launchSignUpSocialMedia();
                 }
             }
         });
@@ -206,5 +219,11 @@ public class SignUpContactFragment extends Fragment {
         if (intent.resolveActivity(activity.getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSignUpScreenChangeListener = null;
     }
 }

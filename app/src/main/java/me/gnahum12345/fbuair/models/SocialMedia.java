@@ -1,9 +1,9 @@
 package me.gnahum12345.fbuair.models;
 
 public class SocialMedia {
-    Icon icon;
-    String profileUrl;
-    String username;
+    private Icon icon;
+    private String profileUrl;
+    private String username;
 
     public Icon getIcon() {
         return icon;
