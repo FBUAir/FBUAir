@@ -1,137 +1,139 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:foreground="?android:attr/selectableItemBackground"
-    android:padding="15dp"
-    tools:context=".fragments.SignUpContactFragment">
-
-    <EditText
-        android:id="@+id/etEmail"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/etPhone"
-        android:layout_alignTop="@+id/ivEmail"
-        android:ems="10"
-        android:hint="Email"
-        android:inputType="textEmailAddress"
-        android:textColor="@android:color/black" />
-
-
-    <TextView
-        android:id="@+id/tvNameError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/btnProfileImage"
-        android:text="name error"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="12sp" />
-
-    <TextView
-        android:id="@+id/tvPhoneError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etOrganization"
-        android:layout_marginTop="10dp"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="12sp"
-        tools:text="phone error" />
-
-    <TextView
-        android:id="@+id/tvEmailError"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etPhone"
-        android:layout_marginTop="10dp"
-        android:text="email error"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="12sp" />
-
-    <EditText
-        android:id="@+id/etPhone"
-        android:layout_width="265dp"
-        android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/ivPhone"
-        android:layout_centerHorizontal="true"
-        android:layout_toEndOf="@+id/ivPhone"
-        android:ems="10"
-        android:hint="Phone Number"
-        android:inputType="phone"
-        android:textColor="@android:color/black" />
-
-    <EditText
-        android:id="@+id/etName"
+    xmlns:tools="http://schemas.android.com/tools">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvNameError"
-        android:layout_marginBottom="10dp"
-        android:ems="10"
-        android:focusedByDefault="true"
-        android:hint="Name"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        android:textColor="@android:color/black" />
+        android:layout_height="match_parent"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="15dp"
+        tools:context=".fragments.SignUpContactFragment">
 
-    <EditText
-        android:id="@+id/etOrganization"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/etName"
-        android:ems="10"
-        android:hint="Organization"
-        android:inputType="textPersonName"
-        android:textAlignment="center"
-        android:textColor="@android:color/black" />
+        <EditText
+            android:id="@+id/etEmail"
+            android:layout_width="265dp"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/etPhone"
+            android:layout_alignTop="@+id/ivEmail"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:textColor="@android:color/black" />
 
-    <Button
-        android:id="@+id/btNext"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:text="Next" />
 
-    <ImageView
-        android:id="@+id/ivPhone"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvPhoneError"
-        app:srcCompat="@drawable/ic_phone" />
+        <TextView
+            android:id="@+id/tvNameError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/btnProfileImage"
+            android:text="name error"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="12sp" />
 
-    <ImageView
-        android:id="@+id/ivEmail"
-        android:layout_width="46dp"
-        android:layout_height="46dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvEmailError"
-        app:srcCompat="@drawable/ic_email" />
+        <TextView
+            android:id="@+id/tvPhoneError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/etOrganization"
+            android:layout_marginTop="10dp"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="12sp"
+            tools:text="phone error" />
 
-    <ImageButton
-        android:id="@+id/btnProfileImage"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:background="@android:color/transparent"
-        android:src="@drawable/ic_camera"
-        android:scaleType="centerCrop" />
+        <TextView
+            android:id="@+id/tvEmailError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/etPhone"
+            android:layout_marginTop="10dp"
+            android:text="email error"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/asterisk"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/tvNameError"
-        android:text="*"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="14sp" />
+        <EditText
+            android:id="@+id/etPhone"
+            android:layout_width="265dp"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/ivPhone"
+            android:layout_centerHorizontal="true"
+            android:layout_toEndOf="@+id/ivPhone"
+            android:ems="10"
+            android:hint="Phone Number"
+            android:inputType="phone"
+            android:textColor="@android:color/black" />
 
-</RelativeLayout>
+        <EditText
+            android:id="@+id/etName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvNameError"
+            android:layout_marginBottom="10dp"
+            android:ems="10"
+            android:focusedByDefault="true"
+            android:hint="Name"
+            android:inputType="textPersonName"
+            android:textAlignment="center"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/etOrganization"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/etName"
+            android:ems="10"
+            android:hint="Organization"
+            android:inputType="textPersonName"
+            android:textAlignment="center"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:id="@+id/btNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:text="Next" />
+
+        <ImageView
+            android:id="@+id/ivPhone"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvPhoneError"
+            app:srcCompat="@drawable/ic_phone" />
+
+        <ImageView
+            android:id="@+id/ivEmail"
+            android:layout_width="46dp"
+            android:layout_height="46dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvEmailError"
+            app:srcCompat="@drawable/ic_email" />
+
+        <ImageButton
+            android:id="@+id/btnProfileImage"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_camera"
+            android:scaleType="centerCrop" />
+
+        <TextView
+            android:id="@+id/asterisk"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/tvNameError"
+            android:text="*"
+            android:textColor="@android:color/holo_red_dark"
+            android:textSize="14sp" />
+
+    </RelativeLayout>
+</layout>

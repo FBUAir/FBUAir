@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <RelativeLayout
+        android:layout_width="match_parent" android:layout_height="match_parent">
+        <TextView
+            android:id="@+id/tvRequestPlatform"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/gvIcons"
+            android:layout_centerHorizontal="true"
+            android:text="@string/request_platforms_message"
+            android:textAlignment="viewStart"
+            android:textSize="12sp" />
+
+        <TextView
+            android:id="@+id/tvSkip"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBaseline="@+id/btNext"
+            android:layout_alignParentStart="true"
+            android:text="SKIP" />
+
+        <Button
+            android:id="@+id/btNext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/tvRequestPlatform"
+            android:layout_marginTop="20dp"
+            android:text="Next" />
+    </RelativeLayout>
+</layout>

@@ -1,23 +1,16 @@
 package me.gnahum12345.fbuair.models;
 
-import android.Manifest;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.v4.app.ActivityCompat;
-import android.telephony.TelephonyManager;
 import android.util.Base64;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Generated;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
-
+import java.util.ArrayList;
 
 @Parcel
 public class User {
@@ -32,6 +25,7 @@ public class User {
     String instagramURL;
     String linkedInURL;
     String timeAddedToHistory;
+    ArrayList<SocialMedia> socialMediaList = new ArrayList<>();
 
     // empty constructor needed by the Parceler library
     public User() {
@@ -113,11 +107,29 @@ public class User {
 
     public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
 
-    public void setInstagramURL(String instagramURL) { this.instagramURL = instagramURL; }
-
-    public void setLinkedInURL(String linkedInURL) { this.linkedInURL = linkedInURL; }
-
     public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
+
+    public ArrayList<SocialMedia> getSocialMediaList() {
+        return socialMediaList;
+    }
+
+    public void addSocialMedia (SocialMedia socialMedia) {
+        socialMediaList.add(socialMedia);
+    }
+
+    // removes social media by object
+    public void removeSocialMedia (SocialMedia socialMedia) {
+        socialMediaList.remove(socialMedia);
+    }
+
+    // removes social media by name
+    public void removeSocialMedia (String socialMediaName) {
+        for (SocialMedia socialMedia : socialMediaList) {
+            if (socialMedia.getIcon().getName().equals(socialMediaName)) {
+                socialMediaList.remove(socialMedia);
+            }
+        }
+    }
 
 
     public static User fromJson(JSONObject json) throws JSONException {

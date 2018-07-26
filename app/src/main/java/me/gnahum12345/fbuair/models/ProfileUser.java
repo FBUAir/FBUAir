@@ -6,7 +6,7 @@ import android.graphics.Bitmap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
+import org.parceler.Parcel;
 
 public class ProfileUser {
 

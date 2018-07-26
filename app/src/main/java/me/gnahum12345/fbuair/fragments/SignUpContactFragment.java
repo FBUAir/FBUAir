@@ -2,8 +2,10 @@ package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -13,13 +15,10 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,22 +26,14 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
+import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
 import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class SignUpContactFragment extends Fragment {
-    // views
-    EditText etName;
-    EditText etOrganization;
-    EditText etPhoneNumber;
-    EditText etEmail;
-    Button btNext;
-    ImageButton btnProfileImage;
-    TextView tvNameError;
-    TextView tvPhoneError;
-    TextView tvEmailError;
 
     Bitmap profileImage;
     Dialog dialog;
@@ -53,15 +44,32 @@ public class SignUpContactFragment extends Fragment {
     // reference to Sign Up Activity
     SignUpActivity activity;
 
+    OnSignUpScreenChangeListener onSignUpScreenChangeListener;
+
+    FragmentSignUpContactBinding bind;
+
     public SignUpContactFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        try {
+            onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
+        } catch (ClassCastException e) {
+                Log.e("SignUpContactFragment",
+                        "Sign Up Activity must implement onSignUpScreenChangeListener");
+        }
+        super.onAttach(context);
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_sign_up_contact, container, false);
+        bind = DataBindingUtil.inflate(
+                inflater, R.layout.fragment_sign_up_contact, container, false);
+        return bind.getRoot();
     }
 
     @Override
@@ -70,53 +78,44 @@ public class SignUpContactFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
 
         // show toolbar
-        activity.getSupportActionBar().show();
-
-        // get references to views
-        etName = view.findViewById(R.id.etName);
-        etOrganization = view.findViewById(R.id.etOrganization);
-        etPhoneNumber = view.findViewById(R.id.etPhone);
-        etEmail = view.findViewById(R.id.etEmail);
-        btNext = view.findViewById(R.id.btNext);
-        btnProfileImage = view.findViewById(R.id.btnProfileImage);
-
-        tvNameError = view.findViewById(R.id.tvNameError);
-        tvEmailError = view.findViewById(R.id.tvEmailError);
-        tvPhoneError = view.findViewById(R.id.tvPhoneError);
+        if (activity != null) {
+            Objects.requireNonNull(activity.getSupportActionBar()).show();
+        }
 
         // clear placeholder text in errors
         clearErrors();
 
         // add formatter to phone number field
-        etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         // go to next sign up screen when user clicks on button
-        btNext.setOnClickListener(new View.OnClickListener() {
+        bind.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // get values user submitted
-                final String name = etName.getText().toString();
-                final String organization = etOrganization.getText().toString();
-                final String phone = etPhoneNumber.getText().toString();
-                final String email = etEmail.getText().toString();
+                final String name = bind.etName.getText().toString();
+                final String organization = bind.etOrganization.getText().toString();
+                final String phone = bind.etPhone.getText().toString();
+                final String email = bind.etEmail.getText().toString();
                 if (profileImage == null) {
                     profileImage = BitmapFactory.decodeResource(getResources(),
                             R.drawable.default_profile);
                 }
                 // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
-                    User user = new User();
+                    User user = activity.user;
                     user.setName(name);
                     user.setOrganization(organization);
                     user.setPhoneNumber(phone);
                     user.setEmail(email);
                     user.setProfileImage(profileImage);
-                    activity.launchSignUpSocialMedia(user);
+                    activity.user = user;
+                    onSignUpScreenChangeListener.launchSignUpSocialMedia();
                 }
             }
         });
 
-        btnProfileImage.setOnClickListener(new View.OnClickListener() {
+        bind.btnProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialog();
@@ -132,24 +131,24 @@ public class SignUpContactFragment extends Fragment {
         // check fields and show appropriate error messages
         boolean valid = true;
         if (name.isEmpty()) {
-            tvNameError.setText(getResources().getString(R.string.no_name_error));
+            bind.tvNameError.setText(getResources().getString(R.string.no_name_error));
             valid = false;
         }
         if (!email.isEmpty() && !isValidEmail(email)) {
-            tvEmailError.setText(getResources().getString(R.string.bad_email_error));
+            bind.tvEmailError.setText(getResources().getString(R.string.bad_email_error));
             valid = false;
         }
         if (!phone.isEmpty() && !isValidPhoneNumber(phone)) {
-            tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
+            bind.tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
             valid = false;
         }
         return valid;
     }
 
     void clearErrors() {
-        tvNameError.setText("");
-        tvPhoneError.setText("");
-        tvEmailError.setText("");
+        bind.tvNameError.setText("");
+        bind.tvPhoneError.setText("");
+        bind.tvEmailError.setText("");
     }
 
     //following are profile image methods
@@ -161,7 +160,7 @@ public class SignUpContactFragment extends Fragment {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 // set image icon to newly selected image
-                btnProfileImage.setImageBitmap(bitmap);
+                bind.btnProfileImage.setImageBitmap(bitmap);
                 profileImage = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
@@ -170,7 +169,7 @@ public class SignUpContactFragment extends Fragment {
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 profileImage = bitmap;
-                btnProfileImage.setImageBitmap(bitmap);
+                bind.btnProfileImage.setImageBitmap(bitmap);
                 if (stream != null) {
                     stream.close();
                 }
@@ -220,5 +219,11 @@ public class SignUpContactFragment extends Fragment {
         if (intent.resolveActivity(activity.getPackageManager()) != null) {
             startActivityForResult(intent, REQUEST_IMAGE_CAPTURE);
         }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        onSignUpScreenChangeListener = null;
     }
 }

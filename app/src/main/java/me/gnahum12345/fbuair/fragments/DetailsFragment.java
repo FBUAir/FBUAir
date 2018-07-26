@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -18,16 +19,12 @@ import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.parceler.Parcels;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.DetailsActivity;
+import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 
@@ -43,25 +40,6 @@ public class DetailsFragment extends Fragment {
     final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
     // whether user granted Contacts permissions
     boolean permissionGranted;
-    // user info views
-    ImageView ivProfileImage;
-    TextView tvName;
-    TextView tvOrganization;
-    TextView tvPhone;
-    TextView tvEmail;
-    // add contact views
-    Button btAddContact;
-    RelativeLayout rlContactOptions;
-    TextView tvUndo;
-    TextView tvView;
-    RelativeLayout rlConflict;
-    TextView tvViewConflict;
-    TextView tvIgnoreConflict;
-    TextView tvConflictMessage;
-    // add on social media views
-    Button btFacebook;
-    Button btInstagram;
-    Button btLinkedIn;
     // current profile and info
     User user;
     // user contact IDs
@@ -69,8 +47,8 @@ public class DetailsFragment extends Fragment {
     String rawContactId;
     ContactUtils.AddContactResult addContactResult;
 
-    // data binding
-    // FragmentDetailsBinding binding;
+    // data bind
+    FragmentDetailsBinding bind;
 
     public static DetailsFragment newInstance(User user) {
         Bundle args = new Bundle();
@@ -81,37 +59,28 @@ public class DetailsFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(Context context) {
+        // get reference to context
+        this.context = context;
+        super.onAttach(context);
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_details, container, false);
+        super.onCreateView(inflater, container, savedInstanceState);
+        bind = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
+        View rootView = bind.getRoot();
+        return rootView;
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // get references to activity and context
+        // get reference to activity
         activity = getActivity();
-        context = getContext();
-
-        // get references to views
-        ivProfileImage = view.findViewById(R.id.ivImage);
-        tvName = view.findViewById(R.id.tvName);
-        tvOrganization = view.findViewById(R.id.tvOrganization);
-        tvPhone = view.findViewById(R.id.tvPhone);
-        tvEmail = view.findViewById(R.id.tvEmail);
-        btFacebook = view.findViewById(R.id.btFacebook);
-        btInstagram = view.findViewById(R.id.btInstagram);
-        btLinkedIn = view.findViewById(R.id.btLinkedIn);
-        btAddContact = view.findViewById(R.id.btAddContact);
-        rlContactOptions = view.findViewById(R.id.rlContactOptions);
-        tvUndo = view.findViewById(R.id.tvUndo);
-        tvView = view.findViewById(R.id.tvView);
-        rlConflict = view.findViewById(R.id.rlConflict);
-        tvViewConflict = view.findViewById(R.id.tvViewConflict);
-        tvIgnoreConflict = view.findViewById(R.id.tvIgnoreConflict);
-        tvConflictMessage = view.findViewById(R.id.tvConflictMessage);
 
         // check whether user granted contacts permissions
         permissionGranted = ContextCompat.checkSelfPermission(activity,
@@ -128,7 +97,7 @@ public class DetailsFragment extends Fragment {
 
         // CLICK HANDLERS
         // add contact when add contact button is clicked if they have required permissions
-        btAddContact.setOnClickListener(new View.OnClickListener() {
+        bind.btAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (requestPermissionsIfNeeded()) {
@@ -141,7 +110,7 @@ public class DetailsFragment extends Fragment {
         });
 
         // undo contact adding when "undo" button is clicked
-        tvUndo.setOnClickListener(new View.OnClickListener() {
+        bind.tvUndo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContactUtils.undo(context, rawContactId);
@@ -150,7 +119,7 @@ public class DetailsFragment extends Fragment {
         });
 
         // go to contacts app to view newly added contact when "view contact" button is clicked
-        tvView.setOnClickListener(new View.OnClickListener() {
+        bind.tvView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContactUtils.viewContact(context, contactId);
@@ -158,7 +127,7 @@ public class DetailsFragment extends Fragment {
         });
 
         // add user despite conflict
-        tvIgnoreConflict.setOnClickListener(new View.OnClickListener() {
+        bind.tvIgnoreConflict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showOptions(ContactUtils.PHONE_CONFLICT, false);
@@ -170,7 +139,7 @@ public class DetailsFragment extends Fragment {
         });
 
         // view phone/email conflict
-        tvViewConflict.setOnClickListener(new View.OnClickListener() {
+        bind.tvViewConflict.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ContactUtils.viewContact(context, addContactResult.getContactId());
@@ -180,17 +149,17 @@ public class DetailsFragment extends Fragment {
 
     // sets views to display user info
     void setInfo() {
-        tvName.setText(user.getName());
-        tvOrganization.setText(user.getOrganization());
-        tvPhone.setText(user.getPhoneNumber());
-        tvEmail.setText(user.getEmail());
-        ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
+        bind.tvName.setText(user.getName());
+        bind.tvOrganization.setText(user.getOrganization());
+        bind.tvPhone.setText(user.getPhoneNumber());
+        bind.tvEmail.setText(user.getEmail());
+        bind.ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
 
         // show applicable social media buttons and set to redirect to profile URLs on click
         if (user.getFacebookURL().isEmpty()) {
-            btFacebook.setVisibility(View.INVISIBLE);
+            bind.btFacebook.setVisibility(View.INVISIBLE);
         } else {
-            btFacebook.setOnClickListener(new View.OnClickListener() {
+            bind.btFacebook.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(Intent.ACTION_VIEW);
@@ -200,9 +169,9 @@ public class DetailsFragment extends Fragment {
             });
         }
         if (user.getInstagramURL().isEmpty()) {
-            btInstagram.setVisibility(View.INVISIBLE);
+            bind.btInstagram.setVisibility(View.INVISIBLE);
         } else {
-            btInstagram.setOnClickListener(new View.OnClickListener() {
+            bind.btInstagram.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(Intent.ACTION_VIEW);
@@ -212,9 +181,9 @@ public class DetailsFragment extends Fragment {
             });
         }
         if (user.getLinkedInURL().isEmpty()) {
-            btLinkedIn.setVisibility(View.INVISIBLE);
+            bind.btLinkedIn.setVisibility(View.INVISIBLE);
         } else {
-            btLinkedIn.setOnClickListener(new View.OnClickListener() {
+            bind.btLinkedIn.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent i = new Intent(Intent.ACTION_VIEW);
@@ -242,26 +211,26 @@ public class DetailsFragment extends Fragment {
         // show options for no conflict
         if (resultCode == ContactUtils.SUCCESS) {
             if (show) {
-                rlContactOptions.setVisibility(View.VISIBLE);
-                btAddContact.setVisibility(View.GONE);
+                bind.rlContactOptions.setVisibility(View.VISIBLE);
+                bind.btAddContact.setVisibility(View.GONE);
             } else {
-                rlContactOptions.setVisibility(View.GONE);
-                btAddContact.setVisibility(View.VISIBLE);
+                bind.rlContactOptions.setVisibility(View.GONE);
+                bind.btAddContact.setVisibility(View.VISIBLE);
             }
         }
         // show options for conflict
         else {
             if (show) {
                 if (resultCode == ContactUtils.PHONE_CONFLICT) {
-                    tvConflictMessage.setText(getResources().getString(R.string.phone_conflict_message));
+                    bind.tvConflictMessage.setText(getResources().getString(R.string.phone_conflict_message));
                 } else if (resultCode == ContactUtils.EMAIL_CONFLICT) {
-                    tvConflictMessage.setText(getResources().getString(R.string.email_conflict_message));
+                    bind.tvConflictMessage.setText(getResources().getString(R.string.email_conflict_message));
                 }
-                rlConflict.setVisibility(View.VISIBLE);
-                btAddContact.setVisibility(View.GONE);
+                bind.rlConflict.setVisibility(View.VISIBLE);
+                bind.btAddContact.setVisibility(View.GONE);
             } else {
-                rlConflict.setVisibility(View.GONE);
-                btAddContact.setVisibility(View.VISIBLE);
+                bind.rlConflict.setVisibility(View.GONE);
+                bind.btAddContact.setVisibility(View.VISIBLE);
             }
         }
     }

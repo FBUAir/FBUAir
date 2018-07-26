@@ -2,10 +2,8 @@ package me.gnahum12345.fbuair.adapters;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +12,11 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.parceler.Parcels;
-
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.DetailsActivity;
-import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
@@ -45,6 +39,12 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         this.history = history;
         this.filteredHistory = history;
         getFilter();
+        // try to get listener
+        try {
+            launchDetailsListener = ((LaunchDetailsListener) context);
+        } catch (ClassCastException e) {
+            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
+        }
     }
 
     @NonNull
@@ -53,12 +53,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         context = holder.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View contactView = inflater.inflate(R.layout.history_item, holder, false);
-        // get listener
-        try {
-            launchDetailsListener = ((LaunchDetailsListener) context);
-        } catch (ClassCastException e) {
-            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
-        }
         // return a new viewHolder,
         return new ViewHolder(contactView);
     }
@@ -128,7 +122,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
             FilterResults filterResults = new FilterResults();
-            if (constraint!=null && constraint.length()>0) {
+            if (constraint != null && constraint.length() > 0) {
                 ArrayList<User> filteredList = new ArrayList<>();
                 // search content in history
                 for (User user : history) {
