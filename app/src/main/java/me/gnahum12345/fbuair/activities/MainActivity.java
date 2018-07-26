@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // Feature to send eveything at once.
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (!discoverFragment.adapter.isEmpty() &&
+        if (!discoverFragment.rvAdapter.isEmpty() &&
                 mGestureDetector.onKeyEvent(event)) {
             return true;
         }

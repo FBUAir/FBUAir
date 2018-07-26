@@ -37,7 +37,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private Context mContext;
     private RecyclerView rvDevicesView;
     private HashSet<ConnectionService.Endpoint> deviceLst;
-    private DiscoverAdapter rvAdapter;
+    public DiscoverAdapter rvAdapter;
     private boolean hasInit = false;
     private DiscoverFragmentListener mListener;
     private TextView tvRVEmpty;
