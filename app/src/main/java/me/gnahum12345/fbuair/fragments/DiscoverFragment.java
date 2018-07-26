@@ -38,7 +38,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private RecyclerView rvDevicesView;
     private HashSet<ConnectionService.Endpoint> deviceLst;
     public DiscoverAdapter rvAdapter;
-    private boolean hasInit = false;
+    //TODO: delete the listener.
     private DiscoverFragmentListener mListener;
     private TextView tvRVEmpty;
 
@@ -46,11 +46,11 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     /**
      * TODO: put in activity.
@@ -76,7 +76,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             permissionsNotGranted();
 
         }
-        hasInit = true;
 
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
@@ -145,17 +144,15 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
     }
 
-    public void notifyAdapter() {
-
-    }
-
     public interface DiscoverFragmentListener {
         public void onPermissionsNotGranted();
     }
 
     private void permissionsNotGranted() {
         String[] permissions = ((MainActivity) mContext).connectService.getRequiredPermissions();
-        //TODO: put dialog here.
+        if (!((MainActivity) mContext).connectService.isDiscovering()) {
+            //TODO: put dialog to agree to permissions in order to discover.
+        }
         requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
 
@@ -175,6 +172,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             ((MainActivity) mContext).recreate();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    public void notifyAdapter() {
+
     }
 }
 

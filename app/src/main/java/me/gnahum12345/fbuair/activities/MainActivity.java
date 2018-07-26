@@ -82,10 +82,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
+    boolean debug;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        debug = true;
 
         userManager = UserManager.getInstance();
         userManager.loadContacts(this);
@@ -197,15 +201,33 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        connectService.removeListener(discoverFragment);
+        stopConnectionService();
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         startConnectionService();
     }
 
+
+
     @Override
     public void onBackPressed() {
+        if (!discoverFragment.rvAdapter.isEmpty()) {
+            connectService.onBackPressed();
+            return;
+        }
+
+        if (debug) {
+            connectService.debug();
+            return;
+        }
+
         super.onBackPressed();
-        connectService.onBackPressed();
 
         // associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager)

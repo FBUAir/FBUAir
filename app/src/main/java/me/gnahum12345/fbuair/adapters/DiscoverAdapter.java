@@ -16,6 +16,7 @@ import org.json.JSONException;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.regex.Pattern;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
@@ -128,10 +129,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         // TODO: figure out why this is a null pointer.
         String divider = mContext.getResources().getString(R.string.divider);
         if (divider == null || divider.isEmpty()) {
-            return name;
-        } else {
-            return name.split(divider)[0];
+            divider = "$$$$$$$$";
         }
+        return name.split(Pattern.quote(divider))[0];
     }
 
     public boolean isEmpty() {

@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.managers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -11,7 +10,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -29,25 +27,28 @@ public class UserManager {
         return ourInstance;
     }
 
-    Map<String, User> currUsers;
+    Map<String, User> currentUsers;
 
     private UserManager() {
-        currUsers = new TreeMap<>();
+        currentUsers = new TreeMap<>();
     }
 
     public User getUser(String id) {
         //TODO: get user given the id.
-        return currUsers.get(id);
+        return currentUsers.get(id);
     }
 
     public void addUser(User user) {
-        currUsers.put(user.getId(), user);
+        currentUsers.put(user.getId(), user);
+        commit();
     }
+
     public void removeUser(User user) {
-        currUsers.remove(user);
+        currentUsers.remove(user);
+        commit();
     }
     public void clearHistory() {
-        currUsers.clear();
+        currentUsers.clear();
     }
 
     public void commit() {
@@ -61,7 +62,7 @@ public class UserManager {
     private JSONArray getJSONArray() {
         JSONArray jArr = new JSONArray();
 
-        for (User u : currUsers.values()) {
+        for (User u : currentUsers.values()) {
             try {
                 jArr.put(User.toJson(u));
             } catch (JSONException e) {
@@ -91,7 +92,7 @@ public class UserManager {
                 try {
                     JSONObject poUser = jsonArr.getJSONObject(i);
                     User user = User.fromJson(poUser);
-                    currUsers.put(user.getId(), user);
+                    currentUsers.put(user.getId(), user);
                 } catch (JSONException e) {
                     Log.e(TAG, String.format("loadContacts: USER={%d} cannot be created.", i), e);
                 }
@@ -100,6 +101,6 @@ public class UserManager {
     }
 
     public List<User> getCurrHistory() {
-        return new ArrayList(currUsers.values());
+        return new ArrayList(currentUsers.values());
     }
 }
