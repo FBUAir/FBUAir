@@ -20,12 +20,12 @@ import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
-class UserManager {
+public class UserManager {
 
     private static final UserManager ourInstance = new UserManager();
     private static final String TAG = "UserManagerTAG";
     private Context mContext;
-    static UserManager getInstance() {
+    public static UserManager getInstance() {
         return ourInstance;
     }
 
@@ -50,7 +50,7 @@ class UserManager {
         currUsers.clear();
     }
 
-    public void commiting() {
+    public void commit() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         JSONArray newHistoryArray = getJSONArray();

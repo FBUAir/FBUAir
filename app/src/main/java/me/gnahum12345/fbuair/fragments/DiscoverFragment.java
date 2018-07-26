@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -123,6 +124,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void saveUser(User user) {
         //TODO: save user.
+        me.gnahum12345.fbuair.managers.UserManager manager = me.gnahum12345.fbuair.managers.UserManager.getInstance();
+        manager.addUser(user);
     }
 
 
@@ -140,6 +143,10 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             rvDevicesView.setVisibility(View.GONE);
             tvRVEmpty.setVisibility(View.VISIBLE);
         }
+    }
+
+    public void notifyAdapter() {
+        rvAdapter.notifyDataSetChanged();
     }
 
     public interface DiscoverFragmentListener {

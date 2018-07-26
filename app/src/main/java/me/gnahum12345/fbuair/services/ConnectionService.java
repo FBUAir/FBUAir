@@ -236,11 +236,7 @@ public class ConnectionService {
                         : ConnectionsStatusCodes.getStatusCodeString(status.getStatusCode()));
     }
 
-    private void sendToAll() {
-        logV("startRecording()");
-        String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
-        send(Payload.fromBytes(senderInfo.getBytes()));
-    }
+
 
     private void setState(State newState) {
         if (mState == newState) {
@@ -528,7 +524,7 @@ public class ConnectionService {
     }
 
     //TODO: this is how we send data backwards.
-    private void send(Payload payload, Set<String> endpoints) {
+    private void send(Payload payload, final Set<String> endpoints) {
         mConnectionsClient
                 .sendPayload(new ArrayList<>(endpoints), payload)
                 .addOnFailureListener(
@@ -536,23 +532,11 @@ public class ConnectionService {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 logW("sendPayload() failed.", e);
+                                e.printStackTrace();
                             }
                         });
 
     }
-
-    public void send(final Payload payload, final Endpoint endpoint) {
-
-        //TODO: CHECK THAT THE GIVEN STRING IS THE ID AND NOT THE NAME.
-        mConnectionsClient.sendPayload(endpoint.getId(), payload)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        logW("sendPayload() Failed given an endpoint", e);
-                    }
-                });
-    }
-
 
     /**
      * Someone connected to us has sent us data. Override this method to act on the event.
@@ -571,10 +555,14 @@ public class ConnectionService {
 
             User user;
             ProfileUser profileUser;
-            boolean userMade = false;
+            boolean userMade;
 
             try {
+                //TODO: fix this... user is being made but in reality it is a profile.
                 user = User.fromString(content);
+                if (user.getId().equals("obviouslyNotAnId")) {
+                    throw new JSONException("This is a profile");
+                }
                 userMade = true;
                 logV("userMade = true");
                 // update listeners to deal with the user.
@@ -629,22 +617,30 @@ public class ConnectionService {
         return REQUIRED_PERMISSIONS;
     }
 
+
+    public void send(final Payload payload, final Endpoint endpoint) {
+
+        //TODO: CHECK THAT THE GIVEN STRING IS THE ID AND NOT THE NAME.
+        mConnectionsClient.sendPayload(endpoint.getId(), payload)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        logW("sendPayload() Failed given an endpoint", e);
+                    }
+                });
+    }
+
+    public void sendToAll() {
+        logV("startRecording()");
+        String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
+        send(Payload.fromBytes(senderInfo.getBytes()));
+    }
+
     public State getState() {
         return mState;
     }
 
-    /**
-     * Listens to holding/releasing the volume rocker.
-     */
-    public final GestureDetector mGestureDetector =
-            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
-                @Override
-                protected void onHold() {
-                    logV("onHold");
-                    sendToAll();
-                }
 
-            };
     /**
      * Sets the device to advertising mode. It will broadcast to other devices in discovery mode.
      * Either {@link #onAdvertisingStarted()} or {@link #onAdvertisingFailed()} will be called once
@@ -831,7 +827,7 @@ public class ConnectionService {
 
         User user = new User();
         user.setName("MY NAME");
-        user.setEmail("GNAHUM!@#$%^@Gmail.com");
+        user.setEmail("GNAHUM@Gmail.com");
         user.setFacebookURL("FACEBOOK.COM/PROFILE=13141341");
         user.setOrganization("SOME ORGANIZATION");
         user.setProfileImage(BitmapFactory.decodeResource(mContext.getResources(),

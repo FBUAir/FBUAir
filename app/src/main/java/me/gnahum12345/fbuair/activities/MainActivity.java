@@ -2,8 +2,6 @@ package me.gnahum12345.fbuair.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.databinding.adapters.SearchViewBindingAdapter;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -15,10 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MenuItem;
-import android.widget.Adapter;
-import android.widget.ImageView;
-import android.widget.Toast;
-import android.widget.Toolbar;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -33,8 +27,11 @@ import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
+import me.gnahum12345.fbuair.managers.UserManager;
+
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
         SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
@@ -45,6 +42,18 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     BottomNavigationView bottomNavigation;
     android.support.v7.widget.Toolbar toolbar;
     SearchView svSearch;
+
+    /**
+     * Listens to holding/releasing the volume rocker.
+     */
+    public final GestureDetector mGestureDetector =
+            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
+                @Override
+                protected void onHold() {
+                    connectService.sendToAll();
+                }
+
+            };
 
     // fragments
     DiscoverFragment discoverFragment;
@@ -57,6 +66,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     final static int HISTORY_FRAGMENT = 1;
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
+
+    UserManager userManager;
 
     //Connection Service.
     public ConnectionService connectService;
@@ -77,6 +88,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        userManager = UserManager.getInstance();
+        userManager.loadContacts(this);
         // set up ConnectionService
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
         //TODO: delete this.
@@ -144,6 +157,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.action_discover:
+                        discoverFragment.notifyAdapter();
                         viewPager.setCurrentItem(DISCOVER_FRAGMENT);
                         return true;
                     case R.id.action_history:
@@ -173,9 +187,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        connectService.startMedia();
+    }
+
+    @Override
     protected void onStop() {
         super.onStop();
         stopConnectionService();
+        userManager.commit();
     }
 
     @Override
@@ -226,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
         if (connectService.getState() == ConnectionService.State.CONNECTED &&
-                connectService.mGestureDetector.onKeyEvent(event)) {
+                mGestureDetector.onKeyEvent(event)) {
             return true;
         }
         return super.dispatchKeyEvent(event);
