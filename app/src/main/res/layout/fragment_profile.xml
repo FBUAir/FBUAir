@@ -19,35 +19,6 @@
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/etFacebookUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignStart="@+id/etPhone"
-                android:layout_alignTop="@+id/ivFacebook"
-                android:layout_marginBottom="10dp"
-                android:ems="10"
-                android:enabled="false"
-                android:hint="Facebook Profile URL"
-                android:inputType="textUri"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-
-            <EditText
-                android:id="@+id/etLinkedInUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_below="@+id/tvLinkedInError"
-                android:layout_marginBottom="10dp"
-                android:layout_toRightOf="@id/ivLinkedInLogo"
-                android:ems="10"
-                android:enabled="false"
-                android:hint="LinkedIn Profile URL"
-                android:inputType="textUri"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-
-            <EditText
                 android:id="@+id/etEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -90,37 +61,6 @@
                 android:layout_below="@+id/etPhone"
                 android:layout_marginTop="10dp"
                 android:text="email error"
-                android:textColor="@android:color/holo_red_dark"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvFacebookError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/ivEmail"
-                android:layout_marginTop="10dp"
-                android:text="fb url error"
-                android:textColor="@android:color/holo_red_dark"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvLinkedInError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/etFacebookUrl"
-                android:text="linked in url error"
-                android:textColor="@android:color/holo_red_dark"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tvInstagramError"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_below="@id/etLinkedInUrl"
-                android:text="instagram url error"
                 android:textColor="@android:color/holo_red_dark"
                 android:textSize="12sp" />
 
@@ -201,14 +141,6 @@
                 android:layout_below="@+id/tvEmailError"
                 app:srcCompat="@drawable/ic_email" />
 
-            <ImageView
-                android:id="@+id/ivFacebook"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/tvFacebookError"
-                app:srcCompat="@drawable/ic_facebook" />
-
             <ImageButton
                 android:id="@+id/btnProfileImage"
                 android:layout_width="75dp"
@@ -219,51 +151,14 @@
                 android:scaleType="centerCrop"
                 android:src="@android:color/transparent" />
 
-            <ImageView
-                android:id="@+id/ivLinkedInLogo"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/tvLinkedInError"
-                app:srcCompat="@drawable/ic_linkedin" />
-
-            <ImageView
-                android:id="@+id/ivInstagramLogo"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/tvInstagramError"
-                app:srcCompat="@drawable/ic_instagram" />
-
-            <EditText
-                android:id="@+id/etInstagramUrl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/tvInstagramError"
-                android:layout_marginBottom="10dp"
-                android:layout_toRightOf="@id/ivInstagramLogo"
-                android:ems="10"
-                android:enabled="false"
-                android:hint="Instagram Profile URL"
-                android:inputType="textUri"
-                android:textColor="@android:color/black"
-                android:textSize="14sp" />
-
             <Button
                 android:id="@+id/btDeleteProfile"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/etInstagramUrl"
+                android:layout_below="@id/etEmail"
                 android:layout_alignParentStart="true"
                 android:text="Delete Profile" />
 
-            <TextView
-                android:id="@+id/tvSocialMedias"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:text="TextView" />
         </RelativeLayout>
     </ScrollView>
 </RelativeLayout>

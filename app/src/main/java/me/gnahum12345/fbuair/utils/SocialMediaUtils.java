@@ -51,17 +51,6 @@ public class SocialMediaUtils {
     }
 
     public static String getProfileUrl(String socialMediaName, String username) {
-/*        Uri.Builder builder = new Uri.Builder();
-        builder.scheme("https");
-        String authority = urlMap.get(socialMediaName);
-        // tumblr uses subdomain, rest are paths
-        if (socialMediaName.equals("Tumblr")) {
-            builder.authority(username + "." + authority);
-        } else {
-            builder.authority(authority);
-            builder.appendPath(username);
-        }
-        return builder.build().toString();*/
         String profileUrl;
         String prefix = "https://www.";
         if (socialMediaName.equals("Tumblr")) {
