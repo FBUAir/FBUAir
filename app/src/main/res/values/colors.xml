@@ -23,13 +23,15 @@
     <color name="state_advertising">#EF5350</color>
 
     <array name="tab_colors">
-        <item name="tab_1">#455C65</item>
-        <item name="tab_2">#00886A</item>
-        <item name="tab_3">#8B6B62</item>
-        <item name="tab_4">#6C4A42</item>
-        <item name="tab_5">#F63D2B</item>
+        <item name="tab_1">#FFFFFF</item>
+        <item name="tab_2">#FFFFFF</item>
+        <item name="tab_3">#FFFFFF</item>
+        <item name="tab_4">#FFFFFF</item>
+        <item name="tab_5">#FFFFFF</item>
     </array>
 
     <color name="color_black">#000000</color>
+    <color name="color_blue_orchid">#1F45FC</color>
     <color name="notification">#F63D2B</color>
+
 </resources>

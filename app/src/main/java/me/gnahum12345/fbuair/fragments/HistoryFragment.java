@@ -25,6 +25,7 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
@@ -34,10 +35,11 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 
-public class HistoryFragment extends Fragment {
+public class HistoryFragment extends Fragment implements UserListener {
 
     public HistoryFragment() {
         // Required empty public constructor
+
     }
 
     public HistoryAdapter historyAdapter;
@@ -117,6 +119,7 @@ public class HistoryFragment extends Fragment {
 
     // populates recycler view with history from shared preferences
     public void populateHistory() {
+        clearHistoryList();
         List<User> users = getHistory();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
@@ -128,5 +131,20 @@ public class HistoryFragment extends Fragment {
     // clears history
     void clearHistory() {
         UserManager.getInstance().clearHistory();
+    }
+
+    private void clearHistoryList() {
+        history.clear();
+        historyAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void userAdded(User user) {
+       populateHistory();
+    }
+
+    @Override
+    public void userRemoved(User user) {
+        populateHistory();
     }
 }

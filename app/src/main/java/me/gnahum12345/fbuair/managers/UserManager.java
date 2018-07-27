@@ -1,9 +1,13 @@
 package me.gnahum12345.fbuair.managers;
 
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.util.Log;
+
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
@@ -28,11 +34,15 @@ public class UserManager {
     public static UserManager getInstance() {
         return ourInstance;
     }
-
+    private Handler handler = new Handler();
+    private boolean notificationsEnabled = false;
+    private Activity activity;
     Map<String, User> currentUsers;
+    ArrayList<UserListener> listeners;
 
     private UserManager() {
         currentUsers = new TreeMap<>();
+        listeners = new ArrayList<UserListener>();
     }
 
     public User getUser(String id) {
@@ -40,10 +50,45 @@ public class UserManager {
         return currentUsers.get(id);
     }
 
+    public void addListener(UserListener listener) {
+        listeners.add(listener);
+    }
+
+    public void removeListener(UserListener listener) {
+        listeners.remove(listener);
+    }
+
+
     public boolean addUser(User user) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         currentUsers.put(user.getId(), user);
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (notificationsEnabled) {
+                    ((MainActivity) activity).bottomNavigation.setNotification(" ", 1);
+                }
+            }
+        }, 1000);
+        notifyListeners(user, true);
         return commit();
+    }
+
+    public void notifyListeners(User user, boolean added) {
+        if (added) {
+            for (UserListener listener : listeners) {
+                listener.userAdded(user);
+            }
+        } else {
+            for (UserListener listener : listeners) {
+                listener.userRemoved(user);
+            }
+        }
+    }
+
+    public void setNotificationAbility(boolean enabled, Activity activity) {
+        notificationsEnabled = enabled;
+        this.activity = activity;
     }
 
     public void removeUser(User user) {

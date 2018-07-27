@@ -24,6 +24,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -37,6 +38,8 @@ import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
+import me.gnahum12345.fbuair.utils.ContactUtils;
+import me.gnahum12345.fbuair.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
@@ -64,8 +67,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     connectService.sendToAll();
                 }
             };
-    //    BottomNavigationView bottomNavigation;
-    AHBottomNavigation bottomNavigation;
     android.support.v7.widget.Toolbar toolbar;
     SearchView svSearch;
     // fragments
@@ -79,6 +80,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     boolean debug;
     // A reference to our view pager.
     private AHBottomNavigationViewPager viewPager;
+    // BottomNavigationView bottomNavigation;
+    public AHBottomNavigation bottomNavigation;
+
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
@@ -92,6 +96,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         userManager = UserManager.getInstance();
         userManager.loadContacts(this);
+        userManager.setNotificationAbility(true, this);
         // set up ConnectionService
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
         //TODO: delete this.
@@ -134,22 +139,22 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             @Override
             public void onPageSelected(int position) {
                 clearMenus();
-                resetItems();
+//                resetItems();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
 //                        bottomNavigation.setSelectedItemId(R.id.action_discover);
                         bottomNavigation.setCurrentItem(0);
-                        bottomNavigation.getItem(0).setColor(fetchColor(R.color.colorAccent));
+//                        bottomNavigation.getItem(0).setColor(fetchColor(R.color.color_blue_orchid));
                         break;
                     case HISTORY_FRAGMENT:
 //                        bottomNavigation.setSelectedItemId(R.id.action_history);
                         bottomNavigation.setCurrentItem(1);
-                        bottomNavigation.getItem(1).setColor(fetchColor(R.color.colorAccent));
+//                        bottomNavigation.getItem(1).setColor(fetchColor(R.color.color_blue_orchid));
                         historyMenu.setVisibility(View.VISIBLE);
                         break;
                     case PROFILE_FRAGMENT:
                         bottomNavigation.setCurrentItem(2);
-                        bottomNavigation.getItem(2).setColor(fetchColor(R.color.colorAccent));
+//                        bottomNavigation.getItem(2).setColor(fetchColor(R.color.color_blue_orchid));
 //                      bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
                 }
@@ -161,7 +166,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         });
 
 
-
         // Grab a reference to our bottom navigation view
         bottomNavigation = findViewById(R.id.bottomNavigationView);
 
@@ -171,9 +175,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bottomNavigation.setNotificationBackgroundColor(fetchColor(R.color.notification));
-        bottomNavigation.setColoredModeColors(fetchColor(R.color.colorAccent), fetchColor(R.color.color_black));
+        bottomNavigation.setColoredModeColors(fetchColor(R.color.color_blue_orchid), fetchColor(R.color.color_black));
         bottomNavigation.setTranslucentNavigationEnabled(true);
-
+        bottomNavigation.setColored(true);
+        // Handle the click for each item on the bottom navigation view.
         bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
@@ -181,33 +186,19 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 if (position == 1) {
                     bottomNavigation.setNotification("", 1);
                 }
-//                bottomNavigation.setColored(true);
+
+                //TODO: Delete this.. this is a proof of concept that if a user is added, it will be added to the HistoryAdapter.
+                if (position == 0) {
+                    User u = new User();
+                    u.setName("this is a fake user...");
+                    u.setTimeAddedToHistory(Utils.getRelativeTimeAgo(Calendar.getInstance().getTime()));
+                    UserManager.getInstance().addUser(u);
+                }
                 return true;
             }
         });
 
-
-        // Handle the click for each item on the bottom navigation view.
-//        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-//            @Override
-//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-//                switch (item.getItemId()) {
-//                    case R.id.action_discover:
-//                        discoverFragment.notifyAdapter();
-//                        viewPager.setCurrentItem(DISCOVER_FRAGMENT);
-//                        return true;
-//                    case R.id.action_history:
-//                        viewPager.setCurrentItem(HISTORY_FRAGMENT);
-//                        return true;
-//                    case R.id.action_profile:
-//                        viewPager.setCurrentItem(PROFILE_FRAGMENT);
-//                        return true;
-//                    default:
-//                        return false;
-//                }
-//            }
-//        });
-
+        UserManager.getInstance().addListener(historyFragment);
         connectService.addListener(discoverFragment);
     }
 
@@ -242,8 +233,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     protected void onStop() {
         super.onStop();
-        stopConnectionService();
+        stopConnectionService(); //TODO possibly delete this.
         userManager.commit();
+        userManager.removeListener(historyFragment);
     }
 
     @Override
