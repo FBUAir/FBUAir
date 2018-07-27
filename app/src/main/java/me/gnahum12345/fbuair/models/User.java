@@ -152,7 +152,7 @@ public class User {
         User user = new User();
         try {
             user.name = json.getString("name");
-            user.uid = json.optString("uid", "obviouslyNotAnId");
+            user.uid = json.optString("uId", "obviouslyNotAnId");
             user.phoneNumber = json.optString("phoneNumber");
             user.email = json.optString("email");
             user.organization = json.optString("organization");
@@ -183,7 +183,7 @@ public class User {
 
         JSONObject json = new JSONObject();
         json.put("name", name);
-        json.put("uid", uid);
+        json.put("uId", uid);
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);

@@ -88,7 +88,7 @@ public class HistoryActivity extends AppCompatActivity {
 
         rvUser = (RecyclerView) findViewById(R.id.rvContact);
         contacts = new ArrayList<>();
-        historyAdapter = new HistoryAdapter(contacts);
+        historyAdapter = new HistoryAdapter(this, contacts);
 
         rvUser.setLayoutManager(new LinearLayoutManager(this));
         rvUser.setAdapter(historyAdapter);
