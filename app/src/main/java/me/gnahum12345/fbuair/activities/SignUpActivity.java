@@ -1,11 +1,10 @@
 package me.gnahum12345.fbuair.activities;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Icon;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -24,16 +23,14 @@ import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.UrlFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
-import me.gnahum12345.fbuair.interfaces.OnIconClickedListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
-import me.gnahum12345.fbuair.models.Icon;
+import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
-public class SignUpActivity extends AppCompatActivity implements OnIconClickedListener,
-        OnSignUpScreenChangeListener {
+public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener {
 
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
@@ -47,8 +44,6 @@ public class SignUpActivity extends AppCompatActivity implements OnIconClickedLi
 
     // user signing up
     public User user;
-
-    Icon selectedIcon;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -109,17 +104,13 @@ public class SignUpActivity extends AppCompatActivity implements OnIconClickedLi
     @Override
     // starts fragment to add social media profiles. passes in info from previous page
     public void launchSignUpSocialMedia() {
-        Bundle userBundle = new Bundle();
-        userBundle.putParcelable("user", Parcels.wrap(user));
-        signUpSocialMediaFragment.setArguments(userBundle);
         startFragment(signUpSocialMediaFragment, "signUpSocialMediaFragment");
     }
 
     @Override
-    public void finishUrl(boolean added) {
+    public void finishUrl() {
         fragmentManager.popBackStack();
-        selectedIcon.setAdded(added);
-        signUpSocialMediaFragment.iconAdapter.notifyDataSetChanged();
+        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -142,32 +133,8 @@ public class SignUpActivity extends AppCompatActivity implements OnIconClickedLi
 
     // prompts user to enter social media profile url and returns true if user does so successfully
     @Override
-    public void addMedia(Icon icon) {
-        selectedIcon = icon;
-        startFragment(UrlFragment.newInstance(icon.getName()), "urlFragment");
-    }
-
-    // checks if user wants to remove social media and returns true after deleting
-    @Override
-    public void removeMedia(final Icon icon) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(getResources().getString
-                (R.string.remove_social_media_confirmation) + " " + icon.getName() + "?")
-                .setTitle("Remove " + icon.getName())
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        user.removeSocialMedia(icon.getName());
-                        icon.setAdded(false);
-                        signUpSocialMediaFragment.iconAdapter.notifyDataSetChanged();
-                    }
-                })
-                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        return;
-                    }
-                });
-        builder.show();
+    public void launchUrl(SocialMedia socialMedia) {
+        // go to url fragment
+        startFragment(UrlFragment.newInstance(socialMedia), "urlFragment");
     }
 }

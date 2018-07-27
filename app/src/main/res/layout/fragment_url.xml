@@ -26,24 +26,6 @@
             android:textColor="@android:color/black"
             android:textSize="24sp" />
 
-        <EditText
-            android:id="@+id/etUrl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/tvUsernameError"
-            android:ems="10"
-            android:hint="URL"
-            android:inputType="textPersonName" />
-
-        <TextView
-            android:id="@+id/tvUrlError"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/etUrl"
-            android:textColor="@android:color/holo_red_dark" />
-
         <TextView
             android:id="@+id/tvUsernameError"
             android:layout_width="wrap_content"
@@ -58,7 +40,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_below="@+id/tvUrlError"
+            android:layout_below="@+id/tvUsernameError"
+            android:layout_marginTop="-10dp"
             android:enabled="false"
             android:text="Submit" />
 
@@ -67,25 +50,28 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_below="@+id/tvUrlError"
+            android:layout_below="@+id/tvUsernameError"
+            android:layout_marginTop="-10dp"
             android:elevation="0dp"
             android:text="Cancel" />
 
-        <ImageView
-            android:id="@+id/ivUrlCheck"
+        <Button
+            android:id="@+id/btRemove"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/etUrl"
-            android:layout_toEndOf="@+id/etUrl"
-            android:src="@drawable/ic_check"
-            android:visibility="gone" />
+            android:layout_below="@+id/tvUsernameError"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-10dp"
+            android:elevation="0dp"
+            android:text="Remove" />
 
         <ImageView
             android:id="@+id/ivUsernameCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvTitle"
-            android:layout_toEndOf="@+id/etUrl"
+            android:layout_marginTop="10dp"
+            android:layout_toEndOf="@+id/etUsername"
             android:src="@drawable/ic_check"
             android:visibility="gone" />
 

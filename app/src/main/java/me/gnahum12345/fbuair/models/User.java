@@ -10,20 +10,21 @@ import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Parcel
 public class User {
 
-    String name;
-    String organization;
-    String phoneNumber;
-    String email;
-    Bitmap profileImage;
-    String facebookURL;
-    String instagramURL;
-    String linkedInURL;
-    String timeAddedToHistory;
-    ArrayList<SocialMedia> socialMediaList = new ArrayList<>();
+    private String name;
+    private String organization;
+    private String phoneNumber;
+    private String email;
+    private Bitmap profileImage;
+    private String facebookURL;
+    private String instagramURL;
+    private String linkedInURL;
+    private String timeAddedToHistory;
+    private ArrayList<SocialMedia> socialMedias = new ArrayList<>();
 
     // empty constructor needed by the Parceler library
     public User() { }
@@ -60,26 +61,37 @@ public class User {
 
     public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
 
-    public ArrayList<SocialMedia> getSocialMediaList() {
-        return socialMediaList;
+    public ArrayList<SocialMedia> getSocialMedias() {
+        return socialMedias;
     }
 
+    // adds social media or edits old one with same name if it exists
     public void addSocialMedia (SocialMedia socialMedia) {
-        socialMediaList.add(socialMedia);
+        boolean exists = false;
+        for (SocialMedia socialMedia1: socialMedias) {
+            if (socialMedia1.getName().equals(socialMedia.getName())) {
+                socialMedia1.setUsername(socialMedia.getUsername());
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) socialMedias.add(socialMedia);
+    }
+
+    // gets social media object from social media list by name. returns null if none exists
+    public SocialMedia getSocialMedia(String socialMediaName) {
+        for (SocialMedia socialMedia1: socialMedias) {
+            if (socialMedia1.getName().equals(socialMediaName)) {
+                return socialMedia1;
+            }
+        }
+        return null;
     }
 
     // removes social media by object
     public void removeSocialMedia (SocialMedia socialMedia) {
-        socialMediaList.remove(socialMedia);
-    }
-
-    // removes social media by name
-    public void removeSocialMedia (String socialMediaName) {
-        for (SocialMedia socialMedia : socialMediaList) {
-            if (socialMedia.getIcon().getName().equals(socialMediaName)) {
-                socialMediaList.remove(socialMedia);
-            }
-        }
+        socialMedia.setUsername(null);
+        socialMedias.remove(socialMedia);
     }
 
     public static User fromJson(JSONObject json) throws JSONException {
@@ -97,9 +109,7 @@ public class User {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
         return user;
-
     }
 
     public static User fromString (String jsonString) throws JSONException {
@@ -128,7 +138,6 @@ public class User {
         json.put("instagramURL", instagramURL);
         json.put("linkedInURL", linkedInURL);
         json.put("timeAddedToHistory", timeAddedToHistory);
-
         return json;
 
     }
@@ -152,4 +161,5 @@ public class User {
         String temp = Base64.encodeToString(b, Base64.DEFAULT);
         return temp;
     }
+
 }

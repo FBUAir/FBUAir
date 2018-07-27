@@ -17,7 +17,7 @@
             android:textSize="16sp" />
 
         <in.srain.cube.views.GridViewWithHeaderAndFooter
-            android:id="@+id/gvIcons"
+            android:id="@+id/gvSocialMedias"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/tvInstructions"

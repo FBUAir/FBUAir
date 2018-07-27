@@ -27,10 +27,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
@@ -40,11 +38,6 @@ import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
-import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
-import static me.gnahum12345.fbuair.utils.Utils.isValidFacebookUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidInstagramUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidLinkedInUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class ProfileFragment extends Fragment {
     // views
@@ -191,9 +184,9 @@ public class ProfileFragment extends Fragment {
             etLinkedInUrl.setText(user.getLinkedInURL());
             btnProfileImage.setImageBitmap(user.getProfileImage());
             String socialMedias = "SOCIALMEDIAS\n";
-            for (SocialMedia socialMedia : user.getSocialMediaList()) {
+            for (SocialMedia socialMedia : user.getSocialMedias()) {
                 socialMedias = socialMedias +
-                        "Name: " + socialMedia.getIcon().getName() +
+                        "Name: " + socialMedia.getName() +
                         " Username: " + socialMedia.getUsername() +
                         " Url: " + socialMedia.getProfileUrl() + "\n";
             }
