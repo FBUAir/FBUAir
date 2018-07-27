@@ -836,7 +836,6 @@ public class ConnectionService {
         User user = new User();
         user.setName("MY NAME");
         user.setEmail("GNAHUM@Gmail.com");
-        user.setFacebookURL("FACEBOOK.COM/PROFILE=13141341");
         user.setOrganization("SOME ORGANIZATION");
         user.setProfileImage(BitmapFactory.decodeResource(mContext.getResources(),
                 R.drawable.default_profile));

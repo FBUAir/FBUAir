@@ -3,7 +3,9 @@ package me.gnahum12345.fbuair.models;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -17,16 +19,13 @@ import java.util.Arrays;
 public class User {
 
     String uid;
-    private String name;
-    private String organization;
-    private String phoneNumber;
-    private String email;
-    private Bitmap profileImage;
-    private String facebookURL;
-    private String instagramURL;
-    private String linkedInURL;
-    private String timeAddedToHistory;
-    private ArrayList<SocialMedia> socialMedias = new ArrayList<>();
+    String name;
+    String organization;
+    String phoneNumber;
+    String email;
+    Bitmap profileImage;
+    String timeAddedToHistory;
+    ArrayList<SocialMedia> socialMedias = new ArrayList<>();
 
 
     // empty constructor needed by the Parceler library
@@ -36,6 +35,7 @@ public class User {
     public String getName() {
         return name;
     }
+
     public String getUid() {
         return uid;
     }
@@ -50,18 +50,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getFacebookURL() {
-        return facebookURL;
-    }
-
-    public String getInstagramURL() {
-        return instagramURL;
-    }
-
-    public String getLinkedInURL() {
-        return linkedInURL;
     }
 
     public Bitmap getProfileImage() {
@@ -106,28 +94,34 @@ public class User {
         }
     }
 
-    public void setOrganization(String organization) { this.organization = organization; }
+    public void setOrganization(String organization) {
+        this.organization = organization;
+    }
 
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
 
-    public void setEmail(String email) { this.email = email; }
-
-    public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public void setProfileImage(Bitmap profileImage) {
         this.profileImage = profileImage;
     }
 
-    public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
+    public void setTimeAddedToHistory(String timeAddedToHistory) {
+        this.timeAddedToHistory = timeAddedToHistory;
+    }
 
     public ArrayList<SocialMedia> getSocialMedias() {
         return socialMedias;
     }
 
     // adds social media or edits old one with same name if it exists
-    public void addSocialMedia (SocialMedia socialMedia) {
+    public void addSocialMedia(SocialMedia socialMedia) {
         boolean exists = false;
-        for (SocialMedia socialMedia1: socialMedias) {
+        for (SocialMedia socialMedia1 : socialMedias) {
             if (socialMedia1.getName().equals(socialMedia.getName())) {
                 socialMedia1.setUsername(socialMedia.getUsername());
                 exists = true;
@@ -139,7 +133,7 @@ public class User {
 
     // gets social media object from social media list by name. returns null if none exists
     public SocialMedia getSocialMedia(String socialMediaName) {
-        for (SocialMedia socialMedia1: socialMedias) {
+        for (SocialMedia socialMedia1 : socialMedias) {
             if (socialMedia1.getName().equals(socialMediaName)) {
                 return socialMedia1;
             }
@@ -148,7 +142,7 @@ public class User {
     }
 
     // removes social media by object
-    public void removeSocialMedia (SocialMedia socialMedia) {
+    public void removeSocialMedia(SocialMedia socialMedia) {
         socialMedia.setUsername(null);
         socialMedias.remove(socialMedia);
     }
@@ -158,15 +152,13 @@ public class User {
         User user = new User();
         try {
             user.name = json.getString("name");
-            user.uid = json.optString("uId", "obviouslyNotAnId");
+            user.uid = json.optString("uid", "obviouslyNotAnId");
             user.phoneNumber = json.optString("phoneNumber");
             user.email = json.optString("email");
             user.organization = json.optString("organization");
-            user.facebookURL = json.optString("facebookURL");
             user.profileImage = stringToBitmap(json.getString("profileImage"));
-            user.instagramURL = json.optString("instagramURL");
-            user.linkedInURL = json.optString("linkedInURL");
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
+            user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -174,7 +166,7 @@ public class User {
     }
 
 
-    public static User fromString (String jsonString) throws JSONException {
+    public static User fromString(String jsonString) throws JSONException {
         return fromJson(new JSONObject(jsonString));
     }
 
@@ -185,43 +177,60 @@ public class User {
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
         String profileImageString = bitmapToString(user.getProfileImage());
-        String facebookURL = user.getFacebookURL();
-        String instagramURL = user.getInstagramURL();
-        String linkedInURL = user.getLinkedInURL();
         String timeAddedToHistory = user.getTimeAddedToHistory();
         String uid = user.getId();
+        JSONArray socialMedias = User.arrayListToJsonArray(user.getSocialMedias());
 
         JSONObject json = new JSONObject();
         json.put("name", name);
-        json.put("uId", uid);
+        json.put("uid", uid);
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);
-        json.put("facebookURL", facebookURL);
         json.put("profileImage", profileImageString);
-        json.put("instagramURL", instagramURL);
-        json.put("linkedInURL", linkedInURL);
         json.put("timeAddedToHistory", timeAddedToHistory);
+        json.put("socialMedias", socialMedias);
         return json;
 
     }
 
-    public static Bitmap stringToBitmap(String encodedString){
+    public static Bitmap stringToBitmap(String encodedString) {
         try {
-            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
-    public static String bitmapToString(Bitmap bitmap){
+    public static String bitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (bitmap == null) return "";
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
-        byte [] b = stream.toByteArray();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] b = stream.toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
+    public static ArrayList<SocialMedia> jsonArrayToArrayList(JSONArray jsonArray) {
+        ArrayList<SocialMedia> arrayList = new ArrayList<>();
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    arrayList.add(SocialMedia.fromJson(jsonArray.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return arrayList;
+    }
+
+    public static JSONArray arrayListToJsonArray(ArrayList<SocialMedia> arrayList) {
+        JSONArray jsonArray = new JSONArray();
+        for (SocialMedia socialMedia : arrayList) {
+            jsonArray.put(SocialMedia.toJson(socialMedia));
+        }
+        return jsonArray;
+    }
 }

@@ -8,8 +8,8 @@ import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 @Parcel
 public class SocialMedia {
-    private String name;
-    private String username;
+    String name;
+    String username;
 
     public SocialMedia() {}
 

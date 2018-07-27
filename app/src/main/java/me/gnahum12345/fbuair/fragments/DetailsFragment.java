@@ -155,43 +155,33 @@ public class DetailsFragment extends Fragment {
         bind.tvEmail.setText(user.getEmail());
         bind.ivProfileImage.setImageDrawable(getResources().getDrawable(R.drawable.happy_face));// fake profile image
 
-        // show applicable social media buttons and set to redirect to profile URLs on click
-        if (user.getFacebookURL().isEmpty()) {
-            bind.btFacebook.setVisibility(View.INVISIBLE);
-        } else {
-            bind.btFacebook.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(user.getFacebookURL()));
-                    startActivity(i);
-                }
-            });
-        }
-        if (user.getInstagramURL().isEmpty()) {
-            bind.btInstagram.setVisibility(View.INVISIBLE);
-        } else {
-            bind.btInstagram.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(user.getInstagramURL()));
-                    startActivity(i);
-                }
-            });
-        }
-        if (user.getLinkedInURL().isEmpty()) {
-            bind.btLinkedIn.setVisibility(View.INVISIBLE);
-        } else {
-            bind.btLinkedIn.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent i = new Intent(Intent.ACTION_VIEW);
-                    i.setData(Uri.parse(user.getLinkedInURL()));
-                    startActivity(i);
-                }
-            });
-        }
+        // set buttons to redirect to profile URLs on click
+        bind.btFacebook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                //i.setData(Uri.parse(user.getFacebookURL()));
+                startActivity(i);
+            }
+        });
+
+        bind.btInstagram.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                //i.setData(Uri.parse(user.getInstagramURL()));
+                startActivity(i);
+            }
+        });
+
+        bind.btLinkedIn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(Intent.ACTION_VIEW);
+                //i.setData(Uri.parse(user.getLinkedInURL()));
+                startActivity(i);
+            }
+        });
     }
 
     // override addContact from utilities to also show appropriate messages and options
