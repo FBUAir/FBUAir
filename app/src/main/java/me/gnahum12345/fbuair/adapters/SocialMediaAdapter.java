@@ -8,9 +8,16 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
 
 import java.util.List;
 
+import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
@@ -100,7 +107,22 @@ public class SocialMediaAdapter extends BaseAdapter {
             // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
             SocialMedia socialMedia;
             socialMedia = socialMedias.get(position);
-            onSignUpScreenChangeListener.launchUrl(socialMedia);
+            if (socialMedia.getName().equals("Twitter")) {
+                MyApp.getTwitterClient().customLoginTwitter((SignUpActivity) context, new Callback<TwitterSession>() {
+                    @Override
+                    public void success(Result<TwitterSession> result) {
+                        Toast.makeText(context, "Yay! Twitter logged in!", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void failure(TwitterException exception) {
+                        Toast.makeText(context, "Boo! Failed to log in!", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                onSignUpScreenChangeListener.launchUrl(socialMedia);
+            }
+
         }
     }
 }

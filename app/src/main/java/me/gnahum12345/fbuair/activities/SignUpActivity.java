@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.drawable.Icon;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -13,11 +12,12 @@ import android.os.Bundle;
 import android.view.View;
 
 import org.json.JSONException;
-import org.parceler.Parcels;
 
 import java.util.Objects;
 
+import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
@@ -46,9 +46,12 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // user signing up
     public User user;
 
+    private TwitterClient client = MyApp.getTwitterClient();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         bind = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
 
         // skip sign up and go to discover page if user already has profile
@@ -74,6 +77,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
         startFragment(welcomeFragment, "welcomeFragment");
+
     }
 
     // sets toolbar for sign up screens and not welcome screen
