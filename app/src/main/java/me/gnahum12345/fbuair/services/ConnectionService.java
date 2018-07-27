@@ -3,14 +3,12 @@ package me.gnahum12345.fbuair.services;
 import android.Manifest;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.support.annotation.NonNull;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.widget.Toast;
 
 import com.google.android.gms.common.api.Status;
@@ -45,7 +43,6 @@ import java.util.Set;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
-import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 
@@ -118,7 +115,6 @@ public class ConnectionService {
      * My endpoint is to optimistically connect devices and
      * make them stable.
      */
-    Endpoint mEndpoint = new Endpoint("4DS1", getName());   // TODO change to be a resonable id. (Perferably the actual id)
     /**
      * The phone's original media volume.
      */
@@ -189,7 +185,7 @@ public class ConnectionService {
      * True if we media is a feature added.
      */
     private boolean mIsMedia = false;
-
+    Endpoint mEndpoint;
     // TODO: give parameters to the constructor so everything can flow smoothly.
     public ConnectionService(Context context) {
         mContext = context;
@@ -197,6 +193,8 @@ public class ConnectionService {
         // Set the media volume to max.
         mProfileUser = new ProfileUser(context);
         mName = mProfileUser.getName() + context.getString(R.string.divider) + generateRandomName();
+        mEndpoint = new Endpoint("4DS1", getName());   // TODO change to be a resonable id. (Perferably the actual id)
+
     }
 
 
@@ -236,21 +234,14 @@ public class ConnectionService {
                         : ConnectionsStatusCodes.getStatusCodeString(status.getStatusCode()));
     }
 
-    private void sendToAll() {
-        logV("startRecording()");
-        String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
-        send(Payload.fromBytes(senderInfo.getBytes()));
-    }
-
-    private void setState(State newState) {
-        if (mState == newState) {
-            logW("State set to " + newState + " but already in that state");
-            return;
-        }
-        logD("state set to " + newState);
-        State oldState = mState;
-        mState = newState;
-        onStateChanged(oldState, mState);
+    /**
+     * An optional hook to pool any permissions the app needs with the permissions ConnectionService
+     * will request.
+     *
+     * @return All permissions required for the app to properly function.
+     */
+    public static String[] getRequiredPermissions() {
+        return REQUIRED_PERMISSIONS;
     }
 
     /**
@@ -528,7 +519,7 @@ public class ConnectionService {
     }
 
     //TODO: this is how we send data backwards.
-    private void send(Payload payload, Set<String> endpoints) {
+    private void send(Payload payload, final Set<String> endpoints) {
         mConnectionsClient
                 .sendPayload(new ArrayList<>(endpoints), payload)
                 .addOnFailureListener(
@@ -536,23 +527,11 @@ public class ConnectionService {
                             @Override
                             public void onFailure(@NonNull Exception e) {
                                 logW("sendPayload() failed.", e);
+                                e.printStackTrace();
                             }
                         });
 
     }
-
-    public void send(final Payload payload, final Endpoint endpoint) {
-
-        //TODO: CHECK THAT THE GIVEN STRING IS THE ID AND NOT THE NAME.
-        mConnectionsClient.sendPayload(endpoint.getId(), payload)
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        logW("sendPayload() Failed given an endpoint", e);
-                    }
-                });
-    }
-
 
     /**
      * Someone connected to us has sent us data. Override this method to act on the event.
@@ -571,10 +550,14 @@ public class ConnectionService {
 
             User user;
             ProfileUser profileUser;
-            boolean userMade = false;
+            boolean userMade;
 
             try {
+                //TODO: fix this... user is being made but in reality it is a profile.
                 user = User.fromString(content);
+                if (user.getId().equals("obviouslyNotAnId")) {
+                    throw new JSONException("This is a profile");
+                }
                 userMade = true;
                 logV("userMade = true");
                 // update listeners to deal with the user.
@@ -600,8 +583,6 @@ public class ConnectionService {
     }
 
 
-
-
     private Strategy getStrategy() {
         return STRATEGY;
     }
@@ -619,32 +600,39 @@ public class ConnectionService {
      *                 Public functions for anyone who wants networking service                     *
      ***********************************************************************************************/
 
-    /**
-     * An optional hook to pool any permissions the app needs with the permissions ConnectionService
-     * will request.
-     *
-     * @return All permissions required for the app to properly function.
-     */
-    public static String[] getRequiredPermissions() {
-        return REQUIRED_PERMISSIONS;
+    public void send(final Payload payload, final Endpoint endpoint) {
+
+        //TODO: CHECK THAT THE GIVEN STRING IS THE ID AND NOT THE NAME.
+        mConnectionsClient.sendPayload(endpoint.getId(), payload)
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        logW("sendPayload() Failed given an endpoint", e);
+                    }
+                });
+    }
+
+    public void sendToAll() {
+        logV("startRecording()");
+        String senderInfo = "This is my info string"; //TODO: Change to be the user's data. ahahahahah
+        send(Payload.fromBytes(senderInfo.getBytes()));
     }
 
     public State getState() {
         return mState;
     }
 
-    /**
-     * Listens to holding/releasing the volume rocker.
-     */
-    public final GestureDetector mGestureDetector =
-            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
-                @Override
-                protected void onHold() {
-                    logV("onHold");
-                    sendToAll();
-                }
+    private void setState(State newState) {
+        if (mState == newState) {
+            logW("State set to " + newState + " but already in that state");
+            return;
+        }
+        logD("state set to " + newState);
+        State oldState = mState;
+        mState = newState;
+        onStateChanged(oldState, mState);
+    }
 
-            };
     /**
      * Sets the device to advertising mode. It will broadcast to other devices in discovery mode.
      * Either {@link #onAdvertisingStarted()} or {@link #onAdvertisingFailed()} will be called once
@@ -693,21 +681,21 @@ public class ConnectionService {
     /**
      * Returns {@code true} if currently advertising.
      */
-    protected boolean isAdvertising() {
+    public boolean isAdvertising() {
         return mIsAdvertising;
     }
 
     /**
      * Returns {@code true} if currently discovering.
      */
-    protected boolean isDiscovering() {
+    public boolean isDiscovering() {
         return mIsDiscovering;
     }
 
     /**
      * Returns {@code true} if we're currently attempting to connect to another device.
      */
-    protected final boolean isConnecting() {
+    public final boolean isConnecting() {
         return mIsConnecting;
     }
 
@@ -797,15 +785,13 @@ public class ConnectionService {
         }
     }
 
+
     //TODO: call in main activity.
     public void onBackPressed() {
-        if (getState() == State.CONNECTED) {
-            disconnectFromAllEndpoints();
-            stopAdvertising();
-            stopDiscovering();
-            setState(State.DISCOVERING);
-            return;
-        }
+        disconnectFromAllEndpoints();
+        stopAdvertising();
+        stopDiscovering();
+        setState(State.DISCOVERING);
     }
 
     public boolean addListener(ConnectionListener listener) {
@@ -824,6 +810,24 @@ public class ConnectionService {
         send(Payload.fromBytes(current_user.getBytes()), endpoint);
     }
 
+    public void debug() {
+        logD("is Connecting: " + mIsConnecting);
+        logD( "is Advertising: " + mIsAdvertising);
+        logD("is Discovering: "+ mIsDiscovering);
+        ArrayList<Endpoint> connections = new ArrayList<>(mPendingConnections.values());
+        logD("Pending Connections: \t");
+        for (int i = 0; i < connections.size(); i++) {
+            logD(connections.get(i).toString());
+        }
+
+        logD("Established Connections: \t");
+        connections.clear();
+        connections.addAll(mEstablishedConnections.values());
+        for (int i = 0; i < connections.size(); i++) {
+            logD(connections.get(i).toString());
+        }
+    }
+
     //TODO: Delete this function...
     public void inputData() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -831,7 +835,7 @@ public class ConnectionService {
 
         User user = new User();
         user.setName("MY NAME");
-        user.setEmail("GNAHUM!@#$%^@Gmail.com");
+        user.setEmail("GNAHUM@Gmail.com");
         user.setFacebookURL("FACEBOOK.COM/PROFILE=13141341");
         user.setOrganization("SOME ORGANIZATION");
         user.setProfileImage(BitmapFactory.decodeResource(mContext.getResources(),
@@ -880,9 +884,6 @@ public class ConnectionService {
             }
         }
     }
-
-
-
 
 
     private void logV(String msg) {
@@ -973,9 +974,7 @@ public class ConnectionService {
             if (o instanceof Endpoint) {
                 Endpoint e = (Endpoint) o;
                 //TODO: delete this.
-                if (e.getName() == null) {
-                    return 1;
-                }
+
                 int result = getName().compareTo(e.getName());
                 return result == 0 ? 1 : result;
             } else {
@@ -985,3 +984,4 @@ public class ConnectionService {
     }
 
 }
+

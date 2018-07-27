@@ -70,8 +70,7 @@ public class DetailsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         super.onCreateView(inflater, container, savedInstanceState);
-        bind = DataBindingUtil.inflate
-                (inflater, R.layout.fragment_details, container, false);
+        bind = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
         View rootView = bind.getRoot();
         return rootView;
     }

@@ -22,6 +22,7 @@ public class ProfileUser {
         SharedPreferences sharedpreferences = context.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         String current_user = sharedpreferences.getString("current_user", null);
         User user = new User();
+        // TODO: Clean this up.
         try {
             if (current_user != null) {
                 user = User.fromJson(new JSONObject(current_user));
@@ -30,8 +31,6 @@ public class ProfileUser {
             }
         } catch (JSONException e) {
             e.printStackTrace();
-            //TODO figure it out.
-//            user.setName("Unknown Name");
         }
         setName(user.getName());
         setIvProfileImage(user.getProfileImage());

@@ -31,7 +31,9 @@
     <string name="status_discovering">Have one person shake their device. Everyone else, stand still.</string>
     <string name="status_searching">Looking for a device to connect to</string>
 
+    <!--TODO: If change divider then change DiscoverAdapter.parseName(String name)-->
     <string name="divider">$$$$$$$$</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 

@@ -21,9 +21,11 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
@@ -104,48 +106,20 @@ public class HistoryFragment extends Fragment {
 
     // adds a given user to history, noting the time (to be called right after sharing data)
     void addToHistory(User user) {
-        sharedpreferences =
-                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        JSONArray historyJSONArray = getHistory();
-        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
-        try {
-            historyJSONArray.put(User.toJson(user));
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString(HISTORY_KEY, historyJSONArray.toString());
-        editor.commit();
+        UserManager.getInstance().addUser(user);
     }
 
     // gets history from shared preferences. return empty json array if no history has been added
-    JSONArray getHistory() {
-        sharedpreferences =
-                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        String historyArrayString = sharedpreferences.getString(HISTORY_KEY, null);
-        if (historyArrayString == null) {
-            return new JSONArray();
-        }
-        else {
-            try {
-                return new JSONArray(historyArrayString);
-            } catch (JSONException e) {
-                return new JSONArray();
-            }
-        }
+    List<User> getHistory() {
+        return UserManager.getInstance().getCurrHistory();
     }
 
 
     // populates recycler view with history from shared preferences
     public void populateHistory() {
-        JSONArray historyJSONArray = getHistory();
-        for (int i = 0; i < historyJSONArray.length(); i++) {
-            User user = null;
-            try {
-                user = User.fromJson(historyJSONArray.getJSONObject(i));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        List<User> users = getHistory();
+        for (int i = 0; i < users.size(); i++) {
+            User user = users.get(i);
             history.add(user);
             historyAdapter.notifyItemInserted(history.size() - 1);
         }
@@ -153,10 +127,6 @@ public class HistoryFragment extends Fragment {
 
     // clears history
     void clearHistory() {
-        sharedpreferences =
-                activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedpreferences.edit();
-        editor.putString(HISTORY_KEY, null);
-        editor.commit();
+        UserManager.getInstance().clearHistory();
     }
 }

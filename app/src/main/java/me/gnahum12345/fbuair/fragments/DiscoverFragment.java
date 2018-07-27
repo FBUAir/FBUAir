@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -36,8 +37,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private Context mContext;
     private RecyclerView rvDevicesView;
     private HashSet<ConnectionService.Endpoint> deviceLst;
-    private DiscoverAdapter rvAdapter;
-    private boolean hasInit = false;
+    public DiscoverAdapter rvAdapter;
+    //TODO: delete the listener.
     private DiscoverFragmentListener mListener;
     private TextView tvRVEmpty;
 
@@ -45,11 +46,11 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         // Required empty public constructor
     }
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
 
     /**
      * TODO: put in activity.
@@ -75,7 +76,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             permissionsNotGranted();
 
         }
-        hasInit = true;
 
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
@@ -123,6 +123,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void saveUser(User user) {
         //TODO: save user.
+        me.gnahum12345.fbuair.managers.UserManager manager = me.gnahum12345.fbuair.managers.UserManager.getInstance();
+        manager.addUser(user);
     }
 
 
@@ -148,7 +150,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void permissionsNotGranted() {
         String[] permissions = ((MainActivity) mContext).connectService.getRequiredPermissions();
-        //TODO: put dialog here.
+        if (!((MainActivity) mContext).connectService.isDiscovering()) {
+            //TODO: put dialog to agree to permissions in order to discover.
+        }
         requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
 
@@ -168,6 +172,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             ((MainActivity) mContext).recreate();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+    public void notifyAdapter() {
+
     }
 }
 

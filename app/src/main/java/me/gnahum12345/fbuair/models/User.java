@@ -9,12 +9,14 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Random;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 @Parcel
 public class User {
 
+    String uid;
     private String name;
     private String organization;
     private String phoneNumber;
@@ -26,30 +28,83 @@ public class User {
     private String timeAddedToHistory;
     private ArrayList<SocialMedia> socialMedias = new ArrayList<>();
 
+
     // empty constructor needed by the Parceler library
-    public User() { }
+    public User() {
+    }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
+    public String getUid() {
+        return uid;
+    }
 
-    public String getOrganization() { return organization; }
+    public String getOrganization() {
+        return organization;
+    }
 
-    public String getPhoneNumber() { return phoneNumber; }
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public String getFacebookURL() { return facebookURL; }
+    public String getFacebookURL() {
+        return facebookURL;
+    }
 
-    public String getInstagramURL() { return instagramURL; }
+    public String getInstagramURL() {
+        return instagramURL;
+    }
 
-    public String getLinkedInURL() { return linkedInURL; }
+    public String getLinkedInURL() {
+        return linkedInURL;
+    }
 
-    public Bitmap getProfileImage() { return profileImage; }
+    public Bitmap getProfileImage() {
+        return profileImage;
+    }
 
-    public String getTimeAddedToHistory() { return timeAddedToHistory; }
+    public String getTimeAddedToHistory() {
+        return timeAddedToHistory;
+    }
 
-    public void setProfileImage(Bitmap profileImage) { this.profileImage = profileImage; }
+    public String getId() {
+        return uid;
+    }
 
-    public void setName(String name) { this.name = name; }
+    public boolean setId() {
+        if (this.name == null) {
+            return false;
+        }
+        uid = this.name + randomDigits(this.name);
+        return true;
+    }
+
+    private String randomDigits(String seed) {
+
+        StringBuilder builder = new StringBuilder();
+        for (Character c : seed.toCharArray()) {
+            Random rand = new Random(c.hashCode());
+            builder.append(rand.nextInt());
+        }
+
+        return builder.toString();
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+        if (getId() == null || getId().isEmpty()) {
+            setId();
+        }
+    }
 
     public void setOrganization(String organization) { this.organization = organization; }
 
@@ -58,6 +113,10 @@ public class User {
     public void setEmail(String email) { this.email = email; }
 
     public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
+
+    public void setProfileImage(Bitmap profileImage) {
+        this.profileImage = profileImage;
+    }
 
     public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
 
@@ -94,10 +153,12 @@ public class User {
         socialMedias.remove(socialMedia);
     }
 
+
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
         try {
             user.name = json.getString("name");
+            user.uid = json.optString("uId", "obviouslyNotAnId");
             user.phoneNumber = json.optString("phoneNumber");
             user.email = json.optString("email");
             user.organization = json.optString("organization");
@@ -111,6 +172,7 @@ public class User {
         }
         return user;
     }
+
 
     public static User fromString (String jsonString) throws JSONException {
         return fromJson(new JSONObject(jsonString));
@@ -127,9 +189,11 @@ public class User {
         String instagramURL = user.getInstagramURL();
         String linkedInURL = user.getLinkedInURL();
         String timeAddedToHistory = user.getTimeAddedToHistory();
+        String uid = user.getId();
 
         JSONObject json = new JSONObject();
         json.put("name", name);
+        json.put("uId", uid);
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);
@@ -145,8 +209,7 @@ public class User {
     public static Bitmap stringToBitmap(String encodedString){
         try {
             byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
-            Bitmap bitmap= BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-            return bitmap;
+            return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
         } catch(Exception e) {
             e.getMessage();
             return null;
@@ -158,8 +221,7 @@ public class User {
         if (bitmap == null) return "";
         bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
         byte [] b = stream.toByteArray();
-        String temp = Base64.encodeToString(b, Base64.DEFAULT);
-        return temp;
+        return Base64.encodeToString(b, Base64.DEFAULT);
     }
 
 }

@@ -32,6 +32,7 @@ public class FakeUsers {
                     .put("phoneNumber", "5478392306")
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Pinterest")
+                    .put("uid", "23232")
                     .put("facebookURL", "")
                     .put("profileImage", "")
                     .put("instagramURL", "")
@@ -39,6 +40,7 @@ public class FakeUsers {
 
             jsonUser2 = new JSONObject()
                     .put("name", "Reese Jones")
+                    .put("uid", "13232")
                     .put("phoneNumber", "7482034937")
                     .put("email", "")
                     .put("organization", "Google")
@@ -49,6 +51,7 @@ public class FakeUsers {
 
             jsonUser3 = new JSONObject()
                     .put("name", "Mary Smith")
+                    .put("uid", "232132")
                     .put("phoneNumber", "5478392306")
                     .put("email", "mary@gmail.com")
                     .put("organization", "")
@@ -61,6 +64,7 @@ public class FakeUsers {
                     .put("name", "Ryan Smith")
                     .put("phoneNumber", "4958203748")
                     .put("email", "r2345@yahoo.com")
+                    .put("uid", "233232")
                     .put("organization", "Airbnb")
                     .put("facebookURL", "")
                     .put("profileImage", "")
@@ -72,6 +76,7 @@ public class FakeUsers {
                     .put("phoneNumber", "2039481726")
                     .put("email", "gabyn@yahoo.com")
                     .put("organization", "Facebook")
+                    .put("uid", "232432")
                     .put("facebookURL", "https://www.facebook.com/gnahum12345")
                     .put("profileImage", "")
                     .put("instagramURL", "")
@@ -81,6 +86,7 @@ public class FakeUsers {
                     .put("name", "Gaby Garcia")
                     .put("phoneNumber", "19283742837")
                     .put("email", "gabyg@gmail.com")
+                    .put("uid", "263232")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406")
                     .put("profileImage", "")
@@ -91,6 +97,7 @@ public class FakeUsers {
                     .put("name", "Mike")
                     .put("phoneNumber", "2938401927")
                     .put("email", "mike@fb.com")
+                    .put("uid", "232382")
                     .put("organization", "Facebook")
                     .put("facebookURL", "https://www.facebook.com/mikecole20")
                     .put("profileImage", "")
@@ -105,6 +112,7 @@ public class FakeUsers {
                     .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
                     .put("instagramURL", "https://www.instagram.com/mariamdiallo9/")
                     .put("linkedInURL", "https://www..com/in/mariamdiallo9/")
+                    .put("uid", "203232")
                     .put("profileImage", "");
 
         } catch (JSONException e) {
