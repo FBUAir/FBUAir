@@ -33,10 +33,8 @@ public class FakeUsers {
                     .put("email", "r2345@yahoo.com")
                     .put("organization", "Pinterest")
                     .put("uId", "23232")
-                    .put("facebookURL", "")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser2 = new JSONObject()
                     .put("name", "Reese Jones")
@@ -44,10 +42,8 @@ public class FakeUsers {
                     .put("phoneNumber", "7482034937")
                     .put("email", "")
                     .put("organization", "Google")
-                    .put("facebookURL", "")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser3 = new JSONObject()
                     .put("name", "Mary Smith")
@@ -55,10 +51,8 @@ public class FakeUsers {
                     .put("phoneNumber", "5478392306")
                     .put("email", "mary@gmail.com")
                     .put("organization", "")
-                    .put("facebookURL", "")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser4 = new JSONObject()
                     .put("name", "Ryan Smith")
@@ -66,10 +60,8 @@ public class FakeUsers {
                     .put("email", "r2345@yahoo.com")
                     .put("uId", "233232")
                     .put("organization", "Airbnb")
-                    .put("facebookURL", "")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser5 = new JSONObject()
                     .put("name", "Gaby Nahum")
@@ -77,10 +69,8 @@ public class FakeUsers {
                     .put("email", "gabyn@yahoo.com")
                     .put("organization", "Facebook")
                     .put("uId", "232432")
-                    .put("facebookURL", "https://www.facebook.com/gnahum12345")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser6 = new JSONObject()
                     .put("name", "Gaby Garcia")
@@ -88,10 +78,8 @@ public class FakeUsers {
                     .put("email", "gabyg@gmail.com")
                     .put("uId", "263232")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/profile.php?id=100009783826406")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser7 = new JSONObject()
                     .put("name", "Mike")
@@ -99,21 +87,17 @@ public class FakeUsers {
                     .put("email", "mike@fb.com")
                     .put("uId", "232382")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/mikecole20")
                     .put("profileImage", "")
-                    .put("instagramURL", "")
-                    .put("linkedInURL", "");
+                    .put("socialMedias", "[]");
 
             jsonUser8 = new JSONObject()
                     .put("name", "Mariam Diallo")
                     .put("phoneNumber", "2938472633")
                     .put("email", "mariam@gmail.com")
                     .put("organization", "Facebook")
-                    .put("facebookURL", "https://www.facebook.com/ari.diallo.9")
-                    .put("instagramURL", "https://www.instagram.com/mariamdiallo9/")
-                    .put("linkedInURL", "https://www..com/in/mariamdiallo9/")
                     .put("uId", "203232")
-                    .put("profileImage", "");
+                    .put("profileImage", "")
+                    .put("socialMedias", "[]");
 
         } catch (JSONException e) {
             e.printStackTrace();

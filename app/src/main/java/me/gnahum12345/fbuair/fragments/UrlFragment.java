@@ -1,21 +1,16 @@
 package me.gnahum12345.fbuair.fragments;
 
-import android.app.Activity;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.databinding.adapters.TextViewBindingAdapter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 
 import org.parceler.Parcels;
 
@@ -23,16 +18,14 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentUrlBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
-import me.gnahum12345.fbuair.models.Icon;
 import me.gnahum12345.fbuair.models.SocialMedia;
-import me.gnahum12345.fbuair.utils.IconUtils;
+import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 public class UrlFragment extends Fragment {
     // the fragment initialization parameters
-    private static final String ARG_ICON_NAME = "iconName";
+    private static final String ARG_SOCIAL_MEDIA = "socialMedia";
 
-    private Icon icon;
-    private String iconName;
+    private SocialMedia socialMedia;
 
     private OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
@@ -44,10 +37,10 @@ public class UrlFragment extends Fragment {
         // Required empty public constructor
     }
 
-    public static UrlFragment newInstance(String iconName) {
+    public static UrlFragment newInstance(SocialMedia socialMedia) {
         UrlFragment fragment = new UrlFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_ICON_NAME, iconName);
+        args.putParcelable(ARG_SOCIAL_MEDIA, Parcels.wrap(socialMedia));
         fragment.setArguments(args);
         return fragment;
     }
@@ -56,8 +49,7 @@ public class UrlFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            iconName = getArguments().getString(ARG_ICON_NAME);
-            icon = IconUtils.getIcon(getContext(), iconName);
+            socialMedia = Parcels.unwrap(getArguments().getParcelable(ARG_SOCIAL_MEDIA));
         }
     }
 
@@ -80,35 +72,21 @@ public class UrlFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        bind.tvTitle.setText("Add " + iconName);
-        bind.etUrl.setHint(iconName + " Profile URL");
+        String title;
+        // if username is not null, user already added this social media
+        if (socialMedia.isAdded()) {
+            title = "Edit ";
+            bind.etUsername.setText(socialMedia.getUsername());
+            bind.btRemove.setVisibility(View.VISIBLE);
+        }
+        else {
+            title = "Add ";
+            bind.etUsername.setText("");
+            bind.btRemove.setVisibility(View.GONE);
+        }
 
-        bind.etUrl.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                String input = editable.toString();
-                if (input.isEmpty()) {
-                    bind.ivUrlCheck.setVisibility(View.GONE);
-                    bind.tvUrlError.setText("A profile URL is required.");
-                }
-                else if (!(Patterns.WEB_URL.matcher(input).matches() &&
-                        input.toLowerCase().contains(iconName.toLowerCase()))) {
-                    bind.ivUrlCheck.setVisibility(View.GONE);
-                    bind.tvUrlError.setText("Enter a valid " + iconName + " profile URL.");
-                }
-                else {
-                    bind.ivUrlCheck.setVisibility(View.VISIBLE);
-                    bind.tvUrlError.setText("");
-                }
-                bind.btSubmit.setEnabled(isValid());
-            }
-        });
+        bind.tvTitle.setText(title + socialMedia.getName());
+        bind.etUsername.setHint(socialMedia.getName() + " username");
 
         bind.etUsername.addTextChangedListener(new TextWatcher() {
             @Override
@@ -122,38 +100,36 @@ public class UrlFragment extends Fragment {
                 if (editable.toString().isEmpty()) {
                     bind.ivUsernameCheck.setVisibility(View.GONE);
                     bind.tvUsernameError.setText("A username is required.");
+                    bind.btValidate.setEnabled(false);
                 }
                 else {
                     bind.ivUsernameCheck.setVisibility(View.VISIBLE);
                     bind.tvUsernameError.setText("");
+                    bind.btValidate.setEnabled(true);
                 }
-                bind.btSubmit.setEnabled(isValid());
             }
         });
 
         bind.btCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSignUpScreenChangeListener.finishUrl(false);
+                onSignUpScreenChangeListener.finishUrl();
             }
         });
-        bind.btSubmit.setOnClickListener(new View.OnClickListener() {
+        bind.btValidate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                SocialMedia socialMedia = new SocialMedia();
-                socialMedia.setIcon(icon);
-                icon.setAdded(true);
-                socialMedia.setProfileUrl(bind.etUrl.getText().toString());
                 socialMedia.setUsername(bind.etUsername.getText().toString());
-                activity.user.addSocialMedia(socialMedia);
-                onSignUpScreenChangeListener.finishUrl(true);
+                onSignUpScreenChangeListener.launchValidateProfile(socialMedia);
             }
         });
-    }
-
-    boolean isValid() {
-        return (bind.ivUsernameCheck.getVisibility() == View.VISIBLE &&
-                bind.ivUrlCheck.getVisibility() == View.VISIBLE);
+        bind.btRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                activity.user.removeSocialMedia(socialMedia);
+                onSignUpScreenChangeListener.finishUrl();
+            }
+        });
     }
 
     @Override

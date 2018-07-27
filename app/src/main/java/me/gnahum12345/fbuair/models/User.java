@@ -3,7 +3,9 @@ package me.gnahum12345.fbuair.models;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
+import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.parceler.Parcel;
@@ -11,6 +13,7 @@ import org.parceler.Parcel;
 import java.io.ByteArrayOutputStream;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 @Parcel
 public class User {
@@ -21,11 +24,9 @@ public class User {
     String phoneNumber;
     String email;
     Bitmap profileImage;
-    String facebookURL;
-    String instagramURL;
-    String linkedInURL;
     String timeAddedToHistory;
-    ArrayList<SocialMedia> socialMediaList = new ArrayList<>();
+    ArrayList<SocialMedia> socialMedias = new ArrayList<>();
+
 
     // empty constructor needed by the Parceler library
     public User() {
@@ -33,6 +34,10 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public String getUid() {
+        return uid;
     }
 
     public String getOrganization() {
@@ -45,18 +50,6 @@ public class User {
 
     public String getEmail() {
         return email;
-    }
-
-    public String getFacebookURL() {
-        return facebookURL;
-    }
-
-    public String getInstagramURL() {
-        return instagramURL;
-    }
-
-    public String getLinkedInURL() {
-        return linkedInURL;
     }
 
     public Bitmap getProfileImage() {
@@ -90,7 +83,9 @@ public class User {
         return builder.toString();
     }
 
-    public void setProfileImage(Bitmap profileImage) { this.profileImage = profileImage; }
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
 
     public void setName(String name) {
         this.name = name;
@@ -99,36 +94,56 @@ public class User {
         }
     }
 
-    public void setOrganization(String organization) { this.organization = organization; }
-
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public void setEmail(String email) { this.email = email; }
-
-    public void setFacebookURL(String facebookURL) { this.facebookURL = facebookURL; }
-
-    public void setTimeAddedToHistory(String timeAddedToHistory) { this.timeAddedToHistory = timeAddedToHistory; }
-
-    public ArrayList<SocialMedia> getSocialMediaList() {
-        return socialMediaList;
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 
-    public void addSocialMedia (SocialMedia socialMedia) {
-        socialMediaList.add(socialMedia);
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setProfileImage(Bitmap profileImage) {
+        this.profileImage = profileImage;
+    }
+
+    public void setTimeAddedToHistory(String timeAddedToHistory) {
+        this.timeAddedToHistory = timeAddedToHistory;
+    }
+
+    public ArrayList<SocialMedia> getSocialMedias() {
+        return socialMedias;
+    }
+
+    // adds social media or edits old one with same name if it exists
+    public void addSocialMedia(SocialMedia socialMedia) {
+        boolean exists = false;
+        for (SocialMedia socialMedia1 : socialMedias) {
+            if (socialMedia1.getName().equals(socialMedia.getName())) {
+                socialMedia1.setUsername(socialMedia.getUsername());
+                exists = true;
+                break;
+            }
+        }
+        if (!exists) socialMedias.add(socialMedia);
+    }
+
+    // gets social media object from social media list by name. returns null if none exists
+    public SocialMedia getSocialMedia(String socialMediaName) {
+        for (SocialMedia socialMedia1 : socialMedias) {
+            if (socialMedia1.getName().equals(socialMediaName)) {
+                return socialMedia1;
+            }
+        }
+        return null;
     }
 
     // removes social media by object
-    public void removeSocialMedia (SocialMedia socialMedia) {
-        socialMediaList.remove(socialMedia);
-    }
-
-    // removes social media by name
-    public void removeSocialMedia (String socialMediaName) {
-        for (SocialMedia socialMedia : socialMediaList) {
-            if (socialMedia.getIcon().getName().equals(socialMediaName)) {
-                socialMediaList.remove(socialMedia);
-            }
-        }
+    public void removeSocialMedia(SocialMedia socialMedia) {
+        socialMedias.remove(socialMedia);
     }
 
 
@@ -140,11 +155,9 @@ public class User {
             user.phoneNumber = json.optString("phoneNumber");
             user.email = json.optString("email");
             user.organization = json.optString("organization");
-            user.facebookURL = json.optString("facebookURL");
             user.profileImage = stringToBitmap(json.getString("profileImage"));
-            user.instagramURL = json.optString("instagramURL");
-            user.linkedInURL = json.optString("linkedInURL");
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
+            user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -152,7 +165,7 @@ public class User {
     }
 
 
-    public static User fromString (String jsonString) throws JSONException {
+    public static User fromString(String jsonString) throws JSONException {
         return fromJson(new JSONObject(jsonString));
     }
 
@@ -163,11 +176,9 @@ public class User {
         String phoneNumber = user.getPhoneNumber();
         String email = user.getEmail();
         String profileImageString = bitmapToString(user.getProfileImage());
-        String facebookURL = user.getFacebookURL();
-        String instagramURL = user.getInstagramURL();
-        String linkedInURL = user.getLinkedInURL();
         String timeAddedToHistory = user.getTimeAddedToHistory();
         String uid = user.getId();
+        JSONArray socialMedias = User.arrayListToJsonArray(user.getSocialMedias());
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -175,31 +186,50 @@ public class User {
         json.put("organization", organization);
         json.put("phoneNumber", phoneNumber);
         json.put("email", email);
-        json.put("facebookURL", facebookURL);
         json.put("profileImage", profileImageString);
-        json.put("instagramURL", instagramURL);
-        json.put("linkedInURL", linkedInURL);
         json.put("timeAddedToHistory", timeAddedToHistory);
-
+        json.put("socialMedias", socialMedias);
         return json;
 
     }
 
-    public static Bitmap stringToBitmap(String encodedString){
+    public static Bitmap stringToBitmap(String encodedString) {
         try {
-            byte [] encodeByte=Base64.decode(encodedString,Base64.DEFAULT);
+            byte[] encodeByte = Base64.decode(encodedString, Base64.DEFAULT);
             return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.getMessage();
             return null;
         }
     }
 
-    public static String bitmapToString(Bitmap bitmap){
+    public static String bitmapToString(Bitmap bitmap) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         if (bitmap == null) return "";
-        bitmap.compress(Bitmap.CompressFormat.PNG,100, stream);
-        byte [] b = stream.toByteArray();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] b = stream.toByteArray();
         return Base64.encodeToString(b, Base64.DEFAULT);
+    }
+
+    public static ArrayList<SocialMedia> jsonArrayToArrayList(JSONArray jsonArray) {
+        ArrayList<SocialMedia> arrayList = new ArrayList<>();
+        if (jsonArray != null) {
+            for (int i = 0; i < jsonArray.length(); i++) {
+                try {
+                    arrayList.add(SocialMedia.fromJson(jsonArray.getJSONObject(i)));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return arrayList;
+    }
+
+    public static JSONArray arrayListToJsonArray(ArrayList<SocialMedia> arrayList) {
+        JSONArray jsonArray = new JSONArray();
+        for (SocialMedia socialMedia : arrayList) {
+            jsonArray.put(SocialMedia.toJson(socialMedia));
+        }
+        return jsonArray;
     }
 }

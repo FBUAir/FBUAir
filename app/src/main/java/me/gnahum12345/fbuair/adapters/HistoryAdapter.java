@@ -35,7 +35,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private Context context;
     private LaunchDetailsListener launchDetailsListener;
 
-    public HistoryAdapter(List<User> history, Context context) {
+    public HistoryAdapter(Context context, List<User> history) {
         this.history = history;
         this.filteredHistory = history;
         getFilter();

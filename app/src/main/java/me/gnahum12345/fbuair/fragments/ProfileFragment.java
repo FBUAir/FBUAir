@@ -27,10 +27,8 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
@@ -40,11 +38,6 @@ import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
-import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
-import static me.gnahum12345.fbuair.utils.Utils.isValidFacebookUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidInstagramUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidLinkedInUrl;
-import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class ProfileFragment extends Fragment {
     // views
@@ -52,9 +45,6 @@ public class ProfileFragment extends Fragment {
     EditText etOrganization;
     EditText etPhoneNumber;
     EditText etEmail;
-    EditText etFacebookUrl;
-    EditText etLinkedInUrl;
-    EditText etInstagramUrl;
     Button btEditProfile;
     Button btSubmit;
     Button btDeleteProfile;
@@ -79,9 +69,6 @@ public class ProfileFragment extends Fragment {
     String organization;
     String phone;
     Bitmap profileImageBitmap;
-    String facebookUrl;
-    String linkedInUrl;
-    String instagramUrl;
 
     // reference to main activity
     Activity activity;
@@ -119,9 +106,6 @@ public class ProfileFragment extends Fragment {
         etOrganization = view.findViewById(R.id.etOrganization);
         etPhoneNumber = view.findViewById(R.id.etPhone);
         etEmail = view.findViewById(R.id.etEmail);
-        etFacebookUrl = view.findViewById(R.id.etFacebookUrl);
-        etInstagramUrl = view.findViewById(R.id.etInstagramUrl);
-        etLinkedInUrl = view.findViewById(R.id.etLinkedInUrl);
         btnProfileImage = view.findViewById(R.id.btnProfileImage);
         tvNameError = view.findViewById(R.id.tvNameError);
         tvEmailError = view.findViewById(R.id.tvEmailError);
@@ -186,14 +170,11 @@ public class ProfileFragment extends Fragment {
             etPhoneNumber.setText(user.getPhoneNumber());
             etEmail.setText(user.getEmail());
             etOrganization.setText(user.getOrganization());
-            etFacebookUrl.setText(user.getFacebookURL());
-            etInstagramUrl.setText(user.getInstagramURL());
-            etLinkedInUrl.setText(user.getLinkedInURL());
             btnProfileImage.setImageBitmap(user.getProfileImage());
             String socialMedias = "SOCIALMEDIAS\n";
-            for (SocialMedia socialMedia : user.getSocialMediaList()) {
+            for (SocialMedia socialMedia : user.getSocialMedias()) {
                 socialMedias = socialMedias +
-                        "Name: " + socialMedia.getIcon().getName() +
+                        "Name: " + socialMedia.getName() +
                         " Username: " + socialMedia.getUsername() +
                         " Url: " + socialMedia.getProfileUrl() + "\n";
             }
@@ -212,9 +193,6 @@ public class ProfileFragment extends Fragment {
         organization = etOrganization.getText().toString();
         phone = etPhoneNumber.getText().toString();
         email = etEmail.getText().toString();
-        facebookUrl = etFacebookUrl.getText().toString();
-        instagramUrl = etInstagramUrl.getText().toString();
-        linkedInUrl = etLinkedInUrl.getText().toString();
 
         if (isValidProfile()) {
             setEditable(false);
@@ -258,9 +236,6 @@ public class ProfileFragment extends Fragment {
         etOrganization.setEnabled(flag);
         etPhoneNumber.setEnabled(flag);
         etEmail.setEnabled(flag);
-        etFacebookUrl.setEnabled(flag);
-        etLinkedInUrl.setEnabled(flag);
-        etInstagramUrl.setEnabled(flag);
         // show appropriate button
         btEditProfile.setVisibility(flag ? View.GONE : View.VISIBLE);
         btSubmit.setVisibility(flag ? View.VISIBLE : View.GONE);

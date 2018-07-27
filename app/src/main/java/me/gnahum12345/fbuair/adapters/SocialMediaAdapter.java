@@ -12,37 +12,38 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.interfaces.OnIconClickedListener;
-import me.gnahum12345.fbuair.models.Icon;
+import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
+import me.gnahum12345.fbuair.models.SocialMedia;
+import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
-// adapter for social media icons during sign up
-public class IconAdapter extends BaseAdapter {
-    // list of icons and context
-    private List<Icon> icons;
+// adapter for social media socialMedias during sign up
+public class SocialMediaAdapter extends BaseAdapter {
+    // list of socialMedias and context
+    private List<SocialMedia> socialMedias;
     private Context context;
 
-    private OnIconClickedListener onIconClickedListener;
+    private OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
     // Clean all elements of the recycler
     public void clear() {
-        icons.clear();
+        socialMedias.clear();
         notifyDataSetChanged();
     }
 
-    // pass the icons list in the constructor
-    public IconAdapter(Context context, List<Icon> icons) {
+    // pass the socialMedias list in the constructor
+    public SocialMediaAdapter(Context context, List<SocialMedia> socialMedias) {
         this.context = context;
-        this.icons = icons;
+        this.socialMedias = socialMedias;
         try {
-            onIconClickedListener = (OnIconClickedListener) context;
+            onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {
-            Log.e("IconAdapter", "Fragment must implement OnIconClickedListener") ;
+            Log.e("SocialMediaAdapter", "Fragment must implement OnSignUpScreenChangeListener") ;
         }
     }
 
     @Override
     public int getCount() {
-        return icons.size();
+        return socialMedias.size();
     }
 
     @Override
@@ -57,34 +58,34 @@ public class IconAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        final Icon icon = icons.get(position);
+        final SocialMedia socialMedia = socialMedias.get(position);
         if (view == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
-            view = layoutInflater.inflate(R.layout.item_icon, null);
+            view = layoutInflater.inflate(R.layout.item_social_media, null);
             final ViewHolder viewHolder = new ViewHolder(view);
             view.setTag(R.id.VIEW_HOLDER_KEY, viewHolder);
             view.setTag(R.id.POSITION_KEY, position);
         }
 
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
-        viewHolder.ivIconImage.setImageDrawable(icon.getDrawable());
-        viewHolder.tvIconName.setText(icon.getName());
-        viewHolder.ivCheck.setVisibility(icon.isAdded() ? View.VISIBLE : View.GONE);
+        viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
+        viewHolder.tvName.setText(socialMedia.getName());
+        viewHolder.ivCheck.setVisibility(socialMedia.isAdded() ? View.VISIBLE : View.GONE);
         return view;
     }
 
     // create the ViewHolder class
     public class ViewHolder implements View.OnClickListener {
         // declare views
-        ImageView ivIconImage;
-        TextView tvIconName;
+        ImageView ivImage;
+        TextView tvName;
         ImageView ivCheck;
 
         ViewHolder(View itemView) {
             // perform findViewById lookups
-            ivIconImage = itemView.findViewById(R.id.ivIconImage);
+            ivImage = itemView.findViewById(R.id.ivImage);
             ivCheck = itemView.findViewById(R.id.ivCheck);
-            tvIconName = itemView.findViewById(R.id.tvIconName);
+            tvName = itemView.findViewById(R.id.tvName);
 
             // set this as items' onclicklistener
             itemView.setOnClickListener(this);
@@ -94,15 +95,10 @@ public class IconAdapter extends BaseAdapter {
         public void onClick(View view) {
             // get item position
             int position = (int) view.getTag(R.id.POSITION_KEY);
-            // get the icon at the position from icons array and toggle its selected
-            Icon icon;
-            icon = icons.get(position);
-            if (icon.isAdded()) {
-                onIconClickedListener.removeMedia(icon);
-            } else {
-                onIconClickedListener.addMedia(icon);
-            }
+            // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
+            SocialMedia socialMedia;
+            socialMedia = socialMedias.get(position);
+            onSignUpScreenChangeListener.launchUrl(socialMedia);
         }
     }
-
 }

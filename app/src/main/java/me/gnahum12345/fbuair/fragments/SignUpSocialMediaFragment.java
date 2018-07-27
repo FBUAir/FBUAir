@@ -11,18 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
-import me.gnahum12345.fbuair.adapters.IconAdapter;
+import me.gnahum12345.fbuair.adapters.SocialMediaAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
 import me.gnahum12345.fbuair.databinding.IconsFooterBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
-import me.gnahum12345.fbuair.models.Icon;
-import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utils.IconUtils;
+import me.gnahum12345.fbuair.models.SocialMedia;
+import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 import me.gnahum12345.fbuair.utils.Utils;
 
 public class SignUpSocialMediaFragment extends Fragment{
@@ -30,13 +28,10 @@ public class SignUpSocialMediaFragment extends Fragment{
     SignUpActivity activity;
 
     ViewGroup container;
-
-    User user;
-
     OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
-    public IconAdapter iconAdapter;
-    List<Icon> icons;
+    public SocialMediaAdapter socialMediaAdapter;
+    List<SocialMedia> socialMedias;
 
     // data bind to skip find view by id
     FragmentSignUpSocialMediaBinding bind;
@@ -44,6 +39,14 @@ public class SignUpSocialMediaFragment extends Fragment{
 
     public SignUpSocialMediaFragment() {
         // Required empty public constructor
+    }
+
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // create socialMedias list with supported social media platforms and create adapter
+        socialMedias = SocialMediaUtils.getAllSocialMedias();
+        socialMediaAdapter = new SocialMediaAdapter(getContext(), socialMedias);
     }
 
     @Override
@@ -81,15 +84,10 @@ public class SignUpSocialMediaFragment extends Fragment{
         bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.icons_footer, container,
                 false);
         View footerView = bindFooter.getRoot();
-        bind.gvIcons.addFooterView(footerView);
+        bind.gvSocialMedias.addFooterView(footerView);
 
-        // create icons list with supported social media platforms and create adapter
-        icons = IconUtils.getAllIcons(getContext());
-        iconAdapter = new IconAdapter(getContext(), icons);
-        bind.gvIcons.setAdapter(iconAdapter);
-
-        // get user signing up
-        user = activity.user;
+        // attach adapter
+        bind.gvSocialMedias.setAdapter(socialMediaAdapter);
 
         // CLICK HANDLERS
         footerView.findViewById(R.id.btNext);
