@@ -141,6 +141,11 @@ public class User {
         return null;
     }
 
+    // checks if user has social media by name
+    public boolean hasSocialMedia(SocialMedia socialMedia) {
+        return getSocialMedia(socialMedia.getName()) != null;
+    }
+
     // removes social media by object
     public void removeSocialMedia(SocialMedia socialMedia) {
         socialMedias.remove(socialMedia);

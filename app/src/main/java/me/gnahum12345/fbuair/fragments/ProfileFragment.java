@@ -53,11 +53,6 @@ public class ProfileFragment extends Fragment {
     TextView tvNameError;
     TextView tvPhoneError;
     TextView tvEmailError;
-    TextView tvFacebookError;
-    TextView tvInstagramError;
-    TextView tvLinkedInError;
-
-    TextView tvSocialMedias;
 
     // shared preferences
     SharedPreferences sharedpreferences;
@@ -110,13 +105,9 @@ public class ProfileFragment extends Fragment {
         tvNameError = view.findViewById(R.id.tvNameError);
         tvEmailError = view.findViewById(R.id.tvEmailError);
         tvPhoneError = view.findViewById(R.id.tvPhoneError);
-        tvFacebookError = view.findViewById(R.id.tvFacebookError);
-        tvInstagramError = view.findViewById(R.id.tvInstagramError);
-        tvLinkedInError = view.findViewById(R.id.tvLinkedInError);
         btEditProfile = view.findViewById(R.id.btEditProfile);
         btSubmit = view.findViewById(R.id.btSubmit);
         btDeleteProfile = view.findViewById(R.id.btDeleteProfile);
-        tvSocialMedias = view.findViewById(R.id.tvSocialMedias);
 
         // clear placeholder text in errors
         clearErrors();
@@ -171,14 +162,6 @@ public class ProfileFragment extends Fragment {
             etEmail.setText(user.getEmail());
             etOrganization.setText(user.getOrganization());
             btnProfileImage.setImageBitmap(user.getProfileImage());
-            String socialMedias = "SOCIALMEDIAS\n";
-            for (SocialMedia socialMedia : user.getSocialMedias()) {
-                socialMedias = socialMedias +
-                        "Name: " + socialMedia.getName() +
-                        " Username: " + socialMedia.getUsername() +
-                        " Url: " + socialMedia.getProfileUrl() + "\n";
-            }
-            tvSocialMedias.setText(socialMedias);
         }
         else {
             // go to sign up activity if no current user
@@ -224,9 +207,6 @@ public class ProfileFragment extends Fragment {
         tvNameError.setText("");
         tvPhoneError.setText("");
         tvEmailError.setText("");
-        tvFacebookError.setText("");
-        tvInstagramError.setText("");
-        tvLinkedInError.setText("");
     }
 
     // go to edit profile mode

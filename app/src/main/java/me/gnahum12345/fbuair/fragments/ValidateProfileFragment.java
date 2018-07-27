@@ -1,7 +1,10 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -11,6 +14,9 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.URLUtil;
+import android.webkit.WebChromeClient;
+import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
 import org.parceler.Parcels;
@@ -70,8 +76,26 @@ public class ValidateProfileFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
         Utils.hideSoftKeyboard(activity);
 
-        bind.wvProfile.setWebViewClient(new WebViewClient());
-        bind.wvProfile.loadUrl(socialMedia.getProfileUrl());
+        // load users profile into webview
+        String profileUrl = socialMedia.getProfileUrl();
+        bind.wvProfile.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                if( URLUtil.isNetworkUrl(url) ) {
+                    return false;
+                }
+                if (appInstalledOrNot(url)) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                    startActivity(intent);
+                } else {
+                    view.loadUrl(url);
+                }
+                return true;
+            }
+
+        });
+        bind.wvProfile.getSettings().setJavaScriptEnabled(true);
+        bind.wvProfile.loadUrl(profileUrl);
 
         bind.btReturn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -82,11 +106,11 @@ public class ValidateProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                socialMedia.setAdded(true);
                 activity.user.addSocialMedia(socialMedia);
                 onSignUpScreenChangeListener.finishValidateProfile(true);
             }
         });
+
     }
 
     @Override
@@ -98,6 +122,17 @@ public class ValidateProfileFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    private boolean appInstalledOrNot(String uri) {
+        PackageManager pm = activity.getPackageManager();
+        try {
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            return true;
+        } catch (PackageManager.NameNotFoundException e) {
+        }
+
+        return false;
     }
 
     @Override
