@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -106,11 +107,18 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         }
         if (profileUser != null) {
             viewHolder.mivProfilePic.setVisibility(View.VISIBLE);
-            viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
+            if (profileUser.getIvProfileImage() == null) {
+                Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
+                viewHolder.mivProfilePic.setImageDrawable(drawable);
+            } else {
+                viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
+            }
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
             String deviceName = parseName(device.getName());
             viewHolder.mtvDeviceName.setText(deviceName);
+            Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
+            viewHolder.mivProfilePic.setImageDrawable(drawable);
         }
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);

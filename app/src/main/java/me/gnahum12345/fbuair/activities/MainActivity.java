@@ -3,19 +3,25 @@ package me.gnahum12345.fbuair.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.databinding.adapters.SearchViewBindingAdapter;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,22 +33,27 @@ import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
-import me.gnahum12345.fbuair.managers.UserManager;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
         SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
 
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    // fragment position aliases
+    final static int DISCOVER_FRAGMENT = 0;
     // references to bottom navigation bar and toolbar
-
-    BottomNavigationView bottomNavigation;
-    android.support.v7.widget.Toolbar toolbar;
-    SearchView svSearch;
-
+    final static int HISTORY_FRAGMENT = 1;
+    final static int PROFILE_FRAGMENT = 2;
+    final static int DETAILS_FRAGMENT = 3;
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+    private static final String TAG = "MainActivityTag";
+    // The list of fragments used in the view pager
+    private final List<Fragment> fragments = new ArrayList<>();
+    //Connection Service.
+    public ConnectionService connectService;
     /**
      * Listens to holding/releasing the volume rocker.
      */
@@ -53,36 +64,24 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     connectService.sendToAll();
                 }
             };
-
+    //    BottomNavigationView bottomNavigation;
+    AHBottomNavigation bottomNavigation;
+    android.support.v7.widget.Toolbar toolbar;
+    SearchView svSearch;
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
     DetailsFragment detailsFragment;
-
-    // fragment position aliases
-    final static int DISCOVER_FRAGMENT = 0;
-    final static int HISTORY_FRAGMENT = 1;
-    final static int PROFILE_FRAGMENT = 2;
-    final static int DETAILS_FRAGMENT = 3;
-
     UserManager userManager;
-
-    //Connection Service.
-    public ConnectionService connectService;
     // menus
     RelativeLayout historyMenu;
-
-    // The list of fragments used in the view pager
-    private final List<Fragment> fragments = new ArrayList<>();
-
+    boolean debug;
     // A reference to our view pager.
-    private ViewPager viewPager;
-
+    private AHBottomNavigationViewPager viewPager;
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
-    boolean debug;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,53 +128,97 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled
-                    (int position, float positionOffset, int positionOffsetPixels) { }
+                    (int position, float positionOffset, int positionOffsetPixels) {
+            }
 
             @Override
             public void onPageSelected(int position) {
                 clearMenus();
+                resetItems();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
-                        bottomNavigation.setSelectedItemId(R.id.action_discover);
+//                        bottomNavigation.setSelectedItemId(R.id.action_discover);
+                        bottomNavigation.setCurrentItem(0);
+                        bottomNavigation.getItem(0).setColor(fetchColor(R.color.colorAccent));
                         break;
                     case HISTORY_FRAGMENT:
-                        bottomNavigation.setSelectedItemId(R.id.action_history);
+//                        bottomNavigation.setSelectedItemId(R.id.action_history);
+                        bottomNavigation.setCurrentItem(1);
+                        bottomNavigation.getItem(1).setColor(fetchColor(R.color.colorAccent));
                         historyMenu.setVisibility(View.VISIBLE);
                         break;
                     case PROFILE_FRAGMENT:
-                        bottomNavigation.setSelectedItemId(R.id.action_profile);
+                        bottomNavigation.setCurrentItem(2);
+                        bottomNavigation.getItem(2).setColor(fetchColor(R.color.colorAccent));
+//                      bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
                 }
             }
 
             @Override
-            public void onPageScrollStateChanged(int state) { }
+            public void onPageScrollStateChanged(int state) {
+            }
         });
+
+
 
         // Grab a reference to our bottom navigation view
         bottomNavigation = findViewById(R.id.bottomNavigationView);
 
-        // Handle the click for each item on the bottom navigation view.
-        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        int[] tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
+        AHBottomNavigationAdapter navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu);
+        navigationAdapter.setupWithBottomNavigation(bottomNavigation, tabColors);
+
+        bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
+        bottomNavigation.setNotificationBackgroundColor(fetchColor(R.color.notification));
+        bottomNavigation.setColoredModeColors(fetchColor(R.color.colorAccent), fetchColor(R.color.color_black));
+        bottomNavigation.setTranslucentNavigationEnabled(true);
+
+        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.action_discover:
-                        discoverFragment.notifyAdapter();
-                        viewPager.setCurrentItem(DISCOVER_FRAGMENT);
-                        return true;
-                    case R.id.action_history:
-                        viewPager.setCurrentItem(HISTORY_FRAGMENT);
-                        return true;
-                    case R.id.action_profile:
-                        viewPager.setCurrentItem(PROFILE_FRAGMENT);
-                        return true;
-                    default:
-                        return false;
+            public boolean onTabSelected(int position, boolean wasSelected) {
+                viewPager.setCurrentItem(position, true);
+                if (position == 1) {
+                    bottomNavigation.setNotification("", 1);
                 }
+//                bottomNavigation.setColored(true);
+                return true;
             }
         });
+
+
+        // Handle the click for each item on the bottom navigation view.
+//        bottomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+//            @Override
+//            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+//                switch (item.getItemId()) {
+//                    case R.id.action_discover:
+//                        discoverFragment.notifyAdapter();
+//                        viewPager.setCurrentItem(DISCOVER_FRAGMENT);
+//                        return true;
+//                    case R.id.action_history:
+//                        viewPager.setCurrentItem(HISTORY_FRAGMENT);
+//                        return true;
+//                    case R.id.action_profile:
+//                        viewPager.setCurrentItem(PROFILE_FRAGMENT);
+//                        return true;
+//                    default:
+//                        return false;
+//                }
+//            }
+//        });
+
         connectService.addListener(discoverFragment);
+    }
+
+    private void resetItems() {
+        for (int i = 0; i < bottomNavigation.getItemsCount(); i++) {
+            bottomNavigation.getItem(i).setColor(fetchColor(R.color.color_black));
+        }
+    }
+
+    private int fetchColor(@ColorRes int color) {
+        return ContextCompat.getColor(this, color);
     }
 
     private void startConnectionService() {
@@ -217,7 +260,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
 
-
     @Override
     public void onBackPressed() {
         if (!discoverFragment.rvAdapter.isEmpty()) {
@@ -242,29 +284,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         svSearch.setOnQueryTextListener(this);
     }
 
-    static class Adapter extends FragmentStatePagerAdapter {
-
-        // The list of fragments which we are going to be displaying in the view pager.
-        private final List<Fragment> fragments;
-
-        public Adapter(FragmentManager fm, List<Fragment> fragments) {
-            super(fm);
-
-            this.fragments = fragments;
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.size();
-        }
-    }
-
-
     // Feature to send eveything at once.
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -280,7 +299,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         //change fragments to ask for permissions.
         requestPermissions(connectService.getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
-
 
     // opens details screen for passed in user
     public void launchDetails(User user) {
@@ -301,5 +319,27 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public boolean onQueryTextChange(String query) {
         historyFragment.historyAdapter.getFilter().filter(query);
         return true;
+    }
+
+    static class Adapter extends FragmentStatePagerAdapter {
+
+        // The list of fragments which we are going to be displaying in the view pager.
+        private final List<Fragment> fragments;
+
+        public Adapter(FragmentManager fm, List<Fragment> fragments) {
+            super(fm);
+
+            this.fragments = fragments;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return fragments.size();
+        }
     }
 }

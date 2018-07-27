@@ -37,4 +37,8 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+
+    <string name="bottom_navigation_menu_1_discovery">Discover</string>
+    <string name="bottom_navigation_menu_2_history">History</string>
+    <string name="bottom_navigation_menu_3_profile">Profile</string>
 </resources>

@@ -1,6 +1,8 @@
-package me.gnahum12345.fbuair.services;
+package me.gnahum12345.fbuair.interfaces;
 
 import java.util.List;
+
+import me.gnahum12345.fbuair.services.ConnectionService;
 
 public interface ConnectionListener {
     //TODO: possibly change this to boolean instead of void in order to assure the endpoint has been updated.

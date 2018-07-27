@@ -79,7 +79,7 @@ public class HistoryFragment extends Fragment {
 
         rvUser = view.findViewById(R.id.rvContact);
         history = new ArrayList<>();
-        historyAdapter = new HistoryAdapter(history);
+        historyAdapter = new HistoryAdapter(history, activity);
 
         rvUser.setLayoutManager(new LinearLayoutManager(activity));
         rvUser.setAdapter(historyAdapter);

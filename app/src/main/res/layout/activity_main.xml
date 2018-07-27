@@ -66,24 +66,45 @@
         </RelativeLayout>
     </android.support.v7.widget.Toolbar>
 
-    <android.support.v4.view.ViewPager
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
         android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:layout_above="@id/bottomNavigationView"
         android:layout_alignParentStart="true"
-        android:layout_below="@+id/toolbar" />
+        android:layout_below="@id/toolbar"
+        />
+    <!--<android.support.v4.view.ViewPager-->
+        <!--android:id="@+id/viewPager"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent"-->
+        <!--android:layout_above="@id/bottomNavigationView"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_below="@+id/toolbar" />-->
 
-    <android.support.design.widget.BottomNavigationView
+    <!--<android.support.design.widget.BottomNavigationView-->
+        <!--android:id="@+id/bottomNavigationView"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:background="@color/color_white"-->
+        <!--app:itemIconTint="@drawable/nav_colors"-->
+        <!--app:itemTextColor="@drawable/nav_colors"-->
+        <!--app:menu="@menu/bottom_navigation_menu" />-->
+
+
+    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
         android:id="@+id/bottomNavigationView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentStart="true"
+        android:layout_gravity="bottom"
         android:background="@color/color_white"
         app:itemIconTint="@drawable/nav_colors"
-        app:itemTextColor="@drawable/nav_colors"
-        app:menu="@menu/bottom_navigation_menu" />
+        app:itemTextColor="@drawable/nav_colors"/>
+
 
     <View
         android:id="@+id/horizontalLine"

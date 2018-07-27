@@ -5,7 +5,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,17 +16,15 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.nio.charset.MalformedInputException;
 import java.util.HashSet;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.services.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
 public class DiscoverFragment extends Fragment implements ConnectionListener {
@@ -123,7 +120,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void saveUser(User user) {
         //TODO: save user.
-        me.gnahum12345.fbuair.managers.UserManager manager = me.gnahum12345.fbuair.managers.UserManager.getInstance();
+        UserManager manager = UserManager.getInstance();
         manager.addUser(user);
     }
 

@@ -10,6 +10,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -17,6 +18,7 @@ import java.util.TreeMap;
 import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 public class UserManager {
 
@@ -38,9 +40,10 @@ public class UserManager {
         return currentUsers.get(id);
     }
 
-    public void addUser(User user) {
+    public boolean addUser(User user) {
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         currentUsers.put(user.getId(), user);
-        commit();
+        return commit();
     }
 
     public void removeUser(User user) {
@@ -51,12 +54,12 @@ public class UserManager {
         currentUsers.clear();
     }
 
-    public void commit() {
+    public boolean commit() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         JSONArray newHistoryArray = getJSONArray();
         editor.putString(HISTORY_KEY, newHistoryArray.toString());
-        editor.commit();
+        return editor.commit();
     }
 
     private JSONArray getJSONArray() {
