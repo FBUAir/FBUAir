@@ -16,12 +16,12 @@ public class SocialMediaUtils {
             "Google", "WhatsApp", "Youtube", "Reddit", "Pinterest", "Tumblr", "Soundcloud",
             "Github", "DeviantArt", "Dribbble"};
 
-    static String[] socialMediaUrls = { "facebook.com/", "instagram.com/", "twitter.com/",
-            "snapchat.com/add/", "linkedin.com/in/", "plus.google.com/", "https://wa.me/",
-            "youtube.com/channel/", "reddit.com/user/","pinterest.com/", "tumblr.com",
-            "soundcloud.com/", "github.com/", "deviantart.com/", "dribbble.com/"};
+    static String[] socialMediaUrls = { "facebook.com", "instagram.com", "twitter.com",
+            "snapchat.com/add", "linkedin.com/in", "plus.google.com", "https://wa.me",
+            "youtube.com/channel", "reddit.com/user","pinterest.com", "tumblr.com",
+            "soundcloud.com", "github.com", "deviantart.com", "dribbble.com"};
 
-    static HashMap<String, String> urlMap = makeUrlMap();
+    static HashMap<String, String> urlMap = getUrlMap();
 
     // gets corresponding drawable from social media
     public static Drawable getDrawable(Context context, SocialMedia socialMedia) {
@@ -42,7 +42,7 @@ public class SocialMediaUtils {
         return socialMedias;
     }
 
-    public static HashMap<String, String> makeUrlMap() {
+    public static HashMap<String, String> getUrlMap() {
         HashMap<String, String> urlMap = new HashMap<String, String>();
         for (int i = 0; i < socialMediaNames.length; i++) {
             urlMap.put(socialMediaNames[i], socialMediaUrls[i]);
@@ -52,6 +52,15 @@ public class SocialMediaUtils {
 
     public static String getProfileUrl(String socialMediaName, String username) {
         Uri.Builder builder = new Uri.Builder();
-        return "";
+        builder.scheme("https");
+        String authority = urlMap.get(socialMediaName);
+        // tumblr uses subdomain, rest are paths
+        if (socialMediaName.equals("Tumblr")) {
+            builder.authority(username + "." + authority);
+        } else {
+            builder.authority(authority);
+            builder.appendPath(username);
+        }
+        return builder.build().toString();
     }
 }

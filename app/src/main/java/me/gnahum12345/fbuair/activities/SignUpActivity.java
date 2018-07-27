@@ -22,6 +22,7 @@ import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.UrlFragment;
+import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
@@ -136,5 +137,20 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public void launchUrl(SocialMedia socialMedia) {
         // go to url fragment
         startFragment(UrlFragment.newInstance(socialMedia), "urlFragment");
+    }
+
+    @Override
+    public void launchValidateProfile(SocialMedia socialMedia) {
+        // go to validate profile fragment
+        startFragment(ValidateProfileFragment.newInstance(socialMedia), "validateProfileFragment");
+    }
+
+    @Override
+    public void finishValidateProfile(boolean success) {
+        fragmentManager.popBackStack();
+        if (success)  {
+            fragmentManager.popBackStack();
+        }
+        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
     }
 }

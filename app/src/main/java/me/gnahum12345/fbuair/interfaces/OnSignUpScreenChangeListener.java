@@ -17,6 +17,10 @@ public interface OnSignUpScreenChangeListener {
     /** closes url fragment and goes back to social media fragment. */
     void finishUrl();
 
+    void launchValidateProfile(SocialMedia socialMedia);
+
+    void finishValidateProfile(boolean success);
+
     /** starts intent to go to main activity */
     void launchMainActivity();
 }
