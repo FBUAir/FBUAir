@@ -11,6 +11,7 @@ import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient;
 import android.webkit.WebViewClient;
 
 import org.parceler.Parcels;
@@ -70,7 +71,9 @@ public class ValidateProfileFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
         Utils.hideSoftKeyboard(activity);
 
+        // load users profile into webview
         bind.wvProfile.setWebViewClient(new WebViewClient());
+        bind.wvProfile.getSettings().setJavaScriptEnabled(true);
         bind.wvProfile.loadUrl(socialMedia.getProfileUrl());
 
         bind.btReturn.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +85,6 @@ public class ValidateProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                socialMedia.setAdded(true);
                 activity.user.addSocialMedia(socialMedia);
                 onSignUpScreenChangeListener.finishValidateProfile(true);
             }

@@ -17,7 +17,7 @@ public class SocialMediaUtils {
             "Github", "DeviantArt", "Dribbble"};
 
     static String[] socialMediaUrls = { "facebook.com", "instagram.com", "twitter.com",
-            "snapchat.com/add", "linkedin.com/in", "plus.google.com", "https://wa.me",
+            "snapchat.com/add", "linkedin.com/in", "plus.google.com", "wa.me",
             "youtube.com/channel", "reddit.com/user","pinterest.com", "tumblr.com",
             "soundcloud.com", "github.com", "deviantart.com", "dribbble.com"};
 
@@ -51,7 +51,7 @@ public class SocialMediaUtils {
     }
 
     public static String getProfileUrl(String socialMediaName, String username) {
-        Uri.Builder builder = new Uri.Builder();
+/*        Uri.Builder builder = new Uri.Builder();
         builder.scheme("https");
         String authority = urlMap.get(socialMediaName);
         // tumblr uses subdomain, rest are paths
@@ -61,6 +61,14 @@ public class SocialMediaUtils {
             builder.authority(authority);
             builder.appendPath(username);
         }
-        return builder.build().toString();
+        return builder.build().toString();*/
+        String profileUrl;
+        String prefix = "https://www.";
+        if (socialMediaName.equals("Tumblr")) {
+            profileUrl = prefix + username + "." + urlMap.get(socialMediaName);
+        } else {
+            profileUrl = prefix + urlMap.get(socialMediaName) + "/" + username;
+        }
+        return profileUrl;
     }
 }

@@ -12,6 +12,7 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
@@ -70,7 +71,8 @@ public class SocialMediaAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
         viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
         viewHolder.tvName.setText(socialMedia.getName());
-        viewHolder.ivCheck.setVisibility(socialMedia.isAdded() ? View.VISIBLE : View.GONE);
+        boolean added = ((SignUpActivity)context).user.hasSocialMedia(socialMedia);
+        viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
         return view;
     }
 

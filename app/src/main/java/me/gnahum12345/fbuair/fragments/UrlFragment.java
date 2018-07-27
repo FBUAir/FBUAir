@@ -51,6 +51,7 @@ public class UrlFragment extends Fragment {
         if (getArguments() != null) {
             socialMedia = Parcels.unwrap(getArguments().getParcelable(ARG_SOCIAL_MEDIA));
         }
+        activity = (SignUpActivity) getActivity();
     }
 
     @Override
@@ -63,18 +64,12 @@ public class UrlFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        activity = (SignUpActivity) getActivity();
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
         String title;
         // if username is not null, user already added this social media
-        if (socialMedia.isAdded()) {
+        if (activity.user.hasSocialMedia(socialMedia)) {
             title = "Edit ";
             bind.etUsername.setText(socialMedia.getUsername());
             bind.btRemove.setVisibility(View.VISIBLE);
@@ -98,12 +93,10 @@ public class UrlFragment extends Fragment {
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.toString().isEmpty()) {
-                    bind.ivUsernameCheck.setVisibility(View.GONE);
                     bind.tvUsernameError.setText("A username is required.");
                     bind.btValidate.setEnabled(false);
                 }
                 else {
-                    bind.ivUsernameCheck.setVisibility(View.VISIBLE);
                     bind.tvUsernameError.setText("");
                     bind.btValidate.setEnabled(true);
                 }
