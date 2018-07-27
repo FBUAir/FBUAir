@@ -70,7 +70,7 @@ public class SocialMediaAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
         viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
         viewHolder.tvName.setText(socialMedia.getName());
-        viewHolder.ivCheck.setVisibility(socialMedia.getUsername() != null ? View.VISIBLE : View.GONE);
+        viewHolder.ivCheck.setVisibility(socialMedia.isAdded() ? View.VISIBLE : View.GONE);
         return view;
     }
 

@@ -10,6 +10,7 @@ import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 public class SocialMedia {
     String name;
     String username;
+    boolean added;
 
     public SocialMedia() {}
 
@@ -33,13 +34,23 @@ public class SocialMedia {
         this.username = username;
     }
 
+    public boolean isAdded() {
+        return added;
+    }
+
+    public void setAdded(boolean added) {
+        this.added = added;
+    }
+
     public static JSONObject toJson(SocialMedia socialMedia) {
         String name = socialMedia.getName();
         String username = socialMedia.getUsername();
+        Boolean added = socialMedia.isAdded();
         JSONObject json = new JSONObject();
         try {
             json.put("name", name);
             json.put("username", username);
+            json.put("added", added);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -51,6 +62,7 @@ public class SocialMedia {
         try {
             socialMedia.name = json.getString("name");
             socialMedia.username = json.getString("username");
+            socialMedia.added = json.getBoolean("added");
         } catch (JSONException e) {
             e.printStackTrace();
         }

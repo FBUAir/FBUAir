@@ -64,15 +64,10 @@ public class ValidateProfileFragment extends Fragment {
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        activity = (SignUpActivity) getActivity();
-    }
-
-    @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        activity = (SignUpActivity) getActivity();
         Utils.hideSoftKeyboard(activity);
 
         bind.wvProfile.setWebViewClient(new WebViewClient());
@@ -87,6 +82,7 @@ public class ValidateProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                socialMedia.setAdded(true);
                 activity.user.addSocialMedia(socialMedia);
                 onSignUpScreenChangeListener.finishValidateProfile(true);
             }

@@ -143,7 +143,6 @@ public class User {
 
     // removes social media by object
     public void removeSocialMedia(SocialMedia socialMedia) {
-        socialMedia.setUsername(null);
         socialMedias.remove(socialMedia);
     }
 

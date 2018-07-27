@@ -74,7 +74,7 @@ public class UrlFragment extends Fragment {
 
         String title;
         // if username is not null, user already added this social media
-        if (socialMedia.getUsername() != null) {
+        if (socialMedia.isAdded()) {
             title = "Edit ";
             bind.etUsername.setText(socialMedia.getUsername());
             bind.btRemove.setVisibility(View.VISIBLE);
