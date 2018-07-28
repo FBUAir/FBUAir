@@ -121,13 +121,14 @@ public class SocialMediaAdapter extends BaseAdapter {
                 onRequestOAuthListener.twitterLogin(new Callback<TwitterSession>() {
                     @Override
                     public void success(Result<TwitterSession> result) {
+                        socialMedia.setUsername(result.data.getUserName());
                         user.addSocialMedia(socialMedia);
                         notifyDataSetChanged();
                     }
 
                     @Override
                     public void failure(TwitterException exception) {
-                        Toast.makeText(context, "Could not authenticate Twitter.", Toast.LENGTH_SHORT).show();
+                        exception.printStackTrace();
                     }
                 });
             } else {

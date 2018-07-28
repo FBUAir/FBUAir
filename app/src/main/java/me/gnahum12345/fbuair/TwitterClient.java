@@ -30,11 +30,14 @@ public class TwitterClient extends TwitterAuthClient {
     }
 
     public void loginTwitter(Activity activity, Callback<TwitterSession> callback) {
-        // check if user is authenticated
+        // if user's not authenticated already, send them to authentication
         if (getTwitterSession() == null) {
-            // if not, start authentication
             authorize(activity, callback);
         }
+    }
+
+    public void logoutTwitter() {
+        TwitterCore.getInstance().getSessionManager().clearActiveSession();
     }
 
     private TwitterSession getTwitterSession() {
@@ -42,7 +45,7 @@ public class TwitterClient extends TwitterAuthClient {
         return session;
     }
 
-    public void fetchUsername(Callback<User> callback) {
+    public void fetchTwitterUser(Callback<User> callback) {
         //initialize twitter api client
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
         // make request for user credentials

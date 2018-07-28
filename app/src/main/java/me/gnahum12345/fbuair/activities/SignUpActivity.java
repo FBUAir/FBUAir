@@ -61,8 +61,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        bind = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
-
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
                 Context.MODE_PRIVATE);
@@ -72,8 +70,11 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
             finish();
         }
 
-        // initialize user
+        bind = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
+
+        // initialize user and end all social media sessions
         user = new User();
+        MyApp.endAllSessions();
 
         // configure toolbar
         configureToolbar();

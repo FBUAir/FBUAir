@@ -25,4 +25,7 @@ public class MyApp extends Application {
     public static TwitterClient getTwitterClient() {
         return TwitterClient.getInstance();
     }
+    public static void endAllSessions() {
+        getTwitterClient().logoutTwitter();
+    }
 }
