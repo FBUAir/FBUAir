@@ -13,7 +13,10 @@ import android.util.Log;
 import android.view.View;
 
 import com.linkedin.platform.LISessionManager;
+import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
+import com.linkedin.platform.listeners.ApiListener;
+import com.linkedin.platform.listeners.ApiResponse;
 import com.linkedin.platform.listeners.AuthListener;
 import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
@@ -208,8 +211,25 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                 (this, Scope.build(Scope.R_BASICPROFILE), new AuthListener() {
             @Override
             public void onAuthSuccess() {
-                user.addSocialMedia(socialMedia);
-                signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
+                    @Override
+                    public void onApiSuccess(ApiResponse apiResponse) {
+                        try {
+                            String linkedInUsername =
+                                    apiResponse.getResponseDataAsJson().getString("formatted-name");
+                            socialMedia.setUsername(linkedInUsername);
+                            user.addSocialMedia(socialMedia);
+                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    @Override
+                    public void onApiError(LIApiError LIApiError) {
+                        Log.e("SignUpActivity", LIApiError.getApiErrorResponse().getMessage());
+                    }
+                });
             }
 
             @Override

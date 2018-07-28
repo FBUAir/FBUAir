@@ -44,13 +44,16 @@ public class LinkedInClient {
 
     public void getDisplayName(Context context, ApiListener apiListener) {
         String url = "https://api.linkedin.com/v2/people/~:(id,formatted-name)";
-        APIHelper apiHelper = APIHelper.getInstance(applicationContext);
-        apiHelper.getRequest(context, url, apiListener);
+        if (getSessionManager().getSession() != null) {
+            APIHelper apiHelper = APIHelper.getInstance(applicationContext);
+            apiHelper.getRequest(context, url, apiListener);
+        }
     }
     public void getProfileUrl(Context context, ApiListener apiListener) {
         String url = "https://api.linkedin.com/v2/people/~:(public-profile-url)";
-        APIHelper apiHelper = APIHelper.getInstance(applicationContext);
-        apiHelper.getRequest(applicationContext, url, apiListener);
+        if (getSessionManager().getSession() != null) {
+            APIHelper apiHelper = APIHelper.getInstance(applicationContext);
+            apiHelper.getRequest(context, url, apiListener);
+        }
     }
-
 }
