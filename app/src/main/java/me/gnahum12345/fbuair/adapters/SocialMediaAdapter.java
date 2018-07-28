@@ -1,5 +1,6 @@
 package me.gnahum12345.fbuair.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +18,12 @@ import com.twitter.sdk.android.core.TwitterSession;
 
 import java.util.List;
 
-import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
+import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 // adapter for social media socialMedias during sign up
@@ -29,8 +31,10 @@ public class SocialMediaAdapter extends BaseAdapter {
     // list of socialMedias and context
     private List<SocialMedia> socialMedias;
     private Context context;
+    private User user;
 
     private OnSignUpScreenChangeListener onSignUpScreenChangeListener;
+    private OnRequestOAuthListener onRequestOAuthListener;
 
     // Clean all elements of the recycler
     public void clear() {
@@ -39,14 +43,21 @@ public class SocialMediaAdapter extends BaseAdapter {
     }
 
     // pass the socialMedias list in the constructor
-    public SocialMediaAdapter(Context context, List<SocialMedia> socialMedias) {
+    public SocialMediaAdapter(Context context, List<SocialMedia> socialMedias, User user) {
         this.context = context;
+        this.user = user;
         this.socialMedias = socialMedias;
         try {
             onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {
             Log.e("SocialMediaAdapter", "Fragment must implement OnSignUpScreenChangeListener") ;
         }
+        try {
+            onRequestOAuthListener = (OnRequestOAuthListener) context;
+        } catch (ClassCastException e) {
+            Log.e("SocialMediaAdapter", "Fragment must implement OnSignUpScreenChangeListener") ;
+        }
+
     }
 
     @Override
@@ -78,17 +89,16 @@ public class SocialMediaAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
         viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
         viewHolder.tvName.setText(socialMedia.getName());
-        boolean added = ((SignUpActivity)context).user.hasSocialMedia(socialMedia);
+        boolean added = user.hasSocialMedia(socialMedia);
         viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
         return view;
     }
 
     // create the ViewHolder class
     public class ViewHolder implements View.OnClickListener {
-        // declare views
         ImageView ivImage;
-        TextView tvName;
         ImageView ivCheck;
+        TextView tvName;
 
         ViewHolder(View itemView) {
             // perform findViewById lookups
@@ -108,15 +118,16 @@ public class SocialMediaAdapter extends BaseAdapter {
             SocialMedia socialMedia;
             socialMedia = socialMedias.get(position);
             if (socialMedia.getName().equals("Twitter")) {
-                MyApp.getTwitterClient().customLoginTwitter((SignUpActivity) context, new Callback<TwitterSession>() {
+                onRequestOAuthListener.twitterLogin(new Callback<TwitterSession>() {
                     @Override
                     public void success(Result<TwitterSession> result) {
-                        Toast.makeText(context, "Yay! Twitter logged in!", Toast.LENGTH_SHORT).show();
+                        user.addSocialMedia(socialMedia);
+                        notifyDataSetChanged();
                     }
 
                     @Override
                     public void failure(TwitterException exception) {
-                        Toast.makeText(context, "Boo! Failed to log in!", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(context, "Could not authenticate Twitter.", Toast.LENGTH_SHORT).show();
                     }
                 });
             } else {

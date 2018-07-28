@@ -44,9 +44,10 @@ public class SignUpSocialMediaFragment extends Fragment{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        activity = (SignUpActivity) getActivity();
         // create socialMedias list with supported social media platforms and create adapter
         socialMedias = SocialMediaUtils.getAllSocialMedias();
-        socialMediaAdapter = new SocialMediaAdapter(getContext(), socialMedias);
+        socialMediaAdapter = new SocialMediaAdapter(getContext(), socialMedias, activity.user);
     }
 
     @Override
@@ -75,7 +76,6 @@ public class SignUpSocialMediaFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity = (SignUpActivity) getActivity();
         // hide keyboard
         Utils.hideSoftKeyboard(activity);
 

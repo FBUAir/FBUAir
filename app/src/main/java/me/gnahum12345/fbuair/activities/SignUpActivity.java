@@ -10,6 +10,13 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
+
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterException;
+import com.twitter.sdk.android.core.TwitterSession;
 
 import org.json.JSONException;
 
@@ -24,6 +31,7 @@ import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.UrlFragment;
 import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
+import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
@@ -31,7 +39,8 @@ import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
-public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener {
+public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
+        OnRequestOAuthListener {
 
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
@@ -46,7 +55,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // user signing up
     public User user;
 
-    private TwitterClient client = MyApp.getTwitterClient();
+    TwitterClient twitterClient = MyApp.getTwitterClient();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -156,5 +165,16 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
             fragmentManager.popBackStack();
         }
         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        twitterClient.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
+    public void twitterLogin(Callback<TwitterSession> callback) {
+        twitterClient.loginTwitter(this, callback);
     }
 }
