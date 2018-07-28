@@ -106,21 +106,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-        bind.btSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveProfile();
-            }
-        });
+        bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
-        bind.btDeleteProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(CURRENT_USER_KEY, null);
-                editor.commit();
-                startActivity(new Intent(activity, SignUpActivity.class));
-            }
+        bind.btDeleteProfile.setOnClickListener(view12 -> {
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString(CURRENT_USER_KEY, null);
+            editor.commit();
+            startActivity(new Intent(activity, SignUpActivity.class));
         });
     }
 

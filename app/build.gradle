@@ -37,6 +37,7 @@ android {
 }
 
 dependencies {
+    implementation project(':linkedin-sdk')
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
     implementation 'in.srain.cube:grid-view-with-header-footer:1.0.12'
     implementation 'org.parceler:parceler-api:1.1.11'

@@ -29,14 +29,14 @@ public class TwitterClient extends TwitterAuthClient {
         return single_instance;
     }
 
-    public void loginTwitter(Activity activity, Callback<TwitterSession> callback) {
+    public void login(Activity activity, Callback<TwitterSession> callback) {
         // if user's not authenticated already, send them to authentication
         if (getTwitterSession() == null) {
             authorize(activity, callback);
         }
     }
 
-    public void logoutTwitter() {
+    public void logout() {
         TwitterCore.getInstance().getSessionManager().clearActiveSession();
     }
 
@@ -45,12 +45,13 @@ public class TwitterClient extends TwitterAuthClient {
         return session;
     }
 
-    public void fetchTwitterUser(Callback<User> callback) {
-        //initialize twitter api client
+    public String getDisplayName() {
+        return getTwitterSession().getUserName();
+/*        //initialize twitter api client
         TwitterApiClient twitterApiClient = TwitterCore.getInstance().getApiClient();
         // make request for user credentials
         Call<User> call = twitterApiClient.getAccountService().verifyCredentials(false, true, false);
-        call.enqueue(callback);
+        call.enqueue(callback);*/
     }
 }
 

@@ -9,12 +9,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
+import com.linkedin.platform.LISessionManager;
+import com.linkedin.platform.errors.LIAuthError;
+import com.linkedin.platform.listeners.AuthListener;
+import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
@@ -22,6 +25,7 @@ import org.json.JSONException;
 
 import java.util.Objects;
 
+import me.gnahum12345.fbuair.LinkedInClient;
 import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.TwitterClient;
@@ -55,11 +59,16 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // user signing up
     public User user;
 
-    TwitterClient twitterClient = MyApp.getTwitterClient();
+    // api clients
+    TwitterClient twitterClient = TwitterClient.getInstance();
+    LinkedInClient linkedInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // get api clients
+        linkedInClient = LinkedInClient.getInstance(getApplicationContext());
 
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
@@ -74,7 +83,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
         // initialize user and end all social media sessions
         user = new User();
-        MyApp.endAllSessions();
+        MyApp.endAllSessions(getApplicationContext());
 
         // configure toolbar
         configureToolbar();
@@ -172,10 +181,42 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
+        linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
     }
 
     @Override
-    public void twitterLogin(Callback<TwitterSession> callback) {
-        twitterClient.loginTwitter(this, callback);
+    public void twitterLogin(SocialMedia socialMedia) {
+        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+        twitterClient.login(this, new Callback<TwitterSession>() {
+            @Override
+            public void success(Result<TwitterSession> result) {
+                socialMedia.setUsername(result.data.getUserName());
+                user.addSocialMedia(socialMedia);
+                signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void failure(TwitterException exception) {
+                exception.printStackTrace();
+            }
+        });
     }
+
+    @Override
+    public void linkedInLogin(SocialMedia socialMedia) {
+        LISessionManager.getInstance(getApplicationContext()).init
+                (this, Scope.build(Scope.R_BASICPROFILE), new AuthListener() {
+            @Override
+            public void onAuthSuccess() {
+                user.addSocialMedia(socialMedia);
+                signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onAuthError(LIAuthError error) {
+                Log.e("SignUpActivity", error.toString());
+            }
+        }, true);
+    }
+
 }

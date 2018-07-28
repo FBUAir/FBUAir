@@ -117,24 +117,16 @@ public class SocialMediaAdapter extends BaseAdapter {
             // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
             SocialMedia socialMedia;
             socialMedia = socialMedias.get(position);
-            if (socialMedia.getName().equals("Twitter")) {
-                onRequestOAuthListener.twitterLogin(new Callback<TwitterSession>() {
-                    @Override
-                    public void success(Result<TwitterSession> result) {
-                        socialMedia.setUsername(result.data.getUserName());
-                        user.addSocialMedia(socialMedia);
-                        notifyDataSetChanged();
-                    }
-
-                    @Override
-                    public void failure(TwitterException exception) {
-                        exception.printStackTrace();
-                    }
-                });
-            } else {
-                onSignUpScreenChangeListener.launchUrl(socialMedia);
+            switch (socialMedia.getName()) {
+                case "Twitter":
+                    onRequestOAuthListener.twitterLogin(socialMedia);
+                    break;
+                case "LinkedIn":
+                    onRequestOAuthListener.linkedInLogin(socialMedia);
+                    break;
+                default:
+                    onSignUpScreenChangeListener.launchUrl(socialMedia);
             }
-
         }
     }
 }

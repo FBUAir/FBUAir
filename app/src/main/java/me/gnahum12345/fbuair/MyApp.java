@@ -1,8 +1,10 @@
 package me.gnahum12345.fbuair;
 
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
+import com.linkedin.platform.LISessionManager;
 import com.twitter.sdk.android.core.DefaultLogger;
 import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterAuthConfig;
@@ -22,10 +24,9 @@ public class MyApp extends Application {
                 .build();
         Twitter.initialize(config);
     }
-    public static TwitterClient getTwitterClient() {
-        return TwitterClient.getInstance();
-    }
-    public static void endAllSessions() {
-        getTwitterClient().logoutTwitter();
+
+    public static void endAllSessions(Context context) {
+        TwitterClient.getInstance().logout();
+        LinkedInClient.getInstance(context).logout();
     }
 }
