@@ -34,6 +34,7 @@ import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
@@ -277,10 +278,17 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         return super.dispatchKeyEvent(event);
     }
 
+
     @Override
-    public void onPermissionsNotGranted() {
-        //change fragments to ask for permissions.
-        requestPermissions(connectService.getRequiredPermissions(), REQUEST_CODE_REQUIRED_PERMISSIONS);
+    public List<ConnectionService.Endpoint> getCurrEndpoints() {
+        return connectService.getCurrentConnections();
+    }
+
+    @Override
+    public void addToListener(ConnectionListener listener) {
+        if (!connectService.contains(listener)) {
+            connectService.addListener(listener);
+        }
     }
 
     // opens details screen for passed in user

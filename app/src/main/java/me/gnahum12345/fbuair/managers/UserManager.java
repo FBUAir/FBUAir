@@ -79,8 +79,12 @@ public class UserManager {
             AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user);
         }
         currentUsers.put(user.getId(), user);
-        notifyListeners(user, true);
-        return commit();
+        if (commit()) {
+            notifyListeners(user, true);
+            return true;
+        } else {
+            return false;
+        }
     }
 
 

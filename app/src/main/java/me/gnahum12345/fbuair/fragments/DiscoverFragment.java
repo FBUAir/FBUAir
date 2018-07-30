@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.HashSet;
+import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
@@ -87,7 +88,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
         rvDevicesView.setLayoutManager(layoutManager);
         rvDevicesView.setAdapter(rvAdapter);
-        ((MainActivity) mContext).connectService.addListener(this);
+        mListener.addToListener(this);
         return view;
     }
 
@@ -102,8 +103,18 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
                     + " must implement OnFragmentInteractionListener");
         }
         rvAdapter = new DiscoverAdapter(mContext);
+        populateAdapter();
     }
 
+    private void populateAdapter() {
+        List<ConnectionService.Endpoint> currEndpoints = mListener.getCurrEndpoints();
+        for (ConnectionService.Endpoint endpoint : currEndpoints) {
+            if (!rvAdapter.contains(endpoint)) {
+                rvAdapter.add(endpoint);
+            }
+        }
+        rvAdapter.notifyDataSetChanged();
+    }
 
 
 
@@ -129,6 +140,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     @Override
     public void addEndpoint(ConnectionService.Endpoint endpoint) {
+        if (rvAdapter == null) {
+            return;
+        }
         rvAdapter.add(endpoint);
         tvRVEmpty.setVisibility(View.GONE);
         rvDevicesView.setVisibility(View.VISIBLE);
@@ -147,7 +161,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     }
 
     public interface DiscoverFragmentListener {
-        public void onPermissionsNotGranted();
+        public List<ConnectionService.Endpoint> getCurrEndpoints();
+        public void addToListener(ConnectionListener listener);
     }
 
     private void permissionsNotGranted() {
@@ -190,9 +205,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-    public void notifyAdapter() {
 
-    }
 }
 
 

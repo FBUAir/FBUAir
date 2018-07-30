@@ -26,7 +26,7 @@ import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {
-
+    //TODO: possibly add this to sharedPreferences.
     private TreeMap<Endpoint, String> mDevices;
     private Context mContext;
 
@@ -75,10 +75,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public boolean contains(Endpoint e) {
+        return mDevices.containsKey(e);
+    }
+
     public void remove(Endpoint e) {
         mDevices.remove(e);
         notifyDataSetChanged();
-//        return true; //TODO: possibly uncomment if this makes something crash.
     }
 
     public void put(Endpoint e, ProfileUser profileUser) {

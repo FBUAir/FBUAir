@@ -88,7 +88,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvUser.setAdapter(historyAdapter);
 
         // clear old history and add fake users to history
-        clearHistory();
+//        clearHistory();
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
         try {
@@ -126,9 +126,9 @@ public class HistoryFragment extends Fragment implements UserListener {
             User user = users.get(i);
             //TODO: make sure that history adapter is not null..
             history.add(user);
-            if (historyAdapter != null) {
-                historyAdapter.notifyItemInserted(history.size() - 1);
-            }
+        }
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
         }
     }
 
@@ -139,10 +139,6 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     private void clearHistoryList() {
         history.clear();
-        if (historyAdapter != null) {
-            historyAdapter.notifyDataSetChanged();
-
-        }
     }
 
     @Override

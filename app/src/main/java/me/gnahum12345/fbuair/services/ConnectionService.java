@@ -892,6 +892,12 @@ public class ConnectionService extends Service {
         }
     }
 
+    public List<Endpoint> getCurrentConnections() {
+        List<Endpoint> currConnections = new ArrayList<>();
+        currConnections.addAll(mEstablishedConnections.values());
+        return currConnections;
+    }
+
     //TODO: Delete this function...
     public void inputData() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -909,6 +915,10 @@ public class ConnectionService extends Service {
             e.printStackTrace();
         }
         editor.commit();
+    }
+
+    public boolean contains(ConnectionListener listener) {
+        return listeners.contains(listener);
     }
 
 
