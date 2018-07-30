@@ -3,14 +3,19 @@ package me.gnahum12345.fbuair.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.Signature;
 import android.databinding.DataBindingUtil;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
@@ -21,11 +26,14 @@ import com.linkedin.platform.listeners.AuthListener;
 import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
+import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import org.json.JSONException;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.LinkedInClient;
@@ -63,14 +71,17 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public User user;
 
     // api clients
-    TwitterClient twitterClient = TwitterClient.getInstance();
+    TwitterClient twitterClient;
     LinkedInClient linkedInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        generateHashkey();
+
         // get api clients
+        twitterClient = TwitterClient.getInstance();
         linkedInClient = LinkedInClient.getInstance(getApplicationContext());
 
         // skip sign up and go to discover page if user already has profile
@@ -174,7 +185,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     public void finishValidateProfile(boolean success) {
         fragmentManager.popBackStack();
-        if (success)  {
+        if (success) {
             fragmentManager.popBackStack();
         }
         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
@@ -216,7 +227,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     public void onApiSuccess(ApiResponse apiResponse) {
                         try {
                             String linkedInUsername =
-                                    apiResponse.getResponseDataAsJson().getString("formatted-name");
+                                    apiResponse.getResponseDataAsJson().getString("formattedName");
                             socialMedia.setUsername(linkedInUsername);
                             user.addSocialMedia(socialMedia);
                             signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
@@ -227,16 +238,35 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     }
                     @Override
                     public void onApiError(LIApiError LIApiError) {
-                        Log.e("SignUpActivity", LIApiError.getApiErrorResponse().getMessage());
+                        Log.e("LI - getdisplayname", LIApiError.getApiErrorResponse().getMessage());
                     }
                 });
             }
 
             @Override
             public void onAuthError(LIAuthError error) {
-                Log.e("SignUpActivity", error.toString());
+                Log.e("LI - login", error.toString());
             }
         }, true);
+    }
+
+    public void generateHashkey(){
+        try {
+            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),
+                    PackageManager.GET_SIGNATURES);
+            for (Signature signature : info.signatures) {
+                MessageDigest md = MessageDigest.getInstance("SHA");
+                md.update(signature.toByteArray());
+
+                Log.e("package name", info.packageName);
+                Log.e("hash", Base64.encodeToString(md.digest(),
+                        Base64.NO_WRAP));
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.d("generatehashkey", e.getMessage(), e);
+        } catch (NoSuchAlgorithmException e) {
+            Log.d("generatehashkey", e.getMessage(), e);
+        }
     }
 
 }
