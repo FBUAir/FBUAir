@@ -7,8 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -19,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
@@ -39,6 +38,15 @@ public class UserManager {
     private Activity activity;
     Map<String, User> currentUsers;
     ArrayList<UserListener> listeners;
+    int count = 0;
+
+    public void setContext(Context c) {
+        mContext = c;
+    }
+
+    private boolean isInBackground() {
+        return !MyLifecycleHandler.isApplicationInForeground() || !MyLifecycleHandler.isApplicationVisible();
+    }
 
     private UserManager() {
         currentUsers = new TreeMap<>();
@@ -58,20 +66,52 @@ public class UserManager {
         listeners.remove(listener);
     }
 
-
     public boolean addUser(User user) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        String title;
+        if (!currentUsers.containsKey(user.getId())) {
+            runBadgeNotification();
+            title = "New User has been added!";
+        } else {
+            title = "User has been updated!";
+        }
+        if (isInBackground()) {
+            AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user);
+        }
         currentUsers.put(user.getId(), user);
+        notifyListeners(user, true);
+        return commit();
+    }
+
+
+    private void runBadgeNotification() {
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
                 if (notificationsEnabled) {
-                    ((MainActivity) activity).bottomNavigation.setNotification(" ", 1);
+                    count++;
+                    ((MainActivity) activity).bottomNavigation.setNotification(Integer.toString(count), 1);
                 }
             }
         }, 1000);
-        notifyListeners(user, true);
-        return commit();
+    }
+    public void clearNotification() {
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (notificationsEnabled) {
+                    count = 0;
+                    ((MainActivity) activity).bottomNavigation.setNotification("", 1);
+                    seenAllUsers();
+                }
+            }
+        }, 1000);
+    }
+
+    private void seenAllUsers() {
+        for (User u : currentUsers.values()) {
+            u.hasSeen(true);
+        }
     }
 
     public void notifyListeners(User user, boolean added) {
@@ -97,6 +137,7 @@ public class UserManager {
     }
     public void clearHistory() {
         currentUsers.clear();
+        commit();
     }
 
     public boolean commit() {
@@ -122,9 +163,8 @@ public class UserManager {
         return jArr;
     }
 
-    public void loadContacts(Context context) {
-        mContext = context;
-        SharedPreferences sharedPreferences = context.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+    public void loadContacts() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         String historyArrayString = sharedPreferences.getString(HISTORY_KEY, null);
         if (historyArrayString == null) {
             return;

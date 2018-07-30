@@ -43,7 +43,7 @@ public class HistoryFragment extends Fragment implements UserListener {
     }
 
     public HistoryAdapter historyAdapter;
-    ArrayList<User> history;
+    ArrayList<User> history = new ArrayList<>();
     RecyclerView rvUser;
     SharedPreferences sharedpreferences;
     private SwipeRefreshLayout swipeContainer;
@@ -124,8 +124,11 @@ public class HistoryFragment extends Fragment implements UserListener {
         List<User> users = getHistory();
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
+            //TODO: make sure that history adapter is not null..
             history.add(user);
-            historyAdapter.notifyItemInserted(history.size() - 1);
+            if (historyAdapter != null) {
+                historyAdapter.notifyItemInserted(history.size() - 1);
+            }
         }
     }
 
@@ -136,7 +139,10 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     private void clearHistoryList() {
         history.clear();
-        historyAdapter.notifyDataSetChanged();
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
+
+        }
     }
 
     @Override

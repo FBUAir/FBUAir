@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +9,7 @@ import android.os.Looper;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -134,6 +136,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     @Override
     public void removeEndpoint(ConnectionService.Endpoint endpoint) {
+        if (rvAdapter == null) {
+            return;
+        }
         rvAdapter.remove(endpoint);
         if (rvAdapter.isEmpty()) {
             rvDevicesView.setVisibility(View.GONE);
@@ -146,11 +151,26 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     }
 
     private void permissionsNotGranted() {
-        String[] permissions = ((MainActivity) mContext).connectService.getRequiredPermissions();
+        final String[] permissions = ConnectionService.getRequiredPermissions();
         if (!((MainActivity) mContext).connectService.isDiscovering()) {
             //TODO: put dialog to agree to permissions in order to discover.
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                                    .setTitle(R.string.permissions_explanation_title)
+                                    .setMessage(R.string.permissions_explanation_body)
+                                    .setPositiveButton("Let me see the permission!", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
+                                        }
+                                    })
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            permissionsNotGranted();
+                                        }
+                                    });
+            builder.create().show();
         }
-        requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
 
 

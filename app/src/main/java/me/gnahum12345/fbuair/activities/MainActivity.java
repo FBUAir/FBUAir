@@ -95,12 +95,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         debug = true;
 
         userManager = UserManager.getInstance();
-        userManager.loadContacts(this);
+        userManager.loadContacts();
         userManager.setNotificationAbility(true, this);
         // set up ConnectionService
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
-        //TODO: delete this.
-        //connectService.inputData();
 
         // set actionbar to be toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -139,23 +137,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             @Override
             public void onPageSelected(int position) {
                 clearMenus();
-//                resetItems();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
-//                        bottomNavigation.setSelectedItemId(R.id.action_discover);
                         bottomNavigation.setCurrentItem(0);
-//                        bottomNavigation.getItem(0).setColor(fetchColor(R.color.color_blue_orchid));
                         break;
                     case HISTORY_FRAGMENT:
-//                        bottomNavigation.setSelectedItemId(R.id.action_history);
                         bottomNavigation.setCurrentItem(1);
-//                        bottomNavigation.getItem(1).setColor(fetchColor(R.color.color_blue_orchid));
                         historyMenu.setVisibility(View.VISIBLE);
                         break;
                     case PROFILE_FRAGMENT:
                         bottomNavigation.setCurrentItem(2);
-//                        bottomNavigation.getItem(2).setColor(fetchColor(R.color.color_blue_orchid));
-//                      bottomNavigation.setSelectedItemId(R.id.action_profile);
                         break;
                 }
             }
@@ -184,7 +175,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             public boolean onTabSelected(int position, boolean wasSelected) {
                 viewPager.setCurrentItem(position, true);
                 if (position == 1) {
-                    bottomNavigation.setNotification("", 1);
+                    UserManager.getInstance().clearNotification();
                 }
 
                 //TODO: Delete this.. this is a proof of concept that if a user is added, it will be added to the HistoryAdapter.
@@ -200,12 +191,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         UserManager.getInstance().addListener(historyFragment);
         connectService.addListener(discoverFragment);
-    }
-
-    private void resetItems() {
-        for (int i = 0; i < bottomNavigation.getItemsCount(); i++) {
-            bottomNavigation.getItem(i).setColor(fetchColor(R.color.color_black));
-        }
     }
 
     private int fetchColor(@ColorRes int color) {
@@ -228,12 +213,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     protected void onStart() {
         super.onStart();
         connectService.startMedia();
+        //TODO: start service.
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        stopConnectionService(); //TODO possibly delete this.
+        stopConnectionService();
+        //TODO: stop discovering, but possibly keep advertising.
         userManager.commit();
         userManager.removeListener(historyFragment);
     }
@@ -254,13 +241,17 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void onBackPressed() {
+
+        if (debug) {
+            connectService.debug();
+        }
+
         if (!discoverFragment.rvAdapter.isEmpty()) {
             connectService.onBackPressed();
             return;
         }
 
         if (debug) {
-            connectService.debug();
             return;
         }
 

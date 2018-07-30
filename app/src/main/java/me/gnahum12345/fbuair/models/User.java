@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.models;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 import android.util.Log;
 
@@ -16,7 +17,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 @Parcel
-public class User {
+public class User implements Comparable {
+
 
     String uid;
     String name;
@@ -26,12 +28,18 @@ public class User {
     Bitmap profileImage;
     String timeAddedToHistory;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
-
+    boolean seen = false;
 
     // empty constructor needed by the Parceler library
     public User() {
     }
 
+    public boolean isSeen() {
+        return seen;
+    }
+    public void hasSeen(boolean seen) {
+        this.seen = seen;
+    }
     public String getName() {
         return name;
     }
@@ -151,6 +159,14 @@ public class User {
         socialMedias.remove(socialMedia);
     }
 
+    @Override
+    public int compareTo(@NonNull Object o) {
+        if (o instanceof User) {
+            return getName().compareTo(((User) o).getName());
+        } else {
+            return 1;
+        }
+    }
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
@@ -163,6 +179,7 @@ public class User {
             user.profileImage = stringToBitmap(json.getString("profileImage"));
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

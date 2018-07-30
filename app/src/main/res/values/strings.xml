@@ -38,7 +38,19 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
+    <!--TODO: write something deep and impactful so the user can give me their permissions..-->
+    <string name="permissions_explanation_body">The reason why i need your permissions....</string>
+    <string name="permissions_explanation_title">Oh oh… we need permissions</string>
+
+    <!--BottomNavigation Titles-->
     <string name="bottom_navigation_menu_1_discovery">Discover</string>
     <string name="bottom_navigation_menu_2_history">History</string>
     <string name="bottom_navigation_menu_3_profile">Profile</string>
+
+    <!--Notification Services. -->
+    <string name="channel_name">AirNotification</string>
+    <string name="channel_description">Updated User or New User will be shown!!</string>
+    <string name="reply_label">Send Back!</string>
+    <string name="extra_notification_label">extra notification id</string>
+    <string name="connection_service">ConnectionService</string>
 </resources>

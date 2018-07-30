@@ -1,11 +1,16 @@
 package me.gnahum12345.fbuair.services;
 
 import android.Manifest;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.os.Binder;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -40,6 +45,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
@@ -50,7 +57,39 @@ import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
 
 
-public class ConnectionService {
+public class ConnectionService extends Service {
+
+    public class LocalBinder extends Binder {
+        ConnectionService getService() {
+            return ConnectionService.this;
+        }
+    }
+
+
+    public ConnectionService() {
+
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+    //TODO: See if this works.. this is broadcasting so in the background it will still work... (Advertise and possibly discover).
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent restartService = new Intent(getString(R.string.connection_service));
+        sendBroadcast(restartService);
+    }
 
     /**
      * These permissions are required before connecting to Nearby Connections. Only {@link
@@ -66,11 +105,13 @@ public class ConnectionService {
             };
 
     private static final String TAG = "ConnectionServiceTAG";
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final Strategy STRATEGY = Strategy.P2P_CLUSTER;
     private static final String SERVICE_ID =
             "com.fbuair.apps.air.discovery.automatic.SERVICE_ID";
-    /*Devices we've discovered near us..*/
+
+    /**
+     * Devices we've discovered near us..
+     */
     private final Map<String, Endpoint> mDiscoveredEndpoints = new HashMap<>();
     /**
      * The devices we have pending connections to. They will stay pending until we call {@link
@@ -83,6 +124,11 @@ public class ConnectionService {
      */
     private final Map<String, Endpoint> mEstablishedConnections = new HashMap<>();
 
+    /**
+     * The possible connections I need to establish if the other endpoints haven't connnected with me
+     * already.
+     */
+    HashMap<Endpoint, MyTimeTask> timeTask = new HashMap<>();
 
     private ProfileUser mProfileUser;
     private List<ConnectionListener> listeners = new ArrayList<>();
@@ -174,6 +220,7 @@ public class ConnectionService {
                 }
 
                 @Override
+
                 public void onDisconnected(String endpointId) {
                     if (!mEstablishedConnections.containsKey(endpointId)) {
                         logW("Unexpected disconnection from endpoint " + endpointId);
@@ -372,6 +419,13 @@ public class ConnectionService {
             connectToEndpoint(endpoint);
             logV("I am connecting to a new endpoint\n" +
                     String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
+        } else {
+            //TODO: put in a queue, if they haven't initiated the connection in 5 seconds then initiate the connection.
+            MyTimeTask scheduleEndpoint = new MyTimeTask(endpoint, this);
+            timeTask.put(endpoint, scheduleEndpoint);
+            Timer timer = new Timer();
+
+            timer.schedule(scheduleEndpoint, 15000);
         }
     }
 
@@ -436,6 +490,11 @@ public class ConnectionService {
     private void connectedToEndpoint(Endpoint endpoint) {
         logD(String.format("connectedToEndpoint(endpoint=%s)", endpoint));
         mEstablishedConnections.put(endpoint.getId(), endpoint);
+        //TODO: make the initiate variable false in the time tasks.
+        if (timeTask.containsKey(endpoint)) {
+            MyTimeTask task = timeTask.get(endpoint);
+            task.initiated();
+        }
         onEndpointConnected(endpoint);
     }
 
@@ -561,6 +620,8 @@ public class ConnectionService {
                 }
                 userMade = true;
                 logV("userMade = true");
+                // TODO: actually toast here saying "user was transferred successfully.
+
                 // update listeners to deal with the user.
                 updateListener(endpoint, user);
             } catch (JSONException e) {
@@ -707,8 +768,6 @@ public class ConnectionService {
      */
     public void startDiscovering() {
         if (!isDiscovering()) {
-            mIsDiscovering = true;
-            mDiscoveredEndpoints.clear();
 
             mConnectionsClient
                     .startDiscovery(
@@ -733,6 +792,7 @@ public class ConnectionService {
                                 @Override
                                 public void onEndpointLost(String endpointId) {
                                     logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
+
                                 }
                             },
                             new DiscoveryOptions(getStrategy()))
@@ -740,6 +800,9 @@ public class ConnectionService {
                             new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unusedResult) {
+
+                                    mIsDiscovering = true;
+                                    mDiscoveredEndpoints.clear();
                                     onDiscoveryStarted();
                                 }
                             })
@@ -983,16 +1046,35 @@ public class ConnectionService {
         }
     }
 
+    private static class MyTimeTask extends TimerTask {
+
+        private Endpoint endpoint;
+        private boolean initiate = true;
+        private ConnectionService service;
+
+        public MyTimeTask(Endpoint e, ConnectionService connectionService) {
+            endpoint = e;
+            service = connectionService;
+        }
+        public void initiated() {
+            initiate = false;
+        }
+        public void run() {
+            //write your code here
+            if (initiate) {
+                // Ask to connect
+                service.mConnectionsClient
+                        .requestConnection("my name", endpoint.getId(), service.mConnectionLifecycleCallback)
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                        //TODO: change my name.
+            }
+        }
+    }
+
 }
-
-
-/**
- * First round:
-* "MY NAME-1185110242-1177415264-1167796541-1183955995-1180493255-1185110242-1182032251"
- * Second Round:
-* "MY NAME-1185110242-1177415264-1167796541-1183955995-1180493255-1185110242-1182032251"
- *
- *
- * Second Phone:
- * MY NAME-1185110242-1177415264-1167796541-1183955995-1180493255-1185110242-1182032251
-* */
