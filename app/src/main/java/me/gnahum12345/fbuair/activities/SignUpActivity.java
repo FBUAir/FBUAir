@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.CallbackManager;
@@ -35,6 +36,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -80,8 +82,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        generateHashkey();
 
         // get api clients
         twitterClient = TwitterClient.getInstance();
@@ -179,12 +179,13 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         startFragment(UrlFragment.newInstance(socialMedia), "urlFragment");
     }
 
+    // starts fragment to view profile on webview and confirm
     @Override
     public void launchValidateProfile(SocialMedia socialMedia) {
-        // go to validate profile fragment
         startFragment(ValidateProfileFragment.newInstance(socialMedia), "validateProfileFragment");
     }
 
+    // goes back to list of social medias after validating profile if successful. else goes back to username inputting
     @Override
     public void finishValidateProfile(boolean success) {
         fragmentManager.popBackStack();
@@ -202,9 +203,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
+    // authenticate twitter and add new social media on success
     @Override
     public void twitterLogin(SocialMedia socialMedia) {
-        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
         twitterClient.login(this, new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -220,6 +221,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         });
     }
 
+    // authenticate linked in and add new social media on success
     @Override
     public void facebookLogin(SocialMedia socialMedia) {
         if (mCallbackManager!=null){
@@ -259,56 +261,37 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     @Override
     public void linkedInLogin(SocialMedia socialMedia) {
-        LISessionManager.getInstance(getApplicationContext()).init
-                (this, Scope.build(Scope.R_BASICPROFILE), new AuthListener() {
+        // try to authenticate the user
+        linkedInClient.login(this, new AuthListener() {
+            @Override
+            public void onAuthSuccess() {
+                // on auth success, make api request to get user's linkedIn name and profile url
+                linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
                     @Override
-                    public void onAuthSuccess() {
-                        linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
-                            @Override
-                            public void onApiSuccess(ApiResponse apiResponse) {
-                                try {
-                                    String linkedInUsername =
-                                            apiResponse.getResponseDataAsJson().getString("formattedName");
-                                    socialMedia.setUsername(linkedInUsername);
-                                    user.addSocialMedia(socialMedia);
-                                    signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
-
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void onApiError(LIApiError LIApiError) {
-                                Log.e("LI - getdisplayname", LIApiError.getApiErrorResponse().getMessage());
-                            }
-                        });
+                    public void onApiSuccess(ApiResponse apiResponse) {
+                        try {
+                            JSONObject jsonResponse = apiResponse.getResponseDataAsJson();
+                            socialMedia.setUsername(jsonResponse.getString("formattedName"));
+                            socialMedia.setProfileUrl(jsonResponse.getString("publicProfileUrl"));
+                            user.addSocialMedia(socialMedia);
+                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            Log.e("getDisplayName", e.getLocalizedMessage());
+                        }
                     }
-
                     @Override
-                    public void onAuthError(LIAuthError error) {
-                        Log.e("LI - login", error.toString());
+                    public void onApiError(LIApiError LIApiError) {
+                        Log.e("getDisplayName", LIApiError.getLocalizedMessage());
                     }
-                }, true);
-    }
-
-    public void generateHashkey() {
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),
-                    PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-
-                Log.e("package name", info.packageName);
-                Log.e("hash", Base64.encodeToString(md.digest(),
-                        Base64.NO_WRAP));
+                });
             }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d("generatehashkey", e.getMessage(), e);
-        } catch (NoSuchAlgorithmException e) {
-            Log.d("generatehashkey", e.getMessage(), e);
-        }
+
+            @Override
+            public void onAuthError(LIAuthError error) {
+                Toast.makeText(SignUpActivity.this, "Couldn't authenticate", Toast.LENGTH_SHORT).show();
+                Log.e("linkedInClient.login", error.toString());
+            }
+        });
     }
 
 }
