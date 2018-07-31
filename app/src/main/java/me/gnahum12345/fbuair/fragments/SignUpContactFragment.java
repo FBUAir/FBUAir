@@ -45,6 +45,7 @@ public class SignUpContactFragment extends Fragment {
 
     final int REQUEST_IMAGE_SELECT = 1;
     final int REQUEST_IMAGE_CAPTURE = 2;
+    final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
 
     // reference to Sign Up Activity
     SignUpActivity activity;
@@ -95,14 +96,14 @@ public class SignUpContactFragment extends Fragment {
         final String phoneID;
         bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
-        if (getPhoneNum()!=null){
+        if (getPhoneNum() != null) {
             phone = getPhoneNum().toString();
-            Toast.makeText(getContext(), "Your phone number is " +phone, Toast.LENGTH_LONG).show();
+            Toast.makeText(getContext(), "Your phone number is " + phone, Toast.LENGTH_LONG).show();
             bind.etPhone.setText(phone);
-        } else{
+        } else {
             phoneID = getPhoneID().toString();
             Toast.makeText(getContext(), "Did not have a phone num", Toast.LENGTH_SHORT).show();
-            Toast.makeText(getContext(), "Phone id is" +phoneID, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Phone id is" + phoneID, Toast.LENGTH_SHORT).show();
             phone = bind.etPhone.getText().toString();
         }
 
@@ -245,16 +246,32 @@ public class SignUpContactFragment extends Fragment {
         onSignUpScreenChangeListener = null;
     }
 
-    //programmatically getting the phone number
+    //programmatically getting the phone number IGNORE REDDDD
     public String getPhoneNum() {
         TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]
+                            {Manifest.permission.READ_SMS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_CONTACTS);
+            String mPhoneNum = tMgr.getLine1Number();
+            return mPhoneNum;
+        }
         String mPhoneNum = tMgr.getLine1Number();
         return mPhoneNum;
     }
 
-    //programmatically getting the phone ID
+    //programmatically getting the phone ID IGNORE REDDDD
     public String getPhoneID() {
         TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]
+                            {Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_CONTACTS);
+            String mPhoneID = tMgr.getDeviceId();
+            return mPhoneID;
+        }
         String mPhoneID = tMgr.getDeviceId();
         return mPhoneID;
     }
