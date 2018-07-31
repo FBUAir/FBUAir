@@ -285,6 +285,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public List<ConnectionService.Endpoint> getCurrEndpoints() {
+        List<ConnectionService.Endpoint> currEndpoints = new ArrayList<>();
+        if (connectService == null) {
+            return currEndpoints;
+        }
         return connectService.getCurrentConnections();
     }
 
