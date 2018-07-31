@@ -7,6 +7,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
@@ -30,14 +32,24 @@ import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
+import com.wuman.android.auth.OAuthManager;
+
+import net.openid.appauth.AuthorizationException;
+import net.openid.appauth.AuthorizationResponse;
+import net.openid.appauth.AuthorizationService;
+import net.openid.appauth.TokenResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
+import me.gnahum12345.fbuair.GithubClient;
+import me.gnahum12345.fbuair.GithubClient2;
+import me.gnahum12345.fbuair.GithubClient3;
 import me.gnahum12345.fbuair.LinkedInClient;
 import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
@@ -75,6 +87,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // api clients
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
+    GithubClient3 githubClient3;
+
+    public static final int RC_AUTH = 5;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +98,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // get api clients
         twitterClient = TwitterClient.getInstance();
         linkedInClient = LinkedInClient.getInstance(getApplicationContext());
+        githubClient3 = new GithubClient3();
 
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
@@ -155,7 +171,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // saves user profile and starts main activity when sign up is finished
     public void launchMainActivity() {
         // add user json string to shared preferences for persistence
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
+                Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         try {
             editor.putString("current_user", User.toJson(user).toString());
@@ -179,10 +196,11 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // starts fragment to view profile on webview and confirm
     @Override
     public void launchValidateProfile(SocialMedia socialMedia) {
-        startFragment(ValidateProfileFragment.newInstance(socialMedia), "validateProfileFragment");
+        startFragment(ValidateProfileFragment.newInstance(socialMedia),
+                "validateProfileFragment");
     }
 
-    // goes back to list of social medias after validating profile if successful. else goes back to username inputting
+    // goes to appropriate screen after validating profile based on whether user confirmed
     @Override
     public void finishValidateProfile(boolean success) {
         fragmentManager.popBackStack();
@@ -195,8 +213,10 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        githubClient3.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
-        linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
+        linkedInClient.getSessionManager()
+                .onActivityResult(this, requestCode, resultCode, data);
     }
 
     // authenticate twitter and add new social media on success
@@ -230,8 +250,10 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     public void onApiSuccess(ApiResponse apiResponse) {
                         try {
                             JSONObject jsonResponse = apiResponse.getResponseDataAsJson();
-                            socialMedia.setUsername(jsonResponse.getString("formattedName"));
-                            socialMedia.setProfileUrl(jsonResponse.getString("publicProfileUrl"));
+                            socialMedia.setUsername(jsonResponse
+                                    .getString("formattedName"));
+                            socialMedia.setProfileUrl(jsonResponse
+                                    .getString("publicProfileUrl"));
                             user.addSocialMedia(socialMedia);
                             signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
@@ -247,10 +269,46 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
             @Override
             public void onAuthError(LIAuthError error) {
-                Toast.makeText(SignUpActivity.this, "Couldn't authenticate", Toast.LENGTH_SHORT).show();
-                Log.e("linkedInClient.login", error.toString());
+                Log.e("linkedInLogin", error.toString());
             }
         });
     }
 
+/*
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkForGithubData();
+    }
+*/
+
+    @Override
+    public void githubLogin(SocialMedia socialMedia) {
+        githubClient3.doAuthorization(SignUpActivity.this, this);
+    }
+
+/*    @Override
+    public void githubLogin(SocialMedia socialMedia) {
+        final Uri.Builder uriBuilder = new Uri.Builder();
+        uriBuilder.scheme("https")
+                .authority("github.com")
+                .appendPath("login")
+                .appendPath("oauth")
+                .appendPath("authorize")
+                .appendQueryParameter("client_id", getResources().getString(R.string.github_client_id));
+        final Intent browser = new Intent(Intent.ACTION_VIEW, uriBuilder.build());
+        startActivity(browser);
+    }*/
+
+/*    private void checkForGithubData() {
+        final Uri data = this.getIntent().getData();
+        if(data != null && data.getScheme().equals("sociallogin") && data.getFragment() != null) {
+            final String authorizationCode = data.getQueryParameter("code");
+            if (authorizationCode != null) {
+                Log.e( "SUActivity", "successful github auth");
+            } else {
+                Log.e( "SUActivity", "github auth failed");
+            }
+        }
+    }*/
 }
