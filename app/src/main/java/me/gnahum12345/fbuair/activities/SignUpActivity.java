@@ -32,6 +32,7 @@ import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -223,36 +224,16 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         linkedInClient.login(this, new AuthListener() {
             @Override
             public void onAuthSuccess() {
-                // on auth success, make api request to get user's linkedIn name
+                // on auth success, make api request to get user's linkedIn name and profile url
                 linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
                     @Override
                     public void onApiSuccess(ApiResponse apiResponse) {
                         try {
-                            String username =
-                                    apiResponse.getResponseDataAsJson()
-                                            .getString("formattedName");
-                            socialMedia.setUsername(username);
-                            // now get user's linkedIn profile url
-                            linkedInClient.getProfileUrl(getBaseContext(), new ApiListener() {
-                                @Override
-                                public void onApiSuccess(ApiResponse apiResponse) {
-                                    try {
-                                        String profileUrl =
-                                                apiResponse.getResponseDataAsJson()
-                                                        .getString("publicProfileUrl");
-                                        socialMedia.setProfileUrl(profileUrl);
-                                        user.addSocialMedia(socialMedia);
-                                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
-                                    } catch (JSONException e) {
-                                        Log.e("getDisplayName", e.getLocalizedMessage());
-                                    }
-                                }
-
-                                @Override
-                                public void onApiError(LIApiError LIApiError) {
-                                    Log.e("getProfileUrl", LIApiError.getLocalizedMessage());
-                                }
-                            });
+                            JSONObject jsonResponse = apiResponse.getResponseDataAsJson();
+                            socialMedia.setUsername(jsonResponse.getString("formattedName"));
+                            socialMedia.setProfileUrl(jsonResponse.getString("publicProfileUrl"));
+                            user.addSocialMedia(socialMedia);
+                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
                         } catch (JSONException e) {
                             Log.e("getDisplayName", e.getLocalizedMessage());
                         }

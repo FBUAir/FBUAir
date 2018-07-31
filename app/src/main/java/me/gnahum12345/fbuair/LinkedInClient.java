@@ -46,14 +46,7 @@ public class LinkedInClient {
 
     public void getDisplayName(Context context, ApiListener callback) {
         if (getSessionManager().getSession().isValid()) {
-            String url = "https://api.linkedin.com/v1/people/~:(formatted-name)?format=json";
-            APIHelper apiHelper = APIHelper.getInstance(applicationContext);
-            apiHelper.getRequest(context, url, callback);
-        }
-    }
-    public void getProfileUrl(Context context, ApiListener callback) {
-        if (getSessionManager().getSession().isValid()) {
-            String url = "https://api.linkedin.com/v1/people/~:(public-profile-url)?format=json";
+            String url = "https://api.linkedin.com/v1/people/~:(formatted-name,public-profile-url)?format=json";
             APIHelper apiHelper = APIHelper.getInstance(applicationContext);
             apiHelper.getRequest(context, url, callback);
         }
