@@ -7,16 +7,21 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.databinding.DataBindingUtil;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
@@ -26,7 +31,6 @@ import com.linkedin.platform.listeners.AuthListener;
 import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 
@@ -34,6 +38,7 @@ import org.json.JSONException;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.LinkedInClient;
@@ -57,22 +62,20 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
 
+    // user signing up
+    public User user;
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
     SignUpSocialMediaFragment signUpSocialMediaFragment;
     WelcomeFragment welcomeFragment;
-
     FragmentManager fragmentManager;
 
     // data binding
     ActivitySignUpBinding bind;
-
-    // user signing up
-    public User user;
-
     // api clients
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
+    private CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +199,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         super.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
         linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -217,40 +221,78 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     }
 
     @Override
+    public void facebookLogin(SocialMedia socialMedia) {
+        if (mCallbackManager!=null){
+            LoginManager.getInstance().unregisterCallback(mCallbackManager);
+        }
+
+        mCallbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("Success", "Login");
+                        Toast.makeText(getApplicationContext(), "Login Success", Toast.LENGTH_LONG).show();
+                        user.addSocialMedia(socialMedia);
+                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("cancel", "cancel error");
+                        Toast.makeText(getApplicationContext(), "Login Cancel", Toast.LENGTH_LONG).show();
+
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Log.d("error", "error");
+                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        exception.printStackTrace();
+                    }
+                });
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+
+    }
+
+    @Override
     public void linkedInLogin(SocialMedia socialMedia) {
         LISessionManager.getInstance(getApplicationContext()).init
                 (this, Scope.build(Scope.R_BASICPROFILE), new AuthListener() {
-            @Override
-            public void onAuthSuccess() {
-                linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
                     @Override
-                    public void onApiSuccess(ApiResponse apiResponse) {
-                        try {
-                            String linkedInUsername =
-                                    apiResponse.getResponseDataAsJson().getString("formattedName");
-                            socialMedia.setUsername(linkedInUsername);
-                            user.addSocialMedia(socialMedia);
-                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                    public void onAuthSuccess() {
+                        linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
+                            @Override
+                            public void onApiSuccess(ApiResponse apiResponse) {
+                                try {
+                                    String linkedInUsername =
+                                            apiResponse.getResponseDataAsJson().getString("formattedName");
+                                    socialMedia.setUsername(linkedInUsername);
+                                    user.addSocialMedia(socialMedia);
+                                    signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+
+                            @Override
+                            public void onApiError(LIApiError LIApiError) {
+                                Log.e("LI - getdisplayname", LIApiError.getApiErrorResponse().getMessage());
+                            }
+                        });
                     }
+
                     @Override
-                    public void onApiError(LIApiError LIApiError) {
-                        Log.e("LI - getdisplayname", LIApiError.getApiErrorResponse().getMessage());
+                    public void onAuthError(LIAuthError error) {
+                        Log.e("LI - login", error.toString());
                     }
-                });
-            }
-
-            @Override
-            public void onAuthError(LIAuthError error) {
-                Log.e("LI - login", error.toString());
-            }
-        }, true);
+                }, true);
     }
 
-    public void generateHashkey(){
+    public void generateHashkey() {
         try {
             PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),
                     PackageManager.GET_SIGNATURES);

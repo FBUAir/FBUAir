@@ -1,6 +1,5 @@
 package me.gnahum12345.fbuair.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,17 +8,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.TwitterException;
-import com.twitter.sdk.android.core.TwitterSession;
 
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
@@ -123,6 +115,9 @@ public class SocialMediaAdapter extends BaseAdapter {
                     break;
                 case "LinkedIn":
                     onRequestOAuthListener.linkedInLogin(socialMedia);
+                    break;
+                case "Facebook":
+                    onRequestOAuthListener.facebookLogin(socialMedia);
                     break;
                 default:
                     onSignUpScreenChangeListener.launchUrl(socialMedia);
