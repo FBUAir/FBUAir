@@ -8,8 +8,12 @@ import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 @Parcel
 public class SocialMedia {
+    // social media platform name (eg. facebook, instagram)
     String name;
+    // user's name (could be username, full name - how user is represented on site)
     String username;
+    // deep link into user's profile
+    String profileUrl;
 
     public SocialMedia() {}
 
@@ -22,7 +26,15 @@ public class SocialMedia {
     }
 
     public String getProfileUrl() {
-        return SocialMediaUtils.getProfileUrl(name, username);
+        if (profileUrl != null) {
+            return profileUrl;
+        } else {
+            return SocialMediaUtils.getProfileUrl(name, username);
+        }
+    }
+
+    public void setProfileUrl(String profileUrl) {
+        this.profileUrl = profileUrl;
     }
 
     public String getUsername() {
@@ -34,12 +46,11 @@ public class SocialMedia {
     }
 
     public static JSONObject toJson(SocialMedia socialMedia) {
-        String name = socialMedia.getName();
-        String username = socialMedia.getUsername();
         JSONObject json = new JSONObject();
         try {
-            json.put("name", name);
-            json.put("username", username);
+            json.put("name", socialMedia.getName());
+            json.put("username", socialMedia.getUsername());
+            json.put("profileUrl", socialMedia.getProfileUrl());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -49,8 +60,9 @@ public class SocialMedia {
     public static SocialMedia fromJson(JSONObject json) throws JSONException {
         SocialMedia socialMedia = new SocialMedia();
         try {
-            socialMedia.name = json.getString("name");
-            socialMedia.username = json.getString("username");
+            socialMedia.setName(json.getString("name"));
+            socialMedia.setUsername(json.getString("username"));
+            socialMedia.setProfileUrl(json.getString("profileUrl"));
         } catch (JSONException e) {
             e.printStackTrace();
         }

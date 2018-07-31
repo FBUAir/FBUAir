@@ -16,6 +16,7 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
@@ -77,8 +78,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        generateHashkey();
 
         // get api clients
         twitterClient = TwitterClient.getInstance();
@@ -176,12 +175,13 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         startFragment(UrlFragment.newInstance(socialMedia), "urlFragment");
     }
 
+    // starts fragment to view profile on webview and confirm
     @Override
     public void launchValidateProfile(SocialMedia socialMedia) {
-        // go to validate profile fragment
         startFragment(ValidateProfileFragment.newInstance(socialMedia), "validateProfileFragment");
     }
 
+    // goes back to list of social medias after validating profile if successful. else goes back to username inputting
     @Override
     public void finishValidateProfile(boolean success) {
         fragmentManager.popBackStack();
@@ -198,9 +198,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
     }
 
+    // authenticate twitter and add new social media on success
     @Override
     public void twitterLogin(SocialMedia socialMedia) {
-        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
         twitterClient.login(this, new Callback<TwitterSession>() {
             @Override
             public void success(Result<TwitterSession> result) {
@@ -216,57 +216,60 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         });
     }
 
+    // authenticate linked in and add new social media on success
     @Override
     public void linkedInLogin(SocialMedia socialMedia) {
-        LISessionManager.getInstance(getApplicationContext()).init
-                (this, Scope.build(Scope.R_BASICPROFILE), new AuthListener() {
+        // try to authenticate the user
+        linkedInClient.login(this, new AuthListener() {
             @Override
             public void onAuthSuccess() {
+                // on auth success, make api request to get user's linkedIn name
                 linkedInClient.getDisplayName(getBaseContext(), new ApiListener() {
                     @Override
                     public void onApiSuccess(ApiResponse apiResponse) {
                         try {
-                            String linkedInUsername =
-                                    apiResponse.getResponseDataAsJson().getString("formattedName");
-                            socialMedia.setUsername(linkedInUsername);
-                            user.addSocialMedia(socialMedia);
-                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                            String username =
+                                    apiResponse.getResponseDataAsJson()
+                                            .getString("formattedName");
+                            socialMedia.setUsername(username);
+                            // now get user's linkedIn profile url
+                            linkedInClient.getProfileUrl(getBaseContext(), new ApiListener() {
+                                @Override
+                                public void onApiSuccess(ApiResponse apiResponse) {
+                                    try {
+                                        String profileUrl =
+                                                apiResponse.getResponseDataAsJson()
+                                                        .getString("publicProfileUrl");
+                                        socialMedia.setProfileUrl(profileUrl);
+                                        user.addSocialMedia(socialMedia);
+                                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                                    } catch (JSONException e) {
+                                        Log.e("getDisplayName", e.getLocalizedMessage());
+                                    }
+                                }
 
+                                @Override
+                                public void onApiError(LIApiError LIApiError) {
+                                    Log.e("getProfileUrl", LIApiError.getLocalizedMessage());
+                                }
+                            });
                         } catch (JSONException e) {
-                            e.printStackTrace();
+                            Log.e("getDisplayName", e.getLocalizedMessage());
                         }
                     }
                     @Override
                     public void onApiError(LIApiError LIApiError) {
-                        Log.e("LI - getdisplayname", LIApiError.getApiErrorResponse().getMessage());
+                        Log.e("getDisplayName", LIApiError.getLocalizedMessage());
                     }
                 });
             }
 
             @Override
             public void onAuthError(LIAuthError error) {
-                Log.e("LI - login", error.toString());
+                Toast.makeText(SignUpActivity.this, "Couldn't authenticate", Toast.LENGTH_SHORT).show();
+                Log.e("linkedInClient.login", error.toString());
             }
-        }, true);
-    }
-
-    public void generateHashkey(){
-        try {
-            PackageInfo info = getPackageManager().getPackageInfo(getPackageName(),
-                    PackageManager.GET_SIGNATURES);
-            for (Signature signature : info.signatures) {
-                MessageDigest md = MessageDigest.getInstance("SHA");
-                md.update(signature.toByteArray());
-
-                Log.e("package name", info.packageName);
-                Log.e("hash", Base64.encodeToString(md.digest(),
-                        Base64.NO_WRAP));
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.d("generatehashkey", e.getMessage(), e);
-        } catch (NoSuchAlgorithmException e) {
-            Log.d("generatehashkey", e.getMessage(), e);
-        }
+        });
     }
 
 }
