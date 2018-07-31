@@ -16,6 +16,9 @@
     <!-- Required for Facebook SDK -->
     <uses-permission android:name="android.permission.INTERNET"/>
 
+    <!-- Required for Prefilling Phone Number -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
     <!-- For shake-to-advertise -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
