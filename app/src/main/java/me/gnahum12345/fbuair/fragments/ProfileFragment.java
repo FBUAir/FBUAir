@@ -51,6 +51,7 @@ public class ProfileFragment extends Fragment {
     String phone;
     Bitmap profileImageBitmap;
     Integer rating;
+    String numConnections;
 
     // reference to main activity
     Activity activity;
@@ -127,8 +128,13 @@ public class ProfileFragment extends Fragment {
             bind.etPhone.setText(user.getPhoneNumber());
             bind.etEmail.setText(user.getEmail());
             bind.etOrganization.setText(user.getOrganization());
-            bind.rbConnection.setRating(user.getNumConnections()/10);
             bind.btnProfileImage.setImageBitmap(user.getProfileImage());
+
+            float numConnection = user.getNumConnections().floatValue();
+            bind.etNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
+            bind.rbConnection.setRating(numConnection= numConnection > 0 ? numConnection / 5.0f : numConnection);
+
+
             String socialMedias = "SOCIAL MEDIAS\n";
             for (SocialMedia socialMedia : user.getSocialMedias()) {
                 socialMedias = socialMedias + socialMedia.getName() + " - Username: " +
