@@ -22,16 +22,15 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
 
-import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentProfileBinding;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -51,6 +50,7 @@ public class ProfileFragment extends Fragment {
     String organization;
     String phone;
     Bitmap profileImageBitmap;
+    Integer rating;
 
     // reference to main activity
     Activity activity;
@@ -119,15 +119,15 @@ public class ProfileFragment extends Fragment {
     // gets current user and sets text views to display current user info
     void setUserInfo() throws JSONException {
         // get json user from preferences and convert to user java object
-        String userJsonString = sharedpreferences.getString("current_user", null);
-        if (userJsonString != null) {
-            JSONObject userJson = new JSONObject(userJsonString);
-            user = User.fromJson(userJson);
+//        String userJsonString = sharedpreferences.getString("current_user", null);
+        User user = UserManager.getInstance().getCurrentUser();
+        if (user != null) {
             // set views to display info
             bind.etName.setText(user.getName());
             bind.etPhone.setText(user.getPhoneNumber());
             bind.etEmail.setText(user.getEmail());
             bind.etOrganization.setText(user.getOrganization());
+            bind.rbConnection.setRating(user.getNumConnections()/10);
             bind.btnProfileImage.setImageBitmap(user.getProfileImage());
             String socialMedias = "SOCIAL MEDIAS\n";
             for (SocialMedia socialMedia : user.getSocialMedias()) {
@@ -149,6 +149,7 @@ public class ProfileFragment extends Fragment {
         organization = bind.etOrganization.getText().toString();
         phone = bind.etPhone.getText().toString();
         email = bind.etEmail.getText().toString();
+        rating = bind.rbConnection.getNumStars();
 
         if (isValidProfile()) {
             setEditable(false);
@@ -156,6 +157,7 @@ public class ProfileFragment extends Fragment {
             user.setPhoneNumber(phone);
             user.setEmail(email);
             user.setOrganization(organization);
+            user.setNumConnections(rating);
             if (profileImageBitmap != null)
                 user.setProfileImage(profileImageBitmap);;
             // save changes to shared preferences
