@@ -157,7 +157,7 @@
                     android:layout_height="75dp"
                     android:layout_alignParentTop="true"
                     android:layout_centerHorizontal="true"
-                    android:background="@android:color/transparent"
+                    android:background="@drawable/com_facebook_profile_picture_blank_portrait"
                     android:scaleType="centerCrop"
                     android:src="@android:color/transparent" />
 
@@ -168,6 +168,31 @@
                     android:layout_below="@id/etEmail"
                     android:layout_alignParentStart="true"
                     android:text="Delete Profile" />
+
+                <RatingBar
+                    android:id="@+id/rbConnection"
+                    style="@android:style/Widget.Holo.RatingBar.Indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/tvTitle"
+                    android:numStars="5"
+                    android:stepSize="0.5"
+                    android:visibility="visible" />
+
+                <TextView
+                    android:id="@+id/etNumConnections"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_below="@+id/rbConnection"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:hint="Number of Connections"
+                    android:inputType="number"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
 
             </RelativeLayout>
         </ScrollView>

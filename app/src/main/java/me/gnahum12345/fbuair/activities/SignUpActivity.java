@@ -8,11 +8,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.Signature;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Base64;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.api.client.auth.oauth2.Credential;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.login.LoginManager;
+import com.facebook.login.LoginResult;
 import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
@@ -29,7 +34,6 @@ import com.linkedin.platform.listeners.AuthListener;
 import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
-import com.twitter.sdk.android.core.Twitter;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.wuman.android.auth.OAuthManager;
@@ -45,10 +49,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.GithubClient;
 import me.gnahum12345.fbuair.GithubClient2;
+import me.gnahum12345.fbuair.GithubClient3;
 import me.gnahum12345.fbuair.GithubClient3;
 import me.gnahum12345.fbuair.LinkedInClient;
 import me.gnahum12345.fbuair.MyApp;
@@ -71,25 +77,23 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
 
+    // user signing up
+    public User user;
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
     SignUpSocialMediaFragment signUpSocialMediaFragment;
     WelcomeFragment welcomeFragment;
-
     FragmentManager fragmentManager;
 
     // data binding
     ActivitySignUpBinding bind;
-
-    // user signing up
-    public User user;
-
     // api clients
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
     GithubClient3 githubClient3;
 
     public static final int RC_AUTH = 5;
+    private CallbackManager mCallbackManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -217,6 +221,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         twitterClient.onActivityResult(requestCode, resultCode, data);
         linkedInClient.getSessionManager()
                 .onActivityResult(this, requestCode, resultCode, data);
+        linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
+        mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
     // authenticate twitter and add new social media on success
@@ -238,6 +244,43 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     }
 
     // authenticate linked in and add new social media on success
+    @Override
+    public void facebookLogin(SocialMedia socialMedia) {
+        if (mCallbackManager!=null){
+            LoginManager.getInstance().unregisterCallback(mCallbackManager);
+        }
+
+        mCallbackManager = CallbackManager.Factory.create();
+
+        LoginManager.getInstance().registerCallback(mCallbackManager,
+                new FacebookCallback<LoginResult>() {
+                    @Override
+                    public void onSuccess(LoginResult loginResult) {
+                        Log.d("Success", "Login");
+                        Toast.makeText(getApplicationContext(), "Login Success", Toast.LENGTH_LONG).show();
+                        user.addSocialMedia(socialMedia);
+                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+
+                    }
+
+                    @Override
+                    public void onCancel() {
+                        Log.d("cancel", "cancel error");
+                        Toast.makeText(getApplicationContext(), "Login Cancel", Toast.LENGTH_LONG).show();
+
+                    }
+
+                    @Override
+                    public void onError(FacebookException exception) {
+                        Log.d("error", "error");
+                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        exception.printStackTrace();
+                    }
+                });
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+
+    }
+
     @Override
     public void linkedInLogin(SocialMedia socialMedia) {
         // try to authenticate the user

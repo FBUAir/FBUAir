@@ -1,10 +1,12 @@
 package me.gnahum12345.fbuair.fragments;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,13 +14,16 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.telephony.PhoneNumberFormattingTextWatcher;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,8 +62,8 @@ public class SignUpContactFragment extends Fragment {
         try {
             onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {
-                Log.e("SignUpContactFragment",
-                        "Sign Up Activity must implement onSignUpScreenChangeListener");
+            Log.e("SignUpContactFragment",
+                    "Sign Up Activity must implement onSignUpScreenChangeListener");
         }
         super.onAttach(context);
     }
@@ -85,8 +90,21 @@ public class SignUpContactFragment extends Fragment {
         // clear placeholder text in errors
         clearErrors();
 
-        // add formatter to phone number field
+        //working with getting the phones number programmatically
+        final String phone;
+        final String phoneID;
         bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
+        if (getPhoneNum()!=null){
+            phone = getPhoneNum().toString();
+            Toast.makeText(getContext(), "Your phone number is " +phone, Toast.LENGTH_LONG).show();
+            bind.etPhone.setText(phone);
+        } else{
+            phoneID = getPhoneID().toString();
+            Toast.makeText(getContext(), "Did not have a phone num", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), "Phone id is" +phoneID, Toast.LENGTH_SHORT).show();
+            phone = bind.etPhone.getText().toString();
+        }
 
         // go to next sign up screen when user clicks on button
         bind.btNext.setOnClickListener(new View.OnClickListener() {
@@ -95,8 +113,8 @@ public class SignUpContactFragment extends Fragment {
                 // get values user submitted
                 final String name = bind.etName.getText().toString();
                 final String organization = bind.etOrganization.getText().toString();
-                final String phone = bind.etPhone.getText().toString();
                 final String email = bind.etEmail.getText().toString();
+
                 if (profileImage == null) {
                     profileImage = BitmapFactory.decodeResource(getResources(),
                             R.drawable.default_profile);
@@ -225,5 +243,19 @@ public class SignUpContactFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         onSignUpScreenChangeListener = null;
+    }
+
+    //programmatically getting the phone number
+    public String getPhoneNum() {
+        TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneNum = tMgr.getLine1Number();
+        return mPhoneNum;
+    }
+
+    //programmatically getting the phone ID
+    public String getPhoneID() {
+        TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String mPhoneID = tMgr.getDeviceId();
+        return mPhoneID;
     }
 }

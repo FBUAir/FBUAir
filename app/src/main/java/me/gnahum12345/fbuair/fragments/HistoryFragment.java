@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,17 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
@@ -28,10 +24,6 @@ import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
-
-import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
-import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
-import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 
 public class HistoryFragment extends Fragment {
@@ -44,6 +36,7 @@ public class HistoryFragment extends Fragment {
     ArrayList<User> history;
     RecyclerView rvUser;
     SharedPreferences sharedpreferences;
+    UserManager userManager = UserManager.getInstance();
     private SwipeRefreshLayout swipeContainer;
     Activity activity;
 
@@ -93,6 +86,10 @@ public class HistoryFragment extends Fragment {
                     fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
                             fakeUsers.jsonUser4, fakeUsers.jsonUser5, fakeUsers.jsonUser6,
                             fakeUsers.jsonUser7, fakeUsers.jsonUser8};
+            User user = userManager.getCurrentUser();
+            user.setNumConnections(fakeHistory.length);
+            userManager.commitCurrentUser(user);
+            user = userManager.getCurrentUser();
             for (JSONObject jsonUser : fakeHistory) {
                 addToHistory(User.fromJson(jsonUser));
             }
@@ -102,6 +99,7 @@ public class HistoryFragment extends Fragment {
 
         // populate recycler view with history from shared preferences
         populateHistory();
+
     }
 
     // adds a given user to history, noting the time (to be called right after sharing data)

@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.models;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -11,9 +10,8 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Random;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Random;
 
 @Parcel
 public class User {
@@ -25,12 +23,17 @@ public class User {
     String email;
     Bitmap profileImage;
     String timeAddedToHistory;
+    Integer numConnections;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
 
 
     // empty constructor needed by the Parceler library
     public User() {
     }
+
+    public Integer getNumConnections() {return numConnections; }
+
+    public void setNumConnections(Integer numConnections) { this.numConnections = numConnections; }
 
     public String getName() {
         return name;
@@ -151,6 +154,14 @@ public class User {
         socialMedias.remove(socialMedia);
     }
 
+    public String toString() {
+        try {
+            return User.toJson(this).toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
@@ -162,6 +173,7 @@ public class User {
             user.organization = json.optString("organization");
             user.profileImage = stringToBitmap(json.getString("profileImage"));
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
+            user.numConnections = json.optInt("numConnections");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
         } catch (JSONException e) {
             e.printStackTrace();
@@ -182,6 +194,7 @@ public class User {
         String email = user.getEmail();
         String profileImageString = bitmapToString(user.getProfileImage());
         String timeAddedToHistory = user.getTimeAddedToHistory();
+        Integer numConnections = user.getNumConnections();
         String uid = user.getId();
         JSONArray socialMedias = User.arrayListToJsonArray(user.getSocialMedias());
 
@@ -194,6 +207,7 @@ public class User {
         json.put("profileImage", profileImageString);
         json.put("timeAddedToHistory", timeAddedToHistory);
         json.put("socialMedias", socialMedias);
+        json.put("numConnections",numConnections);
         return json;
 
     }

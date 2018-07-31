@@ -59,6 +59,14 @@ public class UserManager {
         editor.commit();
     }
 
+    public void commitCurrentUser(User user){
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        JSONArray newHistoryArray = getJSONArray();
+        editor.putString("current_user", user.toString());
+        editor.commit();
+    }
+
     private JSONArray getJSONArray() {
         JSONArray jArr = new JSONArray();
 
@@ -98,6 +106,20 @@ public class UserManager {
                 }
             }
         }
+    }
+    public User getCurrentUser() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        String currentUser = sharedPreferences.getString("current_user", null);
+        User user = new User();
+        if (currentUser != null) {
+            try {
+                JSONObject userJson = new JSONObject(currentUser);
+                user = User.fromJson(userJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
     }
 
     public List<User> getCurrHistory() {
