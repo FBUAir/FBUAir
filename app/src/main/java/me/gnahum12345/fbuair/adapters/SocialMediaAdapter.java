@@ -119,6 +119,9 @@ public class SocialMediaAdapter extends BaseAdapter {
                 case "Facebook":
                     onRequestOAuthListener.facebookLogin(socialMedia);
                     break;
+                case "Github":
+                    onRequestOAuthListener.githubLogin(socialMedia);
+                    break;
                 default:
                     onSignUpScreenChangeListener.launchUrl(socialMedia);
             }

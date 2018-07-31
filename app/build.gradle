@@ -8,6 +8,7 @@ android {
     }
     compileSdkVersion 28
     defaultConfig {
+        manifestPlaceholders = ['appAuthRedirectScheme': 'githublogin']
         applicationId "me.gnahum12345.fbuair"
         minSdkVersion 23
         targetSdkVersion 28
@@ -39,6 +40,8 @@ android {
 }
 
 dependencies {
+    implementation 'net.openid:appauth:0.7.0'
+    implementation 'com.wu-man:android-oauth-client:0.4.5'
     implementation project(':linkedin-sdk')
     implementation 'com.twitter.sdk.android:twitter-core:3.3.0'
     implementation 'in.srain.cube:grid-view-with-header-footer:1.0.12'
