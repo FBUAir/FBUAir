@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -221,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     protected void onStop() {
         super.onStop();
         stopConnectionService();
+
+        //TODO: put notification or widget for advertising... and stop discovering..
         //TODO: stop discovering, but possibly keep advertising.
         userManager.commit();
         userManager.removeListener(historyFragment);
@@ -238,6 +241,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         super.onResume();
         startConnectionService();
     }
+
 
 
     @Override

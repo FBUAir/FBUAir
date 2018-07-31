@@ -9,6 +9,8 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
+import android.os.Parcel;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.SpannableString;
@@ -36,6 +38,14 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -102,6 +112,8 @@ public class ConnectionService extends Service {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
             };
 
     private static final String TAG = "ConnectionServiceTAG";
@@ -125,6 +137,11 @@ public class ConnectionService extends Service {
     private final Map<String, Endpoint> mEstablishedConnections = new HashMap<>();
 
     /**
+     * The incoming payloads that are files.
+     */
+    private final Map<String, Payload> incomingPayloads = new HashMap<>();
+
+    /**
      * The possible connections I need to establish if the other endpoints haven't connnected with me
      * already.
      */
@@ -143,6 +160,7 @@ public class ConnectionService extends Service {
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     logD(String.format("onPayloadReceived(endpointId=%s, payload=%s)", endpointId, payload));
                     onReceive(mEstablishedConnections.get(endpointId), payload);
+
                 }
 
                 @Override
@@ -150,8 +168,48 @@ public class ConnectionService extends Service {
                     logD(
                             String.format(
                                     "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+
+                    if (update.getStatus() == PayloadTransferUpdate.Status.SUCCESS) {
+                        Payload payload = incomingPayloads.remove(endpointId);
+                        if (payload == null) {
+                            return ;
+                            // todo: delete this if, because everything will be in terms of files...
+                        }
+                        if (payload.getType() == Payload.Type.FILE) {
+                            File payloadFile = payload.asFile().asJavaFile();
+                            if (payloadFile == null) {
+                                logD(String.valueOf(payload.asStream() == null));
+                                ParcelFileDescriptor parcelFileDescriptor = payload.asFile().asParcelFileDescriptor();
+                                logD(String.format("parcelFileDescriptor = %s", parcelFileDescriptor));
+                                logD(String.format("the amount of bits is equal to %d", parcelFileDescriptor.getStatSize()));
+                                // It is a parcelfile descriptor.
+                                InputStream fileInputStream = new ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor);
+                                int i = 0;
+                                StringBuilder builder = new StringBuilder();
+                                try {
+                                    while ((i = fileInputStream.read()) != -1) {
+                                        builder.append((char) i);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println(builder.toString());
+                                logD(builder.toString());
+                            } else {
+                                readContent(payloadFile);
+                            }
+                        }
+                    }
                 }
             };
+    private void readContent(File f) {
+        try {
+            String s = new String(Files.readAllBytes(f.toPath()));
+            logV(s);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     /**
      * The state of the app. As the app changes states, the UI will update and advertising/discovery
      * will start/stop.
@@ -526,13 +584,25 @@ public class ConnectionService extends Service {
      */
     protected void onEndpointConnected(Endpoint endpoint) {
         Toast.makeText(mContext, mContext.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
-        sendProfileUser(endpoint);
+//        sendProfileUser(endpoint);
         updateListenersEndpoint(endpoint, true);
     }
 
     protected void sendProfileUser(Endpoint endpoint) {
         ProfileUser profileUser = new ProfileUser(mContext);
-        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
+//        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
+        Payload payload = null;
+        File f = null;
+        try {
+            f = profileUser.toFile(mContext);
+            payload = Payload.fromFile(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } // null pointer exception
+
+        if (f != null) {
+            readContent(f);
+        }
         send(payload, endpoint);
     }
 
@@ -601,6 +671,11 @@ public class ConnectionService extends Service {
      */
     protected void onReceive(Endpoint endpoint, Payload payload) {
         Toast.makeText(mContext, "I am on the received side", Toast.LENGTH_SHORT).show();
+
+        if (payload.getType() == Payload.Type.FILE) {
+            incomingPayloads.put(endpoint.id, payload);
+            Toast.makeText(mContext, "I received a file...", Toast.LENGTH_SHORT).show();
+        }
 
         if (payload.getType() == Payload.Type.BYTES) {
             byte[] b = payload.asBytes();
@@ -868,10 +943,11 @@ public class ConnectionService extends Service {
 
     // TODO: make a way for the listeners to use this function.
     public void sendToEndpoint(Endpoint endpoint) {
-        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String current_user = sharedpreferences.getString("current_user", null);
-
-        send(Payload.fromBytes(current_user.getBytes()), endpoint);
+//        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+//        String current_user = sharedpreferences.getString("current_user", null);
+//
+//        send(Payload.fromBytes(current_user.getBytes()), endpoint);
+        sendProfileUser(endpoint);
     }
 
     public void debug() {
@@ -1074,7 +1150,7 @@ public class ConnectionService extends Service {
             if (initiate) {
                 // Ask to connect
                 service.mConnectionsClient
-                        .requestConnection("my name", endpoint.getId(), service.mConnectionLifecycleCallback)
+                        .requestConnection(service.mName, endpoint.getId(), service.mConnectionLifecycleCallback)
                         .addOnFailureListener(
                                 new OnFailureListener() {
                                     @Override

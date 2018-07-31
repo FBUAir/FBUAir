@@ -49,12 +49,15 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
  }
 
 
-
- 4025 => my phone
-
- 50 =>
-
-
-
-
+ File file = new File("D:/test.txt");
+ FileInputStream fis1 = new FileInputStream(file);
+ FileDescriptor fd = fis1.getFD();
+ //passing FileDescriptor to another  FileInputStream
+ FileInputStream fis2 = new FileInputStream(fd);
+ int i=0;
+ while((i=fis2.read())!=-1){
+ System.out.print((char)i);
+ }
+ fis1.close();
+ fis2.close();
  */

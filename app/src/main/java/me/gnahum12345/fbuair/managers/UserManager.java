@@ -195,4 +195,19 @@ public class UserManager {
     public List<User> getCurrHistory() {
         return new ArrayList(currentUsers.values());
     }
+
+    public User getCurrentUser() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        String currentUser = sharedPreferences.getString("current_user", null);
+        User user = new User();
+        if (currentUser != null) {
+            try {
+                JSONObject userJson = new JSONObject(currentUser);
+                user = User.fromJson(userJson);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        return user;
+    }
 }

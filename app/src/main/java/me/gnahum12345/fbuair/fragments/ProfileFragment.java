@@ -162,8 +162,7 @@ public class ProfileFragment extends Fragment {
             etEmail.setText(user.getEmail());
             etOrganization.setText(user.getOrganization());
             btnProfileImage.setImageBitmap(user.getProfileImage());
-        }
-        else {
+        } else {
             // go to sign up activity if no current user
             Intent intent = new Intent(activity, SignUpActivity.class);
             startActivity(intent);
