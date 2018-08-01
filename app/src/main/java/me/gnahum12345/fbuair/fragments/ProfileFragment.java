@@ -107,10 +107,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+
+
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
+            SharedPreferences.Editor editor = sh    aredpreferences.edit();
             editor.putString(CURRENT_USER_KEY, null);
             editor.commit();
             startActivity(new Intent(activity, SignUpActivity.class));
@@ -184,14 +187,14 @@ public class ProfileFragment extends Fragment {
         return true;
     }
 
-    void clearErrors() {
+    private void clearErrors() {
         bind.tvNameError.setText("");
         bind.tvPhoneError.setText("");
         bind.tvEmailError.setText("");
     }
 
     // go to edit profile mode
-    void setEditable(final boolean flag) {
+    private void setEditable(final boolean flag) {
         // make edit texts editable/not editable
         bind.etName.setEnabled(flag);
         bind.etOrganization.setEnabled(flag);
