@@ -29,6 +29,7 @@ public class User implements Comparable {
     String email;
     Bitmap profileImage;
     String timeAddedToHistory;
+    Integer numConnections;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
     boolean seen = false;
 
@@ -42,12 +43,12 @@ public class User implements Comparable {
     public void hasSeen(boolean seen) {
         this.seen = seen;
     }
+    public Integer getNumConnections() {return numConnections; }
+
+    public void setNumConnections(Integer numConnections) { this.numConnections = numConnections; }
+
     public String getName() {
         return name;
-    }
-
-    public String getUid() {
-        return uid;
     }
 
     public String getOrganization() {
@@ -91,10 +92,6 @@ public class User implements Comparable {
         }
 
         return builder.toString();
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public void setName(String name) {
@@ -181,15 +178,24 @@ public class User implements Comparable {
             }
         }
         try (FileOutputStream writer = context.openFileOutput(f.getName(), Context.MODE_PRIVATE)) {
-            JSONObject obj = User.toJson(this);
-            writer.write(obj.toString().getBytes());
-        } catch (IOException | JSONException e) {
+            String content = this.toString();
+            writer.write(content.getBytes());
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return f;
+
+    }
+    public String toString() {
+        try {
+            return User.toJson(this).toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
-    public static User fromJson(JSONObject json) throws JSONException {
+    public static User fromJson(JSONObject json){
         User user = new User();
         try {
             user.name = json.getString("name");
@@ -199,6 +205,7 @@ public class User implements Comparable {
             user.organization = json.optString("organization");
             user.profileImage = stringToBitmap(json.getString("profileImage"));
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
+            user.numConnections = json.optInt("numConnections");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
 
         } catch (JSONException e) {
@@ -220,6 +227,7 @@ public class User implements Comparable {
         String email = user.getEmail();
         String profileImageString = bitmapToString(user.getProfileImage());
         String timeAddedToHistory = user.getTimeAddedToHistory();
+        Integer numConnections = user.getNumConnections();
         String uid = user.getId();
         JSONArray socialMedias = User.arrayListToJsonArray(user.getSocialMedias());
 
@@ -232,6 +240,7 @@ public class User implements Comparable {
         json.put("profileImage", profileImageString);
         json.put("timeAddedToHistory", timeAddedToHistory);
         json.put("socialMedias", socialMedias);
+        json.put("numConnections",numConnections);
         return json;
 
     }
@@ -275,7 +284,4 @@ public class User implements Comparable {
         }
         return jsonArray;
     }
-
-
-
 }

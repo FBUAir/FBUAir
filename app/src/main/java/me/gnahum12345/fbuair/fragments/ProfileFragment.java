@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -18,14 +19,9 @@ import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,6 +29,8 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.databinding.FragmentProfileBinding;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -40,22 +38,10 @@ import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class ProfileFragment extends Fragment {
-    // views
-    EditText etName;
-    EditText etOrganization;
-    EditText etPhoneNumber;
-    EditText etEmail;
-    Button btEditProfile;
-    Button btSubmit;
-    Button btDeleteProfile;
-    ImageButton btnProfileImage;
-
-    TextView tvNameError;
-    TextView tvPhoneError;
-    TextView tvEmailError;
-
     // shared preferences
     SharedPreferences sharedpreferences;
+
+    FragmentProfileBinding bind;
 
     // current user info
     User user;
@@ -64,6 +50,8 @@ public class ProfileFragment extends Fragment {
     String organization;
     String phone;
     Bitmap profileImageBitmap;
+    Integer rating;
+    String numConnections;
 
     // reference to main activity
     Activity activity;
@@ -80,7 +68,8 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        bind = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
+        return bind.getRoot();
     }
 
 
@@ -96,19 +85,6 @@ public class ProfileFragment extends Fragment {
             sharedpreferences = activity.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         }
 
-        // get references to views
-        etName = view.findViewById(R.id.etName);
-        etOrganization = view.findViewById(R.id.etOrganization);
-        etPhoneNumber = view.findViewById(R.id.etPhone);
-        etEmail = view.findViewById(R.id.etEmail);
-        btnProfileImage = view.findViewById(R.id.btnProfileImage);
-        tvNameError = view.findViewById(R.id.tvNameError);
-        tvEmailError = view.findViewById(R.id.tvEmailError);
-        tvPhoneError = view.findViewById(R.id.tvPhoneError);
-        btEditProfile = view.findViewById(R.id.btEditProfile);
-        btSubmit = view.findViewById(R.id.btSubmit);
-        btDeleteProfile = view.findViewById(R.id.btDeleteProfile);
-
         // clear placeholder text in errors
         clearErrors();
 
@@ -120,48 +96,51 @@ public class ProfileFragment extends Fragment {
         }
 
         // add formatter to phone number field
-        etPhoneNumber.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+        bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         // CLICK LISTENERS
         // make edittext views editable when user clicks edit profile
-        btEditProfile.setOnClickListener(new View.OnClickListener() {
+        bind.btEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 setEditable(true);
             }
         });
 
-        btSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                saveProfile();
-            }
-        });
+        bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
-        btDeleteProfile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                SharedPreferences.Editor editor = sharedpreferences.edit();
-                editor.putString(CURRENT_USER_KEY, null);
-                editor.commit();
-                startActivity(new Intent(activity, SignUpActivity.class));
-            }
+        bind.btDeleteProfile.setOnClickListener(view12 -> {
+            SharedPreferences.Editor editor = sharedpreferences.edit();
+            editor.putString(CURRENT_USER_KEY, null);
+            editor.commit();
+            startActivity(new Intent(activity, SignUpActivity.class));
         });
     }
 
     // gets current user and sets text views to display current user info
     void setUserInfo() throws JSONException {
         // get json user from preferences and convert to user java object
-        String userJsonString = sharedpreferences.getString("current_user", null);
-        if (userJsonString != null) {
-            JSONObject userJson = new JSONObject(userJsonString);
-            user = User.fromJson(userJson);
+//        String userJsonString = sharedpreferences.getString("current_user", null);
+        User user = UserManager.getInstance().getCurrentUser();
+        if (user != null) {
             // set views to display info
-            etName.setText(user.getName());
-            etPhoneNumber.setText(user.getPhoneNumber());
-            etEmail.setText(user.getEmail());
-            etOrganization.setText(user.getOrganization());
-            btnProfileImage.setImageBitmap(user.getProfileImage());
+            bind.etName.setText(user.getName());
+            bind.etPhone.setText(user.getPhoneNumber());
+            bind.etEmail.setText(user.getEmail());
+            bind.etOrganization.setText(user.getOrganization());
+            bind.btnProfileImage.setImageBitmap(user.getProfileImage());
+
+            float numConnection = user.getNumConnections().floatValue();
+            bind.etNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
+            bind.rbConnection.setRating(numConnection= numConnection > 0 ? numConnection / 5.0f : numConnection);
+
+
+            String socialMedias = "SOCIAL MEDIAS\n";
+            for (SocialMedia socialMedia : user.getSocialMedias()) {
+                socialMedias = socialMedias + socialMedia.getName() + " - Username: " +
+                        socialMedia.getUsername() + ", Url: " + socialMedia.getProfileUrl() + "\n";
+            }
+            bind.tvSocialMedias.setText(socialMedias);
         } else {
             // go to sign up activity if no current user
             Intent intent = new Intent(activity, SignUpActivity.class);
@@ -171,10 +150,11 @@ public class ProfileFragment extends Fragment {
     }
     // saves user profile to be edit text fields if valid
     void saveProfile() {
-        name = etName.getText().toString();
-        organization = etOrganization.getText().toString();
-        phone = etPhoneNumber.getText().toString();
-        email = etEmail.getText().toString();
+        name = bind.etName.getText().toString();
+        organization = bind.etOrganization.getText().toString();
+        phone = bind.etPhone.getText().toString();
+        email = bind.etEmail.getText().toString();
+        rating = bind.rbConnection.getNumStars();
 
         if (isValidProfile()) {
             setEditable(false);
@@ -182,6 +162,7 @@ public class ProfileFragment extends Fragment {
             user.setPhoneNumber(phone);
             user.setEmail(email);
             user.setOrganization(organization);
+            user.setNumConnections(rating);
             if (profileImageBitmap != null)
                 user.setProfileImage(profileImageBitmap);;
             // save changes to shared preferences
@@ -203,23 +184,23 @@ public class ProfileFragment extends Fragment {
     }
 
     void clearErrors() {
-        tvNameError.setText("");
-        tvPhoneError.setText("");
-        tvEmailError.setText("");
+        bind.tvNameError.setText("");
+        bind.tvPhoneError.setText("");
+        bind.tvEmailError.setText("");
     }
 
     // go to edit profile mode
     void setEditable(final boolean flag) {
         // make edit texts editable/not editable
-        etName.setEnabled(flag);
-        etOrganization.setEnabled(flag);
-        etPhoneNumber.setEnabled(flag);
-        etEmail.setEnabled(flag);
+        bind.etName.setEnabled(flag);
+        bind.etOrganization.setEnabled(flag);
+        bind.etPhone.setEnabled(flag);
+        bind.etEmail.setEnabled(flag);
         // show appropriate button
-        btEditProfile.setVisibility(flag ? View.GONE : View.VISIBLE);
-        btSubmit.setVisibility(flag ? View.VISIBLE : View.GONE);
+        bind.btEditProfile.setVisibility(flag ? View.GONE : View.VISIBLE);
+        bind.btSubmit.setVisibility(flag ? View.VISIBLE : View.GONE);
         // if in edit profile mode, can click profile image to change it
-        btnProfileImage.setOnClickListener(new View.OnClickListener() {
+        bind.btnProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (flag) showDialog();
@@ -235,7 +216,7 @@ public class ProfileFragment extends Fragment {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) data.getExtras().get("data");
                 // set image icon to newly selected image
-                btnProfileImage.setImageBitmap(bitmap);
+                bind.btnProfileImage.setImageBitmap(bitmap);
                 profileImageBitmap = bitmap;
 
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
@@ -244,7 +225,7 @@ public class ProfileFragment extends Fragment {
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 profileImageBitmap = bitmap;
-                btnProfileImage.setImageBitmap(bitmap);
+                bind.btnProfileImage.setImageBitmap(bitmap);
                 if (stream != null) {
                     stream.close();
                 }

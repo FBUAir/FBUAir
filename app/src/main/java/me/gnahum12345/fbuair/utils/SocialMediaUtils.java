@@ -60,4 +60,5 @@ public class SocialMediaUtils {
         }
         return profileUrl;
     }
+
 }

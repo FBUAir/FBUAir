@@ -152,6 +152,14 @@ public class UserManager {
         return editor.commit();
     }
 
+    public void commitCurrentUser(User user){
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        JSONArray newHistoryArray = getJSONArray();
+        editor.putString("current_user", user.toString());
+        editor.commit();
+    }
+
     private JSONArray getJSONArray() {
         JSONArray jArr = new JSONArray();
 
@@ -191,6 +199,7 @@ public class UserManager {
             }
         }
     }
+
 
     public List<User> getCurrHistory() {
         return new ArrayList(currentUsers.values());

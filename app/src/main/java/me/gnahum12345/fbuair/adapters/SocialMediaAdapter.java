@@ -12,9 +12,10 @@ import android.widget.TextView;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.SignUpActivity;
+import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
+import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 // adapter for social media socialMedias during sign up
@@ -22,8 +23,10 @@ public class SocialMediaAdapter extends BaseAdapter {
     // list of socialMedias and context
     private List<SocialMedia> socialMedias;
     private Context context;
+    private User user;
 
     private OnSignUpScreenChangeListener onSignUpScreenChangeListener;
+    private OnRequestOAuthListener onRequestOAuthListener;
 
     // Clean all elements of the recycler
     public void clear() {
@@ -32,14 +35,21 @@ public class SocialMediaAdapter extends BaseAdapter {
     }
 
     // pass the socialMedias list in the constructor
-    public SocialMediaAdapter(Context context, List<SocialMedia> socialMedias) {
+    public SocialMediaAdapter(Context context, List<SocialMedia> socialMedias, User user) {
         this.context = context;
+        this.user = user;
         this.socialMedias = socialMedias;
         try {
             onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {
             Log.e("SocialMediaAdapter", "Fragment must implement OnSignUpScreenChangeListener") ;
         }
+        try {
+            onRequestOAuthListener = (OnRequestOAuthListener) context;
+        } catch (ClassCastException e) {
+            Log.e("SocialMediaAdapter", "Fragment must implement OnSignUpScreenChangeListener") ;
+        }
+
     }
 
     @Override
@@ -71,17 +81,16 @@ public class SocialMediaAdapter extends BaseAdapter {
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
         viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
         viewHolder.tvName.setText(socialMedia.getName());
-        boolean added = ((SignUpActivity)context).user.hasSocialMedia(socialMedia);
+        boolean added = user.hasSocialMedia(socialMedia);
         viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
         return view;
     }
 
     // create the ViewHolder class
     public class ViewHolder implements View.OnClickListener {
-        // declare views
         ImageView ivImage;
-        TextView tvName;
         ImageView ivCheck;
+        TextView tvName;
 
         ViewHolder(View itemView) {
             // perform findViewById lookups
@@ -100,7 +109,22 @@ public class SocialMediaAdapter extends BaseAdapter {
             // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
             SocialMedia socialMedia;
             socialMedia = socialMedias.get(position);
-            onSignUpScreenChangeListener.launchUrl(socialMedia);
+            switch (socialMedia.getName()) {
+                case "Twitter":
+                    onRequestOAuthListener.twitterLogin(socialMedia);
+                    break;
+                case "LinkedIn":
+                    onRequestOAuthListener.linkedInLogin(socialMedia);
+                    break;
+                case "Facebook":
+                    onRequestOAuthListener.facebookLogin(socialMedia);
+                    break;
+                case "Github":
+                    onRequestOAuthListener.githubLogin(socialMedia);
+                    break;
+                default:
+                    onSignUpScreenChangeListener.launchUrl(socialMedia);
+            }
         }
     }
 }
