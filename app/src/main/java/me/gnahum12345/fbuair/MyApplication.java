@@ -54,7 +54,7 @@ public class MyApplication extends Application {
 
 
     public static void endAllSessions(Context context) {
-        TwitterClient.getInstance().logout();
-        LinkedInClient.getInstance(context).logout();
+        me.gnahum12345.fbuair.TwitterClient.getInstance().logout();
+        me.gnahum12345.fbuair.LinkedInClient.getInstance(context).logout();
     }
 }

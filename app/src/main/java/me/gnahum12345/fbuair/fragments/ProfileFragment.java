@@ -118,10 +118,10 @@ public class ProfileFragment extends Fragment {
     }
 
     // gets current user and sets text views to display current user info
-    void setUserInfo() throws JSONException {
+    private void setUserInfo() throws JSONException {
         // get json user from preferences and convert to user java object
 //        String userJsonString = sharedpreferences.getString("current_user", null);
-        User user = UserManager.getInstance().getCurrentUser();
+        user = UserManager.getInstance().getCurrentUser();
         if (user != null) {
             // set views to display info
             bind.etName.setText(user.getName());
@@ -149,13 +149,14 @@ public class ProfileFragment extends Fragment {
         }
     }
     // saves user profile to be edit text fields if valid
-    void saveProfile() {
+    private void saveProfile() {
         name = bind.etName.getText().toString();
         organization = bind.etOrganization.getText().toString();
         phone = bind.etPhone.getText().toString();
         email = bind.etEmail.getText().toString();
         rating = bind.rbConnection.getNumStars();
 
+        // this will automatically return true...
         if (isValidProfile()) {
             setEditable(false);
             user.setName(name);

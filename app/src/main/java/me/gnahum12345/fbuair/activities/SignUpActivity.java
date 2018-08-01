@@ -37,7 +37,7 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.GithubClient;
 import me.gnahum12345.fbuair.LinkedInClient;
-import me.gnahum12345.fbuair.MyApp;
+import me.gnahum12345.fbuair.MyApplication;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
@@ -96,7 +96,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
         // initialize user and end all social media sessions
         user = new User();
-        MyApp.endAllSessions(getApplicationContext());
+        MyApplication.endAllSessions(getApplicationContext());
 
         // configure toolbar
         configureToolbar();

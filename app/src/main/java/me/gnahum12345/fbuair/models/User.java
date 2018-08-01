@@ -3,6 +3,7 @@ package me.gnahum12345.fbuair.models;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Base64;
 
