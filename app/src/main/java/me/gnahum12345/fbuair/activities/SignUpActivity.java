@@ -3,59 +3,39 @@ package me.gnahum12345.fbuair.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.Signature;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.api.client.auth.oauth2.Credential;
+import com.android.volley.Response;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.linkedin.platform.LISessionManager;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
 import com.linkedin.platform.listeners.ApiListener;
 import com.linkedin.platform.listeners.ApiResponse;
 import com.linkedin.platform.listeners.AuthListener;
-import com.linkedin.platform.utils.Scope;
 import com.twitter.sdk.android.core.Callback;
 import com.twitter.sdk.android.core.Result;
 import com.twitter.sdk.android.core.TwitterException;
 import com.twitter.sdk.android.core.TwitterSession;
-import com.wuman.android.auth.OAuthManager;
-
-import net.openid.appauth.AuthorizationException;
-import net.openid.appauth.AuthorizationResponse;
-import net.openid.appauth.AuthorizationService;
-import net.openid.appauth.TokenResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.GithubClient;
-import me.gnahum12345.fbuair.GithubClient2;
-import me.gnahum12345.fbuair.GithubClient3;
-import me.gnahum12345.fbuair.GithubClient3;
 import me.gnahum12345.fbuair.LinkedInClient;
 import me.gnahum12345.fbuair.MyApp;
 import me.gnahum12345.fbuair.R;
@@ -90,9 +70,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // api clients
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
-    GithubClient3 githubClient3;
+    GithubClient githubClient;
 
-    public static final int RC_AUTH = 5;
     private CallbackManager mCallbackManager;
 
     @Override
@@ -102,7 +81,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // get api clients
         twitterClient = TwitterClient.getInstance();
         linkedInClient = LinkedInClient.getInstance(getApplicationContext());
-        githubClient3 = new GithubClient3();
+        githubClient = GithubClient.getInstance();
 
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
@@ -217,12 +196,14 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        githubClient3.onActivityResult(requestCode, resultCode, data);
+        githubClient.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
         linkedInClient.getSessionManager()
                 .onActivityResult(this, requestCode, resultCode, data);
         linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
-        mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        if (mCallbackManager != null) {
+            mCallbackManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     // authenticate twitter and add new social media on success
@@ -317,41 +298,22 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         });
     }
 
-/*
-    @Override
-    protected void onResume() {
-        super.onResume();
-        checkForGithubData();
-    }
-*/
-
     @Override
     public void githubLogin(SocialMedia socialMedia) {
-        githubClient3.doAuthorization(SignUpActivity.this, this);
-    }
-
-/*    @Override
-    public void githubLogin(SocialMedia socialMedia) {
-        final Uri.Builder uriBuilder = new Uri.Builder();
-        uriBuilder.scheme("https")
-                .authority("github.com")
-                .appendPath("login")
-                .appendPath("oauth")
-                .appendPath("authorize")
-                .appendQueryParameter("client_id", getResources().getString(R.string.github_client_id));
-        final Intent browser = new Intent(Intent.ACTION_VIEW, uriBuilder.build());
-        startActivity(browser);
-    }*/
-
-/*    private void checkForGithubData() {
-        final Uri data = this.getIntent().getData();
-        if(data != null && data.getScheme().equals("sociallogin") && data.getFragment() != null) {
-            final String authorizationCode = data.getQueryParameter("code");
-            if (authorizationCode != null) {
-                Log.e( "SUActivity", "successful github auth");
-            } else {
-                Log.e( "SUActivity", "github auth failed");
+        githubClient.authorizeAndGetUsername(SignUpActivity.this, this, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                try {
+                    JSONObject resp = new JSONObject(response);
+                    socialMedia.setUsername(resp.getString("login"));
+                    user.addSocialMedia(socialMedia);
+                    signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
-        }
-    }*/
+        });
+
+    }
+
 }
