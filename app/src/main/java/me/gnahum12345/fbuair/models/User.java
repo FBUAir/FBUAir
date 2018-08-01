@@ -1,10 +1,10 @@
 package me.gnahum12345.fbuair.models;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.util.Base64;
-import android.util.Log;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -12,9 +12,11 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 @Parcel
 public class User implements Comparable {
@@ -168,6 +170,25 @@ public class User implements Comparable {
         }
     }
 
+    public java.io.File toFile(Context context) {
+        File f = context.getFileStreamPath("user.txt");
+
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try (FileOutputStream writer = context.openFileOutput(f.getName(), Context.MODE_PRIVATE)) {
+            JSONObject obj = User.toJson(this);
+            writer.write(obj.toString().getBytes());
+        } catch (IOException | JSONException e) {
+            e.printStackTrace();
+        }
+        return f;
+    }
+
     public static User fromJson(JSONObject json) throws JSONException {
         User user = new User();
         try {
@@ -254,6 +275,7 @@ public class User implements Comparable {
         }
         return jsonArray;
     }
+
 
 
 }

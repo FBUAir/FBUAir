@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Binder;
 import android.os.IBinder;
-import android.os.Parcel;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,11 +37,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -61,6 +57,7 @@ import java.util.TimerTask;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 
@@ -196,19 +193,58 @@ public class ConnectionService extends Service {
                                 System.out.println(builder.toString());
                                 logD(builder.toString());
                             } else {
-                                readContent(payloadFile);
+                                handleResults(payloadFile, mEstablishedConnections.get(endpointId));
                             }
                         }
                     }
                 }
             };
-    private void readContent(File f) {
+
+    private void handleResults(File f, Endpoint endpoint) {
+        String content = readContent(f);
+        User user;
+        ProfileUser profileUser;
+        boolean userMade;
+
+        try {
+            //TODO: fix this... user is being made but in reality it is a profile.
+            user = User.fromString(content);
+            if (user.getId().equals("obviouslyNotAnId")) {
+                throw new JSONException("This is a profile");
+            }
+            userMade = true;
+            logV("userMade = true");
+            // TODO: actually toast here saying "user was transferred successfully.
+            // update listeners to deal with the user.
+            updateListener(endpoint, user);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            logE("User cannot be created", e);
+            userMade = false;
+        }
+
+
+        if (!userMade) {
+            try {
+                profileUser = ProfileUser.fromJSONString(content);
+                // Update listeners to deal with the profile
+                updateListener(endpoint, profileUser);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                logE("The file wasn't a profile either", e);
+            }
+        }
+
+    }
+    private String readContent(File f) {
         try {
             String s = new String(Files.readAllBytes(f.toPath()));
             logV(s);
+            return s;
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return null;
     }
     /**
      * The state of the app. As the app changes states, the UI will update and advertising/discovery
@@ -584,7 +620,7 @@ public class ConnectionService extends Service {
      */
     protected void onEndpointConnected(Endpoint endpoint) {
         Toast.makeText(mContext, mContext.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
-//        sendProfileUser(endpoint);
+        sendProfileUser(endpoint);
         updateListenersEndpoint(endpoint, true);
     }
 
@@ -682,40 +718,6 @@ public class ConnectionService extends Service {
             String content = new String(b);
             logD(content);
             Toast.makeText(mContext, content, Toast.LENGTH_SHORT).show();
-
-            User user;
-            ProfileUser profileUser;
-            boolean userMade;
-
-            try {
-                //TODO: fix this... user is being made but in reality it is a profile.
-                user = User.fromString(content);
-                if (user.getId().equals("obviouslyNotAnId")) {
-                    throw new JSONException("This is a profile");
-                }
-                userMade = true;
-                logV("userMade = true");
-                // TODO: actually toast here saying "user was transferred successfully.
-
-                // update listeners to deal with the user.
-                updateListener(endpoint, user);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                logE("User cannot be created", e);
-                userMade = false;
-            }
-
-
-            if (!userMade) {
-                try {
-                    profileUser = ProfileUser.fromJSONString(content);
-                    // Update listeners to deal with the profile
-                    updateListener(endpoint, profileUser);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    logE("The file wasn't a profile either", e);
-                }
-            }
         }
     }
 
@@ -947,7 +949,14 @@ public class ConnectionService extends Service {
 //        String current_user = sharedpreferences.getString("current_user", null);
 //
 //        send(Payload.fromBytes(current_user.getBytes()), endpoint);
-        sendProfileUser(endpoint);
+//        sendProfileUser(endpoint);
+        User u = UserManager.getInstance().getCurrentUser();
+        try {
+            File file = u.toFile(mContext);
+            send(Payload.fromFile(file), endpoint);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void debug() {
