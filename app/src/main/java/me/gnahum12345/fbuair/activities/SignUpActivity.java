@@ -1,6 +1,8 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
@@ -238,7 +240,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
-                        Toast.makeText(getApplicationContext(), "Login Success", Toast.LENGTH_LONG).show();
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -247,14 +248,11 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onCancel() {
                         Log.d("cancel", "cancel error");
-                        Toast.makeText(getApplicationContext(), "Login Cancel", Toast.LENGTH_LONG).show();
-
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.d("error", "error");
-                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("error", exception.getLocalizedMessage());
                         exception.printStackTrace();
                     }
                 });
@@ -300,7 +298,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     @Override
     public void githubLogin(SocialMedia socialMedia) {
-        githubClient.authorizeAndGetUsername(SignUpActivity.this, this, new Response.Listener<String>() {
+        githubClient.authorizeAndGetUsername(SignUpActivity.this, this,
+                new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -314,6 +313,45 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
             }
         });
 
+    }
+
+    // shows dialog asking if user wants to remove added social media and removes if confirmed
+    @Override
+    public void showRemoveSocialMediaDialog(SocialMedia socialMedia) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString(R.string.remove_social_media_confirmation)
+                + " " + socialMedia.getName() + "?")
+                .setTitle("Remove " + socialMedia.getName())
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        // if user selects yes, remove scoial media from users profile
+                        // & revoke api authorization
+                        user.removeSocialMedia(socialMedia);
+                        switch (socialMedia.getName()) {
+                            case "Twitter":
+                                twitterClient.logout();
+                                break;
+                            case "LinkedIn":
+                                linkedInClient.logout();
+                                break;
+                            case "Facebook":
+                                // todo - facebook logout
+                                break;
+                            case "Github":
+                                githubClient.logoutGithub();
+                                break;
+                        }
+                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                });
+        builder.show();
     }
 
 }

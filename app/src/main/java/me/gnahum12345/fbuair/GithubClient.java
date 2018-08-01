@@ -157,9 +157,14 @@ public class GithubClient {
     }
 
 
-    public void logoutGithub(Response.Listener<String> successCallback) {
+    public void logoutGithub() {
         String url = BASE_API_URL + "/applications";
-        addVolleyRequest(url, readAuthState(context).getAccessToken(), successCallback);
+        addVolleyRequest(url, readAuthState(context).getAccessToken(),
+                new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+            }
+        });
     }
 
     @NonNull

@@ -8,4 +8,5 @@ public interface OnRequestOAuthListener {
     void linkedInLogin(SocialMedia socialMedia);
     void githubLogin(SocialMedia socialMedia);
     void facebookLogin(SocialMedia socialMedia);
+    void showRemoveSocialMediaDialog(SocialMedia socialMedia);
 }
