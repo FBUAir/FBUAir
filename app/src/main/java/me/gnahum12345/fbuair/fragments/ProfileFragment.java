@@ -113,7 +113,7 @@ public class ProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
-            SharedPreferences.Editor editor = sh    aredpreferences.edit();
+            SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(CURRENT_USER_KEY, null);
             editor.commit();
             startActivity(new Intent(activity, SignUpActivity.class));
@@ -134,7 +134,7 @@ public class ProfileFragment extends Fragment {
             bind.btnProfileImage.setImageBitmap(user.getProfileImage());
 
             float numConnection = user.getNumConnections().floatValue();
-            bind.etNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
+            bind.tvNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
             bind.rbConnection.setRating(numConnection= numConnection > 0 ? numConnection / 5.0f : numConnection);
 
 

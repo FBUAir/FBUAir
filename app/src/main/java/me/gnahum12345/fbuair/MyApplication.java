@@ -34,27 +34,11 @@ public class MyApplication extends Application {
         filter.addAction(Intent.ACTION_AIRPLANE_MODE_CHANGED);
         this.registerReceiver(br, filter);
         // Connection...
-
-        // set up twitter.
-        String CONSUMER_KEY = getResources().getString(R.string.com_twitter_sdk_android_CONSUMER_KEY);
-        String CONSUMER_SECRET = getResources().getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET);
-        TwitterConfig config = new TwitterConfig.Builder(this)
-                .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(CONSUMER_KEY, CONSUMER_SECRET))
-                .debug(true)
-                .build();
-        Twitter.initialize(config);
     }
 
     @Override
     public void onTerminate() {
         super.onTerminate();
         unregisterReceiver(br);
-    }
-
-
-    public static void endAllSessions(Context context) {
-        me.gnahum12345.fbuair.TwitterClient.getInstance().logout();
-        me.gnahum12345.fbuair.LinkedInClient.getInstance(context).logout();
     }
 }

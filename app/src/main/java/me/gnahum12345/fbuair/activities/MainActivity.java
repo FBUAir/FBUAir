@@ -35,6 +35,7 @@ import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     // fragment position aliases
     final static int DISCOVER_FRAGMENT = 0;
-    // references to bottom navigation bar and toolbar
     final static int HISTORY_FRAGMENT = 1;
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
-    ProfileFragment profileFragment;
+    ProfileFragmentTwo profileFragment;
     DetailsFragment detailsFragment;
     UserManager userManager;
     // menus
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
-        profileFragment = new ProfileFragment();
+        profileFragment = new ProfileFragmentTwo();
         detailsFragment = new DetailsFragment();
 
         // Create the fragments to be passed to the ViewPager
