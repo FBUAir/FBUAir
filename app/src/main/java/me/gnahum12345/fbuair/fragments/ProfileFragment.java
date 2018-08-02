@@ -51,7 +51,6 @@ public class ProfileFragment extends Fragment {
     String phone;
     Bitmap profileImageBitmap;
     Integer rating;
-    String numConnections;
 
     // reference to main activity
     Activity activity;

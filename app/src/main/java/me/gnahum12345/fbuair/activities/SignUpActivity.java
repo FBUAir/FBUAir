@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.linkedin.platform.errors.LIApiError;
@@ -36,9 +37,9 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Objects;
 
+import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.clients.GithubClient;
 import me.gnahum12345.fbuair.clients.LinkedInClient;
-import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.clients.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
@@ -238,6 +239,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
+                        socialMedia.setUsername(Profile.getCurrentProfile().getName().toString());
+                        socialMedia.setProfileUrl(Profile.getCurrentProfile().getLinkUri().toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -310,7 +313,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                 }
             }
         });
-
     }
 
     // shows dialog asking if user wants to remove added social media and removes if confirmed
