@@ -113,7 +113,7 @@ public class ProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
-            SharedPreferences.Editor editor = sh    aredpreferences.edit();
+            SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(CURRENT_USER_KEY, null);
             editor.commit();
             startActivity(new Intent(activity, SignUpActivity.class));
