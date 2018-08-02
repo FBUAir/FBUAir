@@ -107,24 +107,28 @@ public class SocialMediaAdapter extends BaseAdapter {
             // get item position
             int position = (int) view.getTag(R.id.POSITION_KEY);
             // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
-            SocialMedia socialMedia;
-            socialMedia = socialMedias.get(position);
-            switch (socialMedia.getName()) {
-                case "Twitter":
-                    onRequestOAuthListener.twitterLogin(socialMedia);
-                    break;
-                case "LinkedIn":
-                    onRequestOAuthListener.linkedInLogin(socialMedia);
-                    break;
-                case "Facebook":
-                    onRequestOAuthListener.facebookLogin(socialMedia);
-                    break;
-                case "Github":
-                    onRequestOAuthListener.githubLogin(socialMedia);
-                    break;
-                default:
-                    onSignUpScreenChangeListener.launchUrl(socialMedia);
+            SocialMedia socialMedia = socialMedias.get(position);
+            if (user.hasSocialMedia(socialMedia)) {
+                onRequestOAuthListener.showRemoveSocialMediaDialog(socialMedia);
+            } else {
+                switch (socialMedia.getName()) {
+                    case "Twitter":
+                        onRequestOAuthListener.twitterLogin(socialMedia);
+                        break;
+                    case "LinkedIn":
+                        onRequestOAuthListener.linkedInLogin(socialMedia);
+                        break;
+                    case "Facebook":
+                        onRequestOAuthListener.facebookLogin(socialMedia);
+                        break;
+                    case "Github":
+                        onRequestOAuthListener.githubLogin(socialMedia);
+                        break;
+                    default:
+                        onSignUpScreenChangeListener.launchUrl(socialMedia);
+                }
             }
+
         }
     }
 }

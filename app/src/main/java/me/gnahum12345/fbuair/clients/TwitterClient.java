@@ -1,19 +1,19 @@
-package me.gnahum12345.fbuair;
+package me.gnahum12345.fbuair.clients;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.widget.Toast;
+import android.content.Context;
+import android.util.Log;
 
 import com.twitter.sdk.android.core.Callback;
-import com.twitter.sdk.android.core.TwitterApiClient;
-import com.twitter.sdk.android.core.TwitterAuthToken;
+import com.twitter.sdk.android.core.DefaultLogger;
+import com.twitter.sdk.android.core.Twitter;
+import com.twitter.sdk.android.core.TwitterAuthConfig;
+import com.twitter.sdk.android.core.TwitterConfig;
 import com.twitter.sdk.android.core.TwitterCore;
 import com.twitter.sdk.android.core.TwitterSession;
 import com.twitter.sdk.android.core.identity.TwitterAuthClient;
-import com.twitter.sdk.android.core.models.User;
 
-import me.gnahum12345.fbuair.activities.MainActivity;
-import retrofit2.Call;
+import me.gnahum12345.fbuair.R;
 
 public class TwitterClient extends TwitterAuthClient {
 
@@ -22,11 +22,25 @@ public class TwitterClient extends TwitterAuthClient {
 
     private TwitterClient() { }
 
-    public static TwitterClient getInstance()  {
+    public static TwitterClient getInstance(Context context)  {
         if (single_instance == null) {
+            initializeTwitter(context);
             single_instance = new TwitterClient();
         }
         return single_instance;
+    }
+
+    private static void initializeTwitter(Context context) {
+        String CONSUMER_KEY = context.getResources().getString
+                (R.string.com_twitter_sdk_android_CONSUMER_KEY);
+        String CONSUMER_SECRET = context.getResources().getString
+                (R.string.com_twitter_sdk_android_CONSUMER_SECRET);
+        TwitterConfig config = new TwitterConfig.Builder(context.getApplicationContext())
+                .logger(new DefaultLogger(Log.DEBUG))
+                .twitterAuthConfig(new TwitterAuthConfig(CONSUMER_KEY, CONSUMER_SECRET))
+                .debug(true)
+                .build();
+        Twitter.initialize(config);
     }
 
     public void login(Activity activity, Callback<TwitterSession> callback) {
@@ -41,8 +55,7 @@ public class TwitterClient extends TwitterAuthClient {
     }
 
     private TwitterSession getTwitterSession() {
-        TwitterSession session = TwitterCore.getInstance().getSessionManager().getActiveSession();
-        return session;
+        return TwitterCore.getInstance().getSessionManager().getActiveSession();
     }
 
     public String getDisplayName() {

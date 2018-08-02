@@ -1,6 +1,8 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
@@ -11,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.facebook.CallbackManager;
@@ -35,11 +36,10 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Objects;
 
-import me.gnahum12345.fbuair.GithubClient;
-import me.gnahum12345.fbuair.LinkedInClient;
-import me.gnahum12345.fbuair.MyApplication;
+import me.gnahum12345.fbuair.clients.GithubClient;
+import me.gnahum12345.fbuair.clients.LinkedInClient;
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.TwitterClient;
+import me.gnahum12345.fbuair.clients.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
@@ -56,6 +56,7 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
+    //TODO - HANDLE NOT HAVING SMS PERMISSIONS, FACEBOOK LOGIN NOT WORKING FOR NON-TEST PEOPLE
 
     // user signing up
     public User user;
@@ -78,11 +79,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get api clients
-        twitterClient = TwitterClient.getInstance();
-        linkedInClient = LinkedInClient.getInstance(getApplicationContext());
-        githubClient = GithubClient.getInstance();
-
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
                 Context.MODE_PRIVATE);
@@ -94,9 +90,14 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
         bind = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
 
+        // get api clients
+        twitterClient = TwitterClient.getInstance(this);
+        linkedInClient = LinkedInClient.getInstance();
+        githubClient = GithubClient.getInstance(this);
+
         // initialize user and end all social media sessions
         user = new User();
-        MyApplication.endAllSessions(getApplicationContext());
+        endAllSessions();
 
         // configure toolbar
         configureToolbar();
@@ -198,9 +199,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         super.onActivityResult(requestCode, resultCode, data);
         githubClient.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
-        linkedInClient.getSessionManager()
+        linkedInClient.getSessionManager(this)
                 .onActivityResult(this, requestCode, resultCode, data);
-        linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
         if (mCallbackManager != null) {
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
@@ -238,7 +238,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
-                        Toast.makeText(getApplicationContext(), "Login Success", Toast.LENGTH_LONG).show();
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -247,14 +246,11 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onCancel() {
                         Log.d("cancel", "cancel error");
-                        Toast.makeText(getApplicationContext(), "Login Cancel", Toast.LENGTH_LONG).show();
-
                     }
 
                     @Override
                     public void onError(FacebookException exception) {
-                        Log.d("error", "error");
-                        Toast.makeText(getApplicationContext(), exception.getMessage(), Toast.LENGTH_LONG).show();
+                        Log.d("error", exception.getLocalizedMessage());
                         exception.printStackTrace();
                     }
                 });
@@ -300,7 +296,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     @Override
     public void githubLogin(SocialMedia socialMedia) {
-        githubClient.authorizeAndGetUsername(SignUpActivity.this, this, new Response.Listener<String>() {
+        githubClient.authorizeAndGetUsername(SignUpActivity.this, this,
+                new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -315,4 +312,49 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         });
 
     }
+
+    // shows dialog asking if user wants to remove added social media and removes if confirmed
+    @Override
+    public void showRemoveSocialMediaDialog(SocialMedia socialMedia) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getResources().getString(R.string.remove_social_media_confirmation)
+                + " " + socialMedia.getName() + "?")
+                .setTitle("Remove " + socialMedia.getName())
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override public void onClick(DialogInterface dialogInterface, int i) {
+                        // if user selects yes, remove scoial media from users profile
+                        // & revoke api authorization
+                        user.removeSocialMedia(socialMedia);
+                        switch (socialMedia.getName()) {
+                            case "Twitter":
+                                twitterClient.logout();
+                                break;
+                            case "LinkedIn":
+                                linkedInClient.logout(getBaseContext());
+                                break;
+                            case "Facebook":
+                                // todo - facebook logout
+                                break;
+                            case "Github":
+                                githubClient.logoutGithub();
+                                break;
+                        }
+                        signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                    }
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                });
+        builder.show();
+    }
+
+    public void endAllSessions() {
+        twitterClient.logout();
+        linkedInClient.logout(this);
+        githubClient.logoutGithub();
+    }
+
 }
