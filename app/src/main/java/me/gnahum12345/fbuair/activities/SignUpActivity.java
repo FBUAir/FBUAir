@@ -13,7 +13,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.facebook.CallbackManager;
@@ -37,11 +36,10 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Objects;
 
-import me.gnahum12345.fbuair.GithubClient;
-import me.gnahum12345.fbuair.LinkedInClient;
-import me.gnahum12345.fbuair.MyApp;
+import me.gnahum12345.fbuair.clients.GithubClient;
+import me.gnahum12345.fbuair.clients.LinkedInClient;
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.TwitterClient;
+import me.gnahum12345.fbuair.clients.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
@@ -58,6 +56,7 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
+    //TODO - HANDLE NOT HAVING SMS PERMISSIONS, FACEBOOK LOGIN NOT WORKING FOR NON-TEST PEOPLE
 
     // user signing up
     public User user;
@@ -80,11 +79,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // get api clients
-        twitterClient = TwitterClient.getInstance();
-        linkedInClient = LinkedInClient.getInstance(getApplicationContext());
-        githubClient = GithubClient.getInstance();
-
         // skip sign up and go to discover page if user already has profile
         SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
                 Context.MODE_PRIVATE);
@@ -96,9 +90,14 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
         bind = DataBindingUtil.setContentView(this, R.layout.activity_sign_up);
 
+        // get api clients
+        twitterClient = TwitterClient.getInstance(this);
+        linkedInClient = LinkedInClient.getInstance();
+        githubClient = GithubClient.getInstance(this);
+
         // initialize user and end all social media sessions
         user = new User();
-        MyApp.endAllSessions(getApplicationContext());
+        endAllSessions();
 
         // configure toolbar
         configureToolbar();
@@ -200,9 +199,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         super.onActivityResult(requestCode, resultCode, data);
         githubClient.onActivityResult(requestCode, resultCode, data);
         twitterClient.onActivityResult(requestCode, resultCode, data);
-        linkedInClient.getSessionManager()
+        linkedInClient.getSessionManager(this)
                 .onActivityResult(this, requestCode, resultCode, data);
-        linkedInClient.getSessionManager().onActivityResult(this, requestCode, resultCode, data);
         if (mCallbackManager != null) {
             mCallbackManager.onActivityResult(requestCode, resultCode, data);
         }
@@ -323,8 +321,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                 + " " + socialMedia.getName() + "?")
                 .setTitle("Remove " + socialMedia.getName())
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
+                    @Override public void onClick(DialogInterface dialogInterface, int i) {
                         // if user selects yes, remove scoial media from users profile
                         // & revoke api authorization
                         user.removeSocialMedia(socialMedia);
@@ -333,7 +330,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                                 twitterClient.logout();
                                 break;
                             case "LinkedIn":
-                                linkedInClient.logout();
+                                linkedInClient.logout(getBaseContext());
                                 break;
                             case "Facebook":
                                 // todo - facebook logout
@@ -352,6 +349,12 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     }
                 });
         builder.show();
+    }
+
+    public void endAllSessions() {
+        twitterClient.logout();
+        linkedInClient.logout(this);
+        githubClient.logoutGithub();
     }
 
 }

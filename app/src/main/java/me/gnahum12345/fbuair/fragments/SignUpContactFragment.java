@@ -97,11 +97,10 @@ public class SignUpContactFragment extends Fragment {
         bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
         if (getPhoneNum() != null) {
-            phone = getPhoneNum().toString();
-            Toast.makeText(getContext(), "Your phone number is " + phone, Toast.LENGTH_LONG).show();
+            phone = getPhoneNum();
             bind.etPhone.setText(phone);
         } else {
-            phoneID = getPhoneID().toString();
+            phoneID = getPhoneID();
             Toast.makeText(getContext(), "Did not have a phone num", Toast.LENGTH_SHORT).show();
             Toast.makeText(getContext(), "Phone id is" + phoneID, Toast.LENGTH_SHORT).show();
             phone = bind.etPhone.getText().toString();
