@@ -107,10 +107,13 @@ public class ProfileFragment extends Fragment {
             }
         });
 
+
+
+
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
-            SharedPreferences.Editor editor = sharedpreferences.edit();
+            SharedPreferences.Editor editor = sh    aredpreferences.edit();
             editor.putString(CURRENT_USER_KEY, null);
             editor.commit();
             startActivity(new Intent(activity, SignUpActivity.class));
@@ -118,10 +121,10 @@ public class ProfileFragment extends Fragment {
     }
 
     // gets current user and sets text views to display current user info
-    void setUserInfo() throws JSONException {
+    private void setUserInfo() throws JSONException {
         // get json user from preferences and convert to user java object
 //        String userJsonString = sharedpreferences.getString("current_user", null);
-        User user = UserManager.getInstance().getCurrentUser();
+        user = UserManager.getInstance().getCurrentUser();
         if (user != null) {
             // set views to display info
             bind.etName.setText(user.getName());
@@ -141,8 +144,7 @@ public class ProfileFragment extends Fragment {
                         socialMedia.getUsername() + ", Url: " + socialMedia.getProfileUrl() + "\n";
             }
             bind.tvSocialMedias.setText(socialMedias);
-        }
-        else {
+        } else {
             // go to sign up activity if no current user
             Intent intent = new Intent(activity, SignUpActivity.class);
             startActivity(intent);
@@ -150,13 +152,14 @@ public class ProfileFragment extends Fragment {
         }
     }
     // saves user profile to be edit text fields if valid
-    void saveProfile() {
+    private void saveProfile() {
         name = bind.etName.getText().toString();
         organization = bind.etOrganization.getText().toString();
         phone = bind.etPhone.getText().toString();
         email = bind.etEmail.getText().toString();
         rating = bind.rbConnection.getNumStars();
 
+        // this will automatically return true...
         if (isValidProfile()) {
             setEditable(false);
             user.setName(name);
@@ -184,14 +187,14 @@ public class ProfileFragment extends Fragment {
         return true;
     }
 
-    void clearErrors() {
+    private void clearErrors() {
         bind.tvNameError.setText("");
         bind.tvPhoneError.setText("");
         bind.tvEmailError.setText("");
     }
 
     // go to edit profile mode
-    void setEditable(final boolean flag) {
+    private void setEditable(final boolean flag) {
         // make edit texts editable/not editable
         bind.etName.setEnabled(flag);
         bind.etOrganization.setEnabled(flag);

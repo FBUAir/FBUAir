@@ -1,7 +1,10 @@
 package me.gnahum12345.fbuair.models;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Parcelable;
+import android.support.annotation.NonNull;
 import android.util.Base64;
 
 import org.json.JSONArray;
@@ -10,11 +13,15 @@ import org.json.JSONObject;
 import org.parceler.Parcel;
 
 import java.io.ByteArrayOutputStream;
-import java.util.ArrayList;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Random;
+import java.util.ArrayList;
 
 @Parcel
-public class User {
+public class User implements Comparable {
+
 
     String uid;
     String name;
@@ -25,22 +32,24 @@ public class User {
     String timeAddedToHistory;
     Integer numConnections;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
-
+    boolean seen = false;
 
     // empty constructor needed by the Parceler library
     public User() {
     }
 
+    public boolean isSeen() {
+        return seen;
+    }
+    public void hasSeen(boolean seen) {
+        this.seen = seen;
+    }
     public Integer getNumConnections() {return numConnections; }
 
     public void setNumConnections(Integer numConnections) { this.numConnections = numConnections; }
 
     public String getName() {
         return name;
-    }
-
-    public String getUid() {
-        return uid;
     }
 
     public String getOrganization() {
@@ -84,10 +93,6 @@ public class User {
         }
 
         return builder.toString();
-    }
-
-    public void setUid(String uid) {
-        this.uid = uid;
     }
 
     public void setName(String name) {
@@ -154,6 +159,34 @@ public class User {
         socialMedias.remove(socialMedia);
     }
 
+    @Override
+    public int compareTo(@NonNull Object o) {
+        if (o instanceof User) {
+            return getName().compareTo(((User) o).getName());
+        } else {
+            return 1;
+        }
+    }
+
+    public java.io.File toFile(Context context) {
+        File f = context.getFileStreamPath("user.txt");
+
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try (FileOutputStream writer = context.openFileOutput(f.getName(), Context.MODE_PRIVATE)) {
+            String content = this.toString();
+            writer.write(content.getBytes());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return f;
+
+    }
     public String toString() {
         try {
             return User.toJson(this).toString();
@@ -163,7 +196,7 @@ public class User {
         }
     }
 
-    public static User fromJson(JSONObject json) throws JSONException {
+    public static User fromJson(JSONObject json){
         User user = new User();
         try {
             user.name = json.getString("name");
@@ -175,6 +208,7 @@ public class User {
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
             user.numConnections = json.optInt("numConnections");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
+
         } catch (JSONException e) {
             e.printStackTrace();
         }

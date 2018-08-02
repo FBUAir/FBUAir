@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -25,7 +26,7 @@ import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {
-
+    //TODO: possibly add this to sharedPreferences.
     private TreeMap<Endpoint, String> mDevices;
     private Context mContext;
 
@@ -74,10 +75,13 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+    public boolean contains(Endpoint e) {
+        return mDevices.containsKey(e);
+    }
+
     public void remove(Endpoint e) {
         mDevices.remove(e);
         notifyDataSetChanged();
-//        return true; //TODO: possibly uncomment if this makes something crash.
     }
 
     public void put(Endpoint e, ProfileUser profileUser) {
@@ -106,11 +110,18 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         }
         if (profileUser != null) {
             viewHolder.mivProfilePic.setVisibility(View.VISIBLE);
-            viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
+            if (profileUser.getIvProfileImage() == null) {
+                Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
+                viewHolder.mivProfilePic.setImageDrawable(drawable);
+            } else {
+                viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
+            }
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
             String deviceName = parseName(device.getName());
             viewHolder.mtvDeviceName.setText(deviceName);
+            Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
+            viewHolder.mivProfilePic.setImageDrawable(drawable);
         }
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);

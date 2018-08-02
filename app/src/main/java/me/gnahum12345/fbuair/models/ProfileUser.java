@@ -6,7 +6,11 @@ import android.graphics.Bitmap;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.parceler.Parcel;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 public class ProfileUser {
 
@@ -69,9 +73,54 @@ public class ProfileUser {
 
     @Override
     public String toString() {
+        return toJSON().toString();
+    }
+
+    public File toFile(Context context) {
+        File f = context.getFileStreamPath("out.txt");
+
+        if (!f.exists()) {
+            try {
+                f.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try(FileOutputStream writer = context.openFileOutput(f.getName(), Context.MODE_PRIVATE)) {
+            writer.write(toString().getBytes());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+        return f;
+    }
+
+    public String toString(String exclude) {
+        JSONObject obj = toJSON();
+        switch (exclude) {
+            case "image":
+                try {
+                    obj.put(BITMAP_KEY, "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case "name":
+                try {
+                    obj.put(NAME_KEY, "");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                break;
+        }
+        return obj.toString();
+    }
+
+    private JSONObject toJSON() {
         String bitmap = "";
         if (ivProfileImage != null) {
-             bitmap = User.bitmapToString(ivProfileImage);
+            bitmap = User.bitmapToString(ivProfileImage);
         }
         JSONObject jsonProfile = new JSONObject();
         try {
@@ -81,6 +130,6 @@ public class ProfileUser {
             e.printStackTrace();
             //TODO handle the exception properly.
         }
-        return jsonProfile.toString();
+        return jsonProfile;
     }
 }

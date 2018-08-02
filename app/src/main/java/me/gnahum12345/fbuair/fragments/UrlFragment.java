@@ -73,8 +73,7 @@ public class UrlFragment extends Fragment {
             title = "Edit ";
             bind.etUsername.setText(socialMedia.getUsername());
             bind.btRemove.setVisibility(View.VISIBLE);
-        }
-        else {
+        } else {
             title = "Add ";
             bind.etUsername.setText("");
             bind.btRemove.setVisibility(View.GONE);

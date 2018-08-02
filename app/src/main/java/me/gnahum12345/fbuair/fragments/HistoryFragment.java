@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -21,27 +20,28 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
 
-public class HistoryFragment extends Fragment {
-
-    public HistoryFragment() {
-        // Required empty public constructor
-    }
+public class HistoryFragment extends Fragment implements UserListener {
 
     public HistoryAdapter historyAdapter;
-    ArrayList<User> history;
+    ArrayList<User> history = new ArrayList<>();
     RecyclerView rvUser;
     SharedPreferences sharedpreferences;
     UserManager userManager = UserManager.getInstance();
-    private SwipeRefreshLayout swipeContainer;
     Activity activity;
+    private SwipeRefreshLayout swipeContainer;
+    public HistoryFragment() {
+        // Required empty public constructor
+
+    }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_history, container, false);
@@ -72,29 +72,26 @@ public class HistoryFragment extends Fragment {
 
         rvUser = view.findViewById(R.id.rvContact);
         history = new ArrayList<>();
+
         historyAdapter = new HistoryAdapter(getContext(), history);
 
         rvUser.setLayoutManager(new LinearLayoutManager(activity));
         rvUser.setAdapter(historyAdapter);
 
         // clear old history and add fake users to history
-        clearHistory();
+//        clearHistory();
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
-        try {
-            fakeHistory = new JSONObject[] {
-                    fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
-                            fakeUsers.jsonUser4, fakeUsers.jsonUser5, fakeUsers.jsonUser6,
-                            fakeUsers.jsonUser7, fakeUsers.jsonUser8};
-            User user = userManager.getCurrentUser();
-            user.setNumConnections(fakeHistory.length);
-            userManager.commitCurrentUser(user);
-            user = userManager.getCurrentUser();
-            for (JSONObject jsonUser : fakeHistory) {
-                addToHistory(User.fromJson(jsonUser));
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        fakeHistory = new JSONObject[]{
+                fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
+                fakeUsers.jsonUser4, fakeUsers.jsonUser5, fakeUsers.jsonUser6,
+                fakeUsers.jsonUser7, fakeUsers.jsonUser8};
+        User user = userManager.getCurrentUser();
+        user.setNumConnections(fakeHistory.length);
+        userManager.commitCurrentUser(user);
+//            user = userManager.getCurrentUser(); //TODO: delete this. this is for debugging purposes to see that the current user has been updated.
+        for (JSONObject jsonUser : fakeHistory) {
+            addToHistory(User.fromJson(jsonUser));
         }
 
         // populate recycler view with history from shared preferences
@@ -115,16 +112,31 @@ public class HistoryFragment extends Fragment {
 
     // populates recycler view with history from shared preferences
     public void populateHistory() {
+        clearHistoryList();
         List<User> users = getHistory();
-        for (int i = 0; i < users.size(); i++) {
-            User user = users.get(i);
-            history.add(user);
-            historyAdapter.notifyItemInserted(history.size() - 1);
+        //TODO: make sure that history adapter is not null..
+        history.addAll(users);
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
         }
     }
 
     // clears history
     void clearHistory() {
         UserManager.getInstance().clearHistory();
+    }
+
+    private void clearHistoryList() {
+        history.clear();
+    }
+
+    @Override
+    public void userAdded(User user) {
+        populateHistory();
+    }
+
+    @Override
+    public void userRemoved(User user) {
+        populateHistory();
     }
 }

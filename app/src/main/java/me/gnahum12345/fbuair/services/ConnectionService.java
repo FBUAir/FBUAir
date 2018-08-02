@@ -1,11 +1,17 @@
 package me.gnahum12345.fbuair.services;
 
 import android.Manifest;
+import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
+import android.os.Binder;
+import android.os.IBinder;
+import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
 import android.util.Log;
@@ -31,6 +37,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 
+import java.io.FileNotFoundException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -40,16 +51,52 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
 
 
-public class ConnectionService {
+public class ConnectionService extends Service {
+
+    public class LocalBinder extends Binder {
+        ConnectionService getService() {
+            return ConnectionService.this;
+        }
+    }
+
+
+    public ConnectionService() {
+
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+
+    //TODO: See if this works.. this is broadcasting so in the background it will still work... (Advertise and possibly discover).
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Intent restartService = new Intent(getString(R.string.connection_service));
+        sendBroadcast(restartService);
+    }
 
     /**
      * These permissions are required before connecting to Nearby Connections. Only {@link
@@ -62,14 +109,18 @@ public class ConnectionService {
                     Manifest.permission.ACCESS_WIFI_STATE,
                     Manifest.permission.CHANGE_WIFI_STATE,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.READ_EXTERNAL_STORAGE,
+                    Manifest.permission.WRITE_EXTERNAL_STORAGE
             };
 
     private static final String TAG = "ConnectionServiceTAG";
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final Strategy STRATEGY = Strategy.P2P_CLUSTER;
     private static final String SERVICE_ID =
             "com.fbuair.apps.air.discovery.automatic.SERVICE_ID";
-    /*Devices we've discovered near us..*/
+
+    /**
+     * Devices we've discovered near us..
+     */
     private final Map<String, Endpoint> mDiscoveredEndpoints = new HashMap<>();
     /**
      * The devices we have pending connections to. They will stay pending until we call {@link
@@ -82,6 +133,16 @@ public class ConnectionService {
      */
     private final Map<String, Endpoint> mEstablishedConnections = new HashMap<>();
 
+    /**
+     * The incoming payloads that are files.
+     */
+    private final Map<String, Payload> incomingPayloads = new HashMap<>();
+
+    /**
+     * The possible connections I need to establish if the other endpoints haven't connnected with me
+     * already.
+     */
+    HashMap<Endpoint, MyTimeTask> timeTask = new HashMap<>();
 
     private ProfileUser mProfileUser;
     private List<ConnectionListener> listeners = new ArrayList<>();
@@ -96,6 +157,7 @@ public class ConnectionService {
                 public void onPayloadReceived(String endpointId, Payload payload) {
                     logD(String.format("onPayloadReceived(endpointId=%s, payload=%s)", endpointId, payload));
                     onReceive(mEstablishedConnections.get(endpointId), payload);
+
                 }
 
                 @Override
@@ -103,8 +165,87 @@ public class ConnectionService {
                     logD(
                             String.format(
                                     "onPayloadTransferUpdate(endpointId=%s, update=%s)", endpointId, update));
+
+                    if (update.getStatus() == PayloadTransferUpdate.Status.SUCCESS) {
+                        Payload payload = incomingPayloads.remove(endpointId);
+                        if (payload == null) {
+                            return ;
+                            // todo: delete this if, because everything will be in terms of files...
+                        }
+                        if (payload.getType() == Payload.Type.FILE) {
+                            File payloadFile = payload.asFile().asJavaFile();
+                            if (payloadFile == null) {
+                                logD(String.valueOf(payload.asStream() == null));
+                                ParcelFileDescriptor parcelFileDescriptor = payload.asFile().asParcelFileDescriptor();
+                                logD(String.format("parcelFileDescriptor = %s", parcelFileDescriptor));
+                                logD(String.format("the amount of bits is equal to %d", parcelFileDescriptor.getStatSize()));
+                                // It is a parcelfile descriptor.
+                                InputStream fileInputStream = new ParcelFileDescriptor.AutoCloseInputStream(parcelFileDescriptor);
+                                int i = 0;
+                                StringBuilder builder = new StringBuilder();
+                                try {
+                                    while ((i = fileInputStream.read()) != -1) {
+                                        builder.append((char) i);
+                                    }
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                System.out.println(builder.toString());
+                                logD(builder.toString());
+                            } else {
+                                handleResults(payloadFile, mEstablishedConnections.get(endpointId));
+                            }
+                        }
+                    }
                 }
             };
+
+    private void handleResults(File f, Endpoint endpoint) {
+        String content = readContent(f);
+        User user;
+        ProfileUser profileUser;
+        boolean userMade;
+
+        try {
+            //TODO: fix this... user is being made but in reality it is a profile.
+            user = User.fromString(content);
+            if (user.getId().equals("obviouslyNotAnId")) {
+                throw new JSONException("This is a profile");
+            }
+            userMade = true;
+            logV("userMade = true");
+            // TODO: actually toast here saying "user was transferred successfully.
+            // update listeners to deal with the user.
+            updateListener(endpoint, user);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            logE("User cannot be created", e);
+            userMade = false;
+        }
+
+
+        if (!userMade) {
+            try {
+                profileUser = ProfileUser.fromJSONString(content);
+                // Update listeners to deal with the profile
+                updateListener(endpoint, profileUser);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                logE("The file wasn't a profile either", e);
+            }
+        }
+
+    }
+    private String readContent(File f) {
+        try {
+            String s = new String(Files.readAllBytes(f.toPath()));
+            logV(s);
+            return s;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
     /**
      * The state of the app. As the app changes states, the UI will update and advertising/discovery
      * will start/stop.
@@ -173,6 +314,7 @@ public class ConnectionService {
                 }
 
                 @Override
+
                 public void onDisconnected(String endpointId) {
                     if (!mEstablishedConnections.containsKey(endpointId)) {
                         logW("Unexpected disconnection from endpoint " + endpointId);
@@ -371,6 +513,13 @@ public class ConnectionService {
             connectToEndpoint(endpoint);
             logV("I am connecting to a new endpoint\n" +
                     String.format("Endpoint(id={%s}, name={%s}", endpoint.getId(), endpoint.getName()));
+        } else {
+            //TODO: put in a queue, if they haven't initiated the connection in 5 seconds then initiate the connection.
+            MyTimeTask scheduleEndpoint = new MyTimeTask(endpoint, this);
+            timeTask.put(endpoint, scheduleEndpoint);
+            Timer timer = new Timer();
+
+            timer.schedule(scheduleEndpoint, 15000);
         }
     }
 
@@ -435,6 +584,11 @@ public class ConnectionService {
     private void connectedToEndpoint(Endpoint endpoint) {
         logD(String.format("connectedToEndpoint(endpoint=%s)", endpoint));
         mEstablishedConnections.put(endpoint.getId(), endpoint);
+        //TODO: make the initiate variable false in the time tasks.
+        if (timeTask.containsKey(endpoint)) {
+            MyTimeTask task = timeTask.get(endpoint);
+            task.initiated();
+        }
         onEndpointConnected(endpoint);
     }
 
@@ -472,7 +626,19 @@ public class ConnectionService {
 
     protected void sendProfileUser(Endpoint endpoint) {
         ProfileUser profileUser = new ProfileUser(mContext);
-        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
+//        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
+        Payload payload = null;
+        File f = null;
+        try {
+            f = profileUser.toFile(mContext);
+            payload = Payload.fromFile(f);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } // null pointer exception
+
+        if (f != null) {
+            readContent(f);
+        }
         send(payload, endpoint);
     }
 
@@ -542,43 +708,16 @@ public class ConnectionService {
     protected void onReceive(Endpoint endpoint, Payload payload) {
         Toast.makeText(mContext, "I am on the received side", Toast.LENGTH_SHORT).show();
 
+        if (payload.getType() == Payload.Type.FILE) {
+            incomingPayloads.put(endpoint.id, payload);
+            Toast.makeText(mContext, "I received a file...", Toast.LENGTH_SHORT).show();
+        }
+
         if (payload.getType() == Payload.Type.BYTES) {
             byte[] b = payload.asBytes();
             String content = new String(b);
             logD(content);
             Toast.makeText(mContext, content, Toast.LENGTH_SHORT).show();
-
-            User user;
-            ProfileUser profileUser;
-            boolean userMade;
-
-            try {
-                //TODO: fix this... user is being made but in reality it is a profile.
-                user = User.fromString(content);
-                if (user.getId().equals("obviouslyNotAnId")) {
-                    throw new JSONException("This is a profile");
-                }
-                userMade = true;
-                logV("userMade = true");
-                // update listeners to deal with the user.
-                updateListener(endpoint, user);
-            } catch (JSONException e) {
-                e.printStackTrace();
-                logE("User cannot be created", e);
-                userMade = false;
-            }
-
-
-            if (!userMade) {
-                try {
-                    profileUser = ProfileUser.fromJSONString(content);
-                    // Update listeners to deal with the profile
-                    updateListener(endpoint, profileUser);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                    logE("The file wasn't a profile either", e);
-                }
-            }
         }
     }
 
@@ -706,8 +845,6 @@ public class ConnectionService {
      */
     public void startDiscovering() {
         if (!isDiscovering()) {
-            mIsDiscovering = true;
-            mDiscoveredEndpoints.clear();
 
             mConnectionsClient
                     .startDiscovery(
@@ -732,6 +869,7 @@ public class ConnectionService {
                                 @Override
                                 public void onEndpointLost(String endpointId) {
                                     logD(String.format("onEndpointLost(endpointId=%s)", endpointId));
+
                                 }
                             },
                             new DiscoveryOptions(getStrategy()))
@@ -739,6 +877,9 @@ public class ConnectionService {
                             new OnSuccessListener<Void>() {
                                 @Override
                                 public void onSuccess(Void unusedResult) {
+
+                                    mIsDiscovering = true;
+                                    mDiscoveredEndpoints.clear();
                                     onDiscoveryStarted();
                                 }
                             })
@@ -804,10 +945,18 @@ public class ConnectionService {
 
     // TODO: make a way for the listeners to use this function.
     public void sendToEndpoint(Endpoint endpoint) {
-        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-        String current_user = sharedpreferences.getString("current_user", null);
-
-        send(Payload.fromBytes(current_user.getBytes()), endpoint);
+//        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+//        String current_user = sharedpreferences.getString("current_user", null);
+//
+//        send(Payload.fromBytes(current_user.getBytes()), endpoint);
+//        sendProfileUser(endpoint);
+        User u = UserManager.getInstance().getCurrentUser();
+        try {
+            File file = u.toFile(mContext);
+            send(Payload.fromFile(file), endpoint);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
     public void debug() {
@@ -828,6 +977,12 @@ public class ConnectionService {
         }
     }
 
+    public List<Endpoint> getCurrentConnections() {
+        List<Endpoint> currConnections = new ArrayList<>();
+        currConnections.addAll(mEstablishedConnections.values());
+        return currConnections;
+    }
+
     //TODO: Delete this function...
     public void inputData() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
@@ -845,6 +1000,10 @@ public class ConnectionService {
             e.printStackTrace();
         }
         editor.commit();
+    }
+
+    public boolean contains(ConnectionListener listener) {
+        return listeners.contains(listener);
     }
 
 
@@ -982,5 +1141,35 @@ public class ConnectionService {
         }
     }
 
-}
+    private static class MyTimeTask extends TimerTask {
 
+        private Endpoint endpoint;
+        private boolean initiate = true;
+        private ConnectionService service;
+
+        public MyTimeTask(Endpoint e, ConnectionService connectionService) {
+            endpoint = e;
+            service = connectionService;
+        }
+        public void initiated() {
+            initiate = false;
+        }
+        public void run() {
+            //write your code here
+            if (initiate) {
+                // Ask to connect
+                service.mConnectionsClient
+                        .requestConnection(service.mName, endpoint.getId(), service.mConnectionLifecycleCallback)
+                        .addOnFailureListener(
+                                new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
+                        //TODO: change my name.
+            }
+        }
+    }
+
+}

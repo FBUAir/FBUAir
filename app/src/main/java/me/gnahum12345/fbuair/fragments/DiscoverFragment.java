@@ -1,14 +1,15 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,17 +18,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.w3c.dom.Text;
-
-import java.nio.charset.MalformedInputException;
 import java.util.HashSet;
+import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.services.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
 public class DiscoverFragment extends Fragment implements ConnectionListener {
@@ -88,7 +88,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
         rvDevicesView.setLayoutManager(layoutManager);
         rvDevicesView.setAdapter(rvAdapter);
-        ((MainActivity) mContext).connectService.addListener(this);
+        mListener.addToListener(this);
         return view;
     }
 
@@ -103,8 +103,18 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
                     + " must implement OnFragmentInteractionListener");
         }
         rvAdapter = new DiscoverAdapter(mContext);
+        populateAdapter();
     }
 
+    private void populateAdapter() {
+        List<ConnectionService.Endpoint> currEndpoints = mListener.getCurrEndpoints();
+        for (ConnectionService.Endpoint endpoint : currEndpoints) {
+            if (!rvAdapter.contains(endpoint)) {
+                rvAdapter.add(endpoint);
+            }
+        }
+        rvAdapter.notifyDataSetChanged();
+    }
 
 
 
@@ -123,13 +133,16 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void saveUser(User user) {
         //TODO: save user.
-        me.gnahum12345.fbuair.managers.UserManager manager = me.gnahum12345.fbuair.managers.UserManager.getInstance();
+        UserManager manager = UserManager.getInstance();
         manager.addUser(user);
     }
 
 
     @Override
     public void addEndpoint(ConnectionService.Endpoint endpoint) {
+        if (rvAdapter == null) {
+            return;
+        }
         rvAdapter.add(endpoint);
         tvRVEmpty.setVisibility(View.GONE);
         rvDevicesView.setVisibility(View.VISIBLE);
@@ -137,6 +150,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     @Override
     public void removeEndpoint(ConnectionService.Endpoint endpoint) {
+        if (rvAdapter == null) {
+            return;
+        }
         rvAdapter.remove(endpoint);
         if (rvAdapter.isEmpty()) {
             rvDevicesView.setVisibility(View.GONE);
@@ -145,15 +161,31 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     }
 
     public interface DiscoverFragmentListener {
-        public void onPermissionsNotGranted();
+        public List<ConnectionService.Endpoint> getCurrEndpoints();
+        public void addToListener(ConnectionListener listener);
     }
 
     private void permissionsNotGranted() {
-        String[] permissions = ((MainActivity) mContext).connectService.getRequiredPermissions();
+        final String[] permissions = ConnectionService.getRequiredPermissions();
         if (!((MainActivity) mContext).connectService.isDiscovering()) {
             //TODO: put dialog to agree to permissions in order to discover.
+            AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
+                                    .setTitle(R.string.permissions_explanation_title)
+                                    .setMessage(R.string.permissions_explanation_body)
+                                    .setPositiveButton("Let me see the permission!", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
+                                        }
+                                    })
+                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(DialogInterface dialogInterface, int i) {
+                                            permissionsNotGranted();
+                                        }
+                                    });
+            builder.create().show();
         }
-        requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
     }
 
 
@@ -173,9 +205,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
-    public void notifyAdapter() {
 
-    }
 }
 
 

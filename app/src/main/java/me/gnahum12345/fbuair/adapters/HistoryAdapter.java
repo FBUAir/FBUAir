@@ -2,6 +2,8 @@ package me.gnahum12345.fbuair.adapters;
 
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -17,7 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.User;
+
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
 
@@ -31,17 +35,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private Context context;
     private LaunchDetailsListener launchDetailsListener;
 
-    public interface LaunchDetailsListener {
-        void launchDetails(User user);
-    }
-
     public HistoryAdapter(Context context, List<User> history) {
         this.history = history;
         this.filteredHistory = history;
         getFilter();
         // try to get listener
         try {
-            launchDetailsListener = ((LaunchDetailsListener) context);
+            launchDetailsListener = ((LaunchDetailsListener) context); // This is null.
         } catch (ClassCastException e) {
             throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
         }
@@ -59,18 +59,31 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        User user = filteredHistory.get(position);
+        final User user = filteredHistory.get(position);
         viewHolder.tvName.setText(user.getName());
-        viewHolder.ivProfileImage.setImageBitmap(user.getProfileImage());
+        Bitmap b = user.getProfileImage();
+        if (b == null) {
+            Drawable drawable = ((MainActivity) launchDetailsListener).getResources().getDrawable(R.drawable.default_profile);
+            viewHolder.ivProfileImage.setImageDrawable(drawable);
+        } else {
+            viewHolder.ivProfileImage.setImageBitmap(b);
+        }
         String relativeTimeString;
         try {
             relativeTimeString =
                     getRelativeTimeAgo(dateFormatter.parse(user.getTimeAddedToHistory()));
         } catch (ParseException e) {
             e.printStackTrace();
-            relativeTimeString  = "";
+            relativeTimeString = "";
         }
         viewHolder.tvTime.setText(relativeTimeString);
+
+        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                launchDetailsListener.launchDetails(user);
+            }
+        });
     }
 
     public void clear() {
@@ -81,6 +94,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     @Override
     public int getItemCount() {
         return filteredHistory.size();
+    }
+
+    // get filter
+    @Override
+    public Filter getFilter() {
+        if (historyFilter == null) {
+            historyFilter = new HistoryFilter();
+        }
+        return historyFilter;
+    }
+
+    public interface LaunchDetailsListener {
+        void launchDetails(User user);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -95,25 +121,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    int position = getAdapterPosition();
-                    User user = history.get(position);
-                    launchDetailsListener.launchDetails(user);
-                }
-            });
+//            view.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View view) {
+//                    int position = getAdapterPosition();
+//                    User user = history.get(position);
+//                    launchDetailsListener.launchDetails(user);
+//                }
+//            });
         }
 
-    }
-
-    // get filter
-    @Override
-    public Filter getFilter() {
-        if (historyFilter == null) {
-            historyFilter = new HistoryFilter();
-        }
-        return historyFilter;
     }
 
     // filter history for searching
