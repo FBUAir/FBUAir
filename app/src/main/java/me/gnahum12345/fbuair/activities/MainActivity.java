@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.activities;
 import android.app.SearchManager;
 import android.content.Context;
 import android.databinding.adapters.SearchViewBindingAdapter;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
@@ -11,9 +10,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
@@ -21,7 +18,6 @@ import android.widget.SearchView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationItem;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
@@ -40,7 +36,6 @@ import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
-import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.Utils;
 
 
@@ -193,6 +188,15 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         UserManager.getInstance().addListener(historyFragment);
         connectService.addListener(discoverFragment);
+
+        // associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        svSearch = findViewById(R.id.svSearch);
+        svSearch.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        svSearch.setSubmitButtonEnabled(true);
+        svSearch.setOnQueryTextListener(this);
     }
 
     private int fetchColor(@ColorRes int color) {
@@ -262,14 +266,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         super.onBackPressed();
 
-        // associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager)
-                getSystemService(Context.SEARCH_SERVICE);
-        svSearch = findViewById(R.id.svSearch);
-        svSearch.setSearchableInfo(searchManager.
-                getSearchableInfo(getComponentName()));
-        svSearch.setSubmitButtonEnabled(true);
-        svSearch.setOnQueryTextListener(this);
     }
 
     // Feature to send eveything at once.
@@ -341,4 +337,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             return fragments.size();
         }
     }
+
+
 }
