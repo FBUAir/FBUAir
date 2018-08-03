@@ -71,28 +71,6 @@ import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
 public class ConnectionService extends Service {
 
 
-////    public static class ConnectionServiceBroadcastReceiver extends BroadcastReceiver {
-////        @Override
-////        public void onReceive(Context context, Intent intent) {
-////            Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
-////            StringBuilder sb = new StringBuilder();
-////            sb.append("Action: "+ intent.getAction() + "\n");
-////            sb.append("endpoint: "+ intent.getStringExtra("endpoint"));
-////            Endpoint endpoint = Endpoint.fromString(intent.getStringExtra("endpoint"));
-////            Log.d(TAG, String.format("Endpoint created: %s", endpoint.toString()));
-////            User u = MyUserManager.getInstance().getCurrentUser();
-////            try {
-////                send(Payload.fromFile(u.toFile(context)), endpoint);
-////            } catch (FileNotFoundException e) {
-////                e.printStackTrace();
-////            }
-////            logD("replyIntent: " + sb.toString());
-////
-////        }
-////    }
-//
-//    public final BroadcastReceiver receiver = new ConnectionServiceBroadcastReceiver();
-
     public class LocalBinder extends Binder {
         public ConnectionService getService() {
             return ConnectionService.this;
@@ -122,9 +100,6 @@ public class ConnectionService extends Service {
     public void onCreate() {
         super.onCreate();
         mContext = getApplicationContext();
-//        IntentFilter filter = new IntentFilter();
-//        filter.addAction(getResources().getString(R.string.reply_label));
-//        registerReceiver(receiver, filter);
         mConnectionsClient = Nearby.getConnectionsClient(this);
         // Set the media volume to max.
         mProfileUser = new ProfileUser(getApplicationContext());
@@ -985,11 +960,6 @@ public class ConnectionService extends Service {
 
     // TODO: make a way for the listeners to use this function.
     public void sendToEndpoint(Endpoint endpoint) {
-//        SharedPreferences sharedpreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
-//        String current_user = sharedpreferences.getString("current_user", null);
-//
-//        send(Payload.fromBytes(current_user.getBytes()), endpoint);
-//        sendProfileUser(endpoint);
         User u = MyUserManager.getInstance().getCurrentUser();
         try {
             File file = u.toFile(this);

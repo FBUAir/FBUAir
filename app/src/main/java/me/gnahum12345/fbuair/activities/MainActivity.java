@@ -130,7 +130,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // set up ConnectionService
 
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
-        if (!isMyServiceRunning(ConnectionService.class)) {
+
+        connectService = Utils.isMyServiceRunning(ConnectionService.class, this);
+
+
+        if (Utils.isMyServiceRunning(ConnectionService.class, this) == null) {
             startService(intent);
         }
 
@@ -229,16 +233,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         bind.svSearch.setOnQueryTextListener(this);
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
 
-    }
 
     private int fetchColor(@ColorRes int color) {
         return ContextCompat.getColor(this, color);
@@ -263,13 +258,18 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (mBound) {
             connectService.startMedia(this);
         }
+        if (connectService != null) {
+            connectService.startDiscovering();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 //        stopConnectionService();
-
+        if (connectService != null) {
+            connectService.stopDiscovering();
+        }
         //TODO: put notification or widget for advertising... and stop discovering..
         //TODO: stop discovering, but possibly keep advertising.
         userManager.commit();

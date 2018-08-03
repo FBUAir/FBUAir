@@ -1,6 +1,8 @@
 package me.gnahum12345.fbuair.utils;
 
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Patterns;
@@ -56,5 +58,16 @@ public class Utils {
         relativeDate = DateUtils.getRelativeTimeSpanString(dateMillis,
                 System.currentTimeMillis(), DateUtils.SECOND_IN_MILLIS).toString();
         return relativeDate;
+    }
+
+    public static <T extends Object> T isMyServiceRunning(Class<T> serviceClass, Context context) {
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getClass().equals(service.service.getClass())) {
+                return service.service;
+            }
+        }
+
+        return null;
     }
 }

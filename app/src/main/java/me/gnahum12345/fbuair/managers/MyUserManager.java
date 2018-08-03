@@ -251,4 +251,9 @@ public class MyUserManager {
         }
         return user;
     }
+
+    public boolean isAvaliable(User user) {
+
+    }
+
 }
