@@ -20,6 +20,7 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
@@ -33,7 +34,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<User> filteredHistory;
     private HistoryFilter historyFilter;
     private Context context;
-    private LaunchDetailsListener launchDetailsListener;
+    private OnFragmentChangeListener onFragmentChangeListener;
 
     public HistoryAdapter(Context context, List<User> history) {
         this.history = history;
@@ -41,14 +42,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         getFilter();
         // try to get listener
         try {
-            launchDetailsListener = ((LaunchDetailsListener) context); // This is null.
+            onFragmentChangeListener = ((OnFragmentChangeListener) context);
         } catch (ClassCastException e) {
-            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
+            throw new ClassCastException("MainActivity must implement OnFragmentChangeListener.");
         }
-    }
-
-    public interface LaunchDetailsListener {
-        void launchDetails(String uid);
     }
 
     @NonNull
@@ -67,7 +64,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvName.setText(user.getName());
         Bitmap b = user.getProfileImage();
         if (b == null) {
-            Drawable drawable = ((MainActivity) launchDetailsListener).getResources().getDrawable(R.drawable.default_profile);
+            Drawable drawable = context.getResources().getDrawable(R.drawable.default_profile, null);
             viewHolder.ivProfileImage.setImageDrawable(drawable);
         } else {
             viewHolder.ivProfileImage.setImageBitmap(b);
@@ -85,7 +82,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchDetailsListener.launchDetails(user.getId());
+                onFragmentChangeListener.launchDetails(user.getId());
             }
         });
     }

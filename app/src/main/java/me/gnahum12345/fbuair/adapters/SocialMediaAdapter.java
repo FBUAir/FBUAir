@@ -128,7 +128,6 @@ public class SocialMediaAdapter extends BaseAdapter {
                         onSignUpScreenChangeListener.launchUrl(socialMedia);
                 }
             }
-
         }
     }
 }

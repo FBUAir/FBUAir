@@ -154,10 +154,17 @@ public class UserManager {
         return editor.commit();
     }
 
-    public void commitCurrentUser(User user){
+    public void commitCurrentUser(User user) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(CURRENT_USER_KEY, user.toString());
+        editor.commit();
+    }
+
+    public void deleteCurrentUser() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CURRENT_USER_KEY, null);
         editor.commit();
     }
 

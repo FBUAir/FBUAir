@@ -2,8 +2,10 @@ package me.gnahum12345.fbuair.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.databinding.adapters.SearchViewBindingAdapter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
@@ -33,6 +35,7 @@ import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
@@ -41,7 +44,7 @@ import me.gnahum12345.fbuair.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
-        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener {
 
     public ActivityMainBinding bind;
     // fragment position aliases
@@ -275,11 +278,31 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
+    @Override
     // opens details screen for passed in user
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragmentTwo.newInstance(uid));
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
         Objects.requireNonNull(getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void launchEditProfile() {
+        Objects.requireNonNull(getSupportActionBar()).show();
+    }
+
+    @Override
+    public void launchUrlView(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    @Override
+    public void deleteAccount() {
+        userManager.deleteCurrentUser();
+        startActivity(new Intent(this, SignUpActivity.class));
+        finish();
     }
 
     void clearMenus() {
