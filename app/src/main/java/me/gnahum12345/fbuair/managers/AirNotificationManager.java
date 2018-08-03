@@ -16,6 +16,7 @@ import java.util.TreeMap;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.MyBroadcastReceiver;
 
 public class AirNotificationManager {
@@ -57,7 +58,7 @@ public class AirNotificationManager {
         }
     }
 
-    public void createNotification(String title, String body, User user) {
+    public void createNotification(String title, String body, User user, ConnectionService.Endpoint endpoint) {
         int id;
         if (userMap.containsKey(user)) {
             id = userMap.get(user);
@@ -79,7 +80,7 @@ public class AirNotificationManager {
         Intent intent = new Intent(mContext, MyBroadcastReceiver.class);
         intent.setAction(mContext.getString(R.string.reply_label));
         intent.putExtra(mContext.getString(R.string.extra_notification_label), 0);
-        intent.putExtra("user", user.getId()); //TODO get endpoint id...
+        intent.putExtra("endpoint", endpoint.toString());
         PendingIntent replyPendingIntent = PendingIntent.getBroadcast(mContext, 0, intent, 0);
 
         mBuilder.setSmallIcon(R.drawable.ic_discover)

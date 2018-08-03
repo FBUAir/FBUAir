@@ -3,6 +3,7 @@ package me.gnahum12345.fbuair.fragments;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -24,7 +25,7 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
 import me.gnahum12345.fbuair.interfaces.UserListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.SwipeController;
 import me.gnahum12345.fbuair.services.SwipeControllerActions;
@@ -36,8 +37,8 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     public HistoryAdapter historyAdapter;
     ArrayList<User> history = new ArrayList<>();
+    MyUserManager userManager = MyUserManager.getInstance();
     RecyclerView rvHistory;
-    UserManager userManager = UserManager.getInstance();
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
@@ -61,13 +62,6 @@ public class HistoryFragment extends Fragment implements UserListener {
         history = new ArrayList<>();
         historyAdapter = new HistoryAdapter(getContext(), history);
         linearLayoutManager = new LinearLayoutManager(activity);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
     @Override
@@ -99,7 +93,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         swipeController = new SwipeController(new SwipeControllerActions() {
             @Override
             public void onRightClicked(int position) {
-                UserManager.getInstance().removeUser(history.get(position));
+                MyUserManager.getInstance().removeUser(history.get(position));
                 history.remove(position);
                 historyAdapter.notifyItemRemoved(position);
                 historyAdapter.notifyItemRangeChanged(position, historyAdapter.getItemCount());
@@ -143,11 +137,37 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_history, container, false);
+    }
+
+    // adds a given user to history, noting the time (to be called right after sharing data)
+    void addToHistory(User user) {
+        MyUserManager.getInstance().addUser(user);
+    }
+
+    // gets history from shared preferences. return empty json array if no history has been added
+    List<User> getHistory() {
+        return MyUserManager.getInstance().getCurrHistory();
+    }
+
+
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
         List<User> users = userManager.getCurrHistory();
         history.addAll(users);
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    // clears history
+    void clearHistory() {
+        MyUserManager.getInstance().clearHistory();
         historyAdapter.notifyDataSetChanged();
     }
 

@@ -21,7 +21,7 @@ import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
@@ -46,7 +46,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.context = context;
         this.header = new Header(uid);
         this.contact = new Contact(uid);
-        this.socialMedias = UserManager.getInstance().getUser(uid).getSocialMedias();
+        this.socialMedias = MyUserManager.getInstance().getUser(uid).getSocialMedias();
         this.isCurrentUserProfile = isCurrentUserProfile;
         difference = contact.isEmpty() ? 1 : 2;
 
@@ -205,7 +205,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         int connections;
 
         public Header(String uid) {
-            User user = UserManager.getInstance().getUser(uid);
+            User user = MyUserManager.getInstance().getUser(uid);
             this.profileImage = user.getProfileImage();
             this.name = user.getName();
             this.organization = user.getOrganization();
@@ -237,7 +237,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         String email;
 
         public Contact(String uid) {
-            User user = UserManager.getInstance().getUser(uid);
+            User user = MyUserManager.getInstance().getUser(uid);
             this.phone = user.getPhoneNumber();
             this.email = user.getEmail();
         }

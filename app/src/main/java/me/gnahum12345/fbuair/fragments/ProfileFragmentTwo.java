@@ -1,50 +1,24 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.telephony.PhoneNumberFormattingTextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
-
-import org.json.JSONException;
-import org.parceler.Parcels;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.MainActivity;
-import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.adapters.ProfileAdapter;
-import me.gnahum12345.fbuair.adapters.SocialMediaAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentProfileTwoBinding;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
-import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
-import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class ProfileFragmentTwo extends Fragment {
 
@@ -78,11 +52,11 @@ public class ProfileFragmentTwo extends Fragment {
         // if no arguments were passed in, assume current user profile
         if (getArguments() != null) {
             uid = getArguments().getString(ARG_UID);
-            user = UserManager.getInstance().getUser(getArguments().getString(ARG_UID));
-            isCurrentUserProfile = (user.equals(UserManager.getInstance().getCurrentUser()));
+            user = MyUserManager.getInstance().getUser(getArguments().getString(ARG_UID));
+            isCurrentUserProfile = (user.equals(MyUserManager.getInstance().getCurrentUser()));
         }
         else {
-            user = UserManager.getInstance().getCurrentUser();
+            user = MyUserManager.getInstance().getCurrentUser();
             uid = user.getId();
             isCurrentUserProfile = true;
         }

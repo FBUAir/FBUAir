@@ -21,6 +21,8 @@
 
     <!-- Required for Prefilling Phone Number -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
     <!-- For shake-to-advertise -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -44,6 +46,8 @@
 
         <activity
             android:name=".activities.MainActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -55,6 +59,7 @@
         <activity android:name=".activities.HistoryActivity" />
         <activity
             android:name=".activities.SignUpActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -68,6 +73,9 @@
             android:name=".services.ConnectionService"
             android:enabled="true">
         </service>
+
+        <!--<receiver android:name=".services.ConnectionService$ConnectionServiceBroadcastReceiver"-->
+            <!--android:enabled="true"/>-->
 
         <receiver
             android:name=".services.MyBroadcastReceiver"

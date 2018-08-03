@@ -1,13 +1,17 @@
 package me.gnahum12345.fbuair.services;
 
 import android.Manifest;
+import android.app.RemoteInput;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Binder;
+import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
@@ -57,7 +61,7 @@ import java.util.TimerTask;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 
@@ -66,21 +70,43 @@ import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
 
 public class ConnectionService extends Service {
 
+
+////    public static class ConnectionServiceBroadcastReceiver extends BroadcastReceiver {
+////        @Override
+////        public void onReceive(Context context, Intent intent) {
+////            Bundle remoteInput = RemoteInput.getResultsFromIntent(intent);
+////            StringBuilder sb = new StringBuilder();
+////            sb.append("Action: "+ intent.getAction() + "\n");
+////            sb.append("endpoint: "+ intent.getStringExtra("endpoint"));
+////            Endpoint endpoint = Endpoint.fromString(intent.getStringExtra("endpoint"));
+////            Log.d(TAG, String.format("Endpoint created: %s", endpoint.toString()));
+////            User u = MyUserManager.getInstance().getCurrentUser();
+////            try {
+////                send(Payload.fromFile(u.toFile(context)), endpoint);
+////            } catch (FileNotFoundException e) {
+////                e.printStackTrace();
+////            }
+////            logD("replyIntent: " + sb.toString());
+////
+////        }
+////    }
+//
+//    public final BroadcastReceiver receiver = new ConnectionServiceBroadcastReceiver();
+
     public class LocalBinder extends Binder {
-        ConnectionService getService() {
+        public ConnectionService getService() {
             return ConnectionService.this;
         }
     }
 
+    private final IBinder mBinder = new LocalBinder();
 
-    public ConnectionService() {
-
-    }
+    public ConnectionService() {}
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return mBinder;
     }
 
 
@@ -89,6 +115,21 @@ public class ConnectionService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
         return START_STICKY;
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        mContext = getApplicationContext();
+//        IntentFilter filter = new IntentFilter();
+//        filter.addAction(getResources().getString(R.string.reply_label));
+//        registerReceiver(receiver, filter);
+        mConnectionsClient = Nearby.getConnectionsClient(this);
+        // Set the media volume to max.
+        mProfileUser = new ProfileUser(getApplicationContext());
+        mName = mProfileUser.getName() + this.getString(R.string.divider) + generateRandomName();
+        mEndpoint = new Endpoint("4DS1", getName());   // TODO change to be a resonable id. (Perferably the actual id)
     }
 
     @Override
@@ -238,7 +279,10 @@ public class ConnectionService extends Service {
     }
     private String readContent(File f) {
         try {
-            String s = new String(Files.readAllBytes(f.toPath()));
+            String s = null;
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                s = new String(Files.readAllBytes(f.toPath()));
+            }
             logV(s);
             return s;
         } catch (IOException e) {
@@ -292,7 +336,8 @@ public class ConnectionService extends Service {
                                     endpointId, connectionInfo.getEndpointName()));
                     Endpoint endpoint = new Endpoint(endpointId, connectionInfo.getEndpointName());
                     mPendingConnections.put(endpointId, endpoint);
-                    ((MainActivity) mContext).connectService.onConnectionInitiated(endpoint, connectionInfo);
+                    logD("onConnectionInitiated: " + endpoint.getName() + "intiated. ");
+                    acceptConnection(endpoint);
                 }
 
                 @Override
@@ -328,10 +373,12 @@ public class ConnectionService extends Service {
      */
     private boolean mIsMedia = false;
     Endpoint mEndpoint;
+
+
     // TODO: give parameters to the constructor so everything can flow smoothly.
     public ConnectionService(Context context) {
         mContext = context;
-        mConnectionsClient = Nearby.getConnectionsClient(mContext);
+        mConnectionsClient = Nearby.getConnectionsClient(this);
         // Set the media volume to max.
         mProfileUser = new ProfileUser(context);
         mName = mProfileUser.getName() + context.getString(R.string.divider) + generateRandomName();
@@ -425,16 +472,7 @@ public class ConnectionService extends Service {
 
     }
 
-    /**
-     * Called when a pending connection with a remote endpoint is created. Use {@link ConnectionInfo}
-     * for metadata about the connection (like incoming vs outgoing, or the authentication token). If
-     * we want to continue with the connection, call {@link #acceptConnection(Endpoint)}. Otherwise,
-     * call {@link #rejectConnection(Endpoint)}.
-     */
-    protected void onConnectionInitiated(Endpoint endpoint, ConnectionInfo connectionInfo) {
-        logD("onConnectionInitiated: " + endpoint.getName() + "intiated. ");
-        acceptConnection(endpoint);
-    }
+
 
 
     /**
@@ -557,8 +595,7 @@ public class ConnectionService extends Service {
     }
 
     /**
-     * Sends a connection request to the endpoint. Either {@link #onConnectionInitiated(Endpoint,
-     * ConnectionInfo)} or {@link #onConnectionFailed(Endpoint)} will be called once we've found out
+     * Sends a connection request to the endpoint.
      * if we successfully reached the device.
      */
     protected void connectToEndpoint(final Endpoint endpoint) {
@@ -619,18 +656,18 @@ public class ConnectionService extends Service {
      * Called when someone has connected to us. Override this method to act on the event.
      */
     protected void onEndpointConnected(Endpoint endpoint) {
-        Toast.makeText(mContext, mContext.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, this.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
         sendProfileUser(endpoint);
         updateListenersEndpoint(endpoint, true);
     }
 
     protected void sendProfileUser(Endpoint endpoint) {
-        ProfileUser profileUser = new ProfileUser(mContext);
+        ProfileUser profileUser = new ProfileUser(this);
 //        Payload payload = Payload.fromBytes(profileUser.toString().getBytes());
         Payload payload = null;
         File f = null;
         try {
-            f = profileUser.toFile(mContext);
+            f = profileUser.toFile(this);
             payload = Payload.fromFile(f);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -706,18 +743,18 @@ public class ConnectionService extends Service {
      * @param payload  The data.
      */
     protected void onReceive(Endpoint endpoint, Payload payload) {
-        Toast.makeText(mContext, "I am on the received side", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "I am on the received side", Toast.LENGTH_SHORT).show();
 
         if (payload.getType() == Payload.Type.FILE) {
             incomingPayloads.put(endpoint.id, payload);
-            Toast.makeText(mContext, "I received a file...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "I received a file...", Toast.LENGTH_SHORT).show();
         }
 
         if (payload.getType() == Payload.Type.BYTES) {
             byte[] b = payload.asBytes();
             String content = new String(b);
             logD(content);
-            Toast.makeText(mContext, content, Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -857,7 +894,7 @@ public class ConnectionService extends Service {
                                                     "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
                                                     endpointId, info.getServiceId(), info.getEndpointName()));
 
-                                    Toast.makeText(mContext, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(ConnectionService.this, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
 
                                     if (getServiceId().equals(info.getServiceId())) {
                                         Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
@@ -888,6 +925,9 @@ public class ConnectionService extends Service {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
                                     mIsDiscovering = false;
+//                                    if (e.getCause().getMessage().contains("ALREADY_DISCOVERING")) {
+//                                        mIsDiscovering = true;
+//                                    }
                                     logW("startDiscovering() failed.", e);
                                     onDiscoveryFailed();
                                 }
@@ -905,24 +945,24 @@ public class ConnectionService extends Service {
         mConnectionsClient.stopDiscovery();
     }
 
-    public void startMedia() {
+    public void startMedia(Context context) {
         if (!mIsMedia) {
             mIsMedia = true;
-            ((MainActivity) mContext).setVolumeControlStream(AudioManager.STREAM_MUSIC);
-            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            ((MainActivity) context).setVolumeControlStream(AudioManager.STREAM_MUSIC);
+            AudioManager audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
             mOriginalVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
             audioManager.setStreamVolume(
                     AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
         }
     }
 
-    public void stopMedia() {
+    public void stopMedia(Context context) {
         if (mIsMedia) {
             mIsMedia = false;
             // Restore the original volume.
-            AudioManager audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
+            AudioManager audioManager = (AudioManager) this.getSystemService(Context.AUDIO_SERVICE);
             audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, mOriginalVolume, 0);
-            ((MainActivity) mContext).setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
+            ((MainActivity) context).setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);
         }
     }
 
@@ -950,19 +990,28 @@ public class ConnectionService extends Service {
 //
 //        send(Payload.fromBytes(current_user.getBytes()), endpoint);
 //        sendProfileUser(endpoint);
-        User u = UserManager.getInstance().getCurrentUser();
+        User u = MyUserManager.getInstance().getCurrentUser();
         try {
-            File file = u.toFile(mContext);
+            File file = u.toFile(this);
             send(Payload.fromFile(file), endpoint);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+
+
     public void debug() {
         logD("is Connecting: " + mIsConnecting);
         logD( "is Advertising: " + mIsAdvertising);
         logD("is Discovering: "+ mIsDiscovering);
+        //TODO: figure out when to discover...
+        if (!mIsAdvertising) {
+            startAdvertising();
+        }
+        if (!mIsDiscovering) {
+            startDiscovering();
+        }
         ArrayList<Endpoint> connections = new ArrayList<>(mPendingConnections.values());
         logD("Pending Connections: \t");
         for (int i = 0; i < connections.size(); i++) {
@@ -985,14 +1034,14 @@ public class ConnectionService extends Service {
 
     //TODO: Delete this function...
     public void inputData() {
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = this.getSharedPreferences(MyPREFERENCES, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         User user = new User();
         user.setName("MY NAME");
         user.setEmail("GNAHUM@Gmail.com");
         user.setOrganization("SOME ORGANIZATION");
-        user.setProfileImage(BitmapFactory.decodeResource(mContext.getResources(),
+        user.setProfileImage(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.default_profile));
         try {
             editor.putString("current_user", user.toJson(user).toString());
@@ -1046,31 +1095,31 @@ public class ConnectionService extends Service {
 
     private void logV(String msg) {
         Log.v(TAG, msg);
-        appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_verbose)));
+        appendToLogs(toColor(msg, this.getResources().getColor(R.color.log_verbose)));
     }
 
     private void logD(String msg) {
         Log.d(TAG, msg);
-        appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_debug)));
+        appendToLogs(toColor(msg, this.getResources().getColor(R.color.log_debug)));
     }
 
     private void logW(String msg) {
         Log.w(TAG, msg);
-        appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_warning)));
+        appendToLogs(toColor(msg, this.getResources().getColor(R.color.log_warning)));
     }
 
     private void logW(String msg, Throwable e) {
         Log.w(TAG, msg, e);
-        appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_warning)));
+        appendToLogs(toColor(msg, this.getResources().getColor(R.color.log_warning)));
     }
 
     private void logE(String msg, Throwable e) {
         Log.e(TAG, msg, e);
-        appendToLogs(toColor(msg, mContext.getResources().getColor(R.color.log_error)));
+        appendToLogs(toColor(msg, this.getResources().getColor(R.color.log_error)));
     }
 
     private void appendToLogs(CharSequence msg) {
-        Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -1138,6 +1187,13 @@ public class ConnectionService extends Service {
             } else {
                 return -1;
             }
+        }
+
+        public static Endpoint fromString(String endpoint) {
+            if (!endpoint.contains("id=") || !endpoint.contains("name=")) { return null; }
+            String id = endpoint.split("id=")[1].split(",")[0];
+            String name = endpoint.split("name=")[1].replace("}", "");
+            return new Endpoint(id, name);
         }
     }
 

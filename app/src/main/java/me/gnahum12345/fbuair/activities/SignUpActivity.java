@@ -49,7 +49,7 @@ import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -156,7 +156,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     // saves user profile and starts main activity when sign up is finished
     public void launchMainActivity() {
-        UserManager userManager = UserManager.getInstance();
+        MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
         userManager.addUser(user);
 
