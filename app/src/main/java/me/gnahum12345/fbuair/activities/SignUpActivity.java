@@ -95,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // get api clients
         twitterClient = TwitterClient.getInstance(this);
         linkedInClient = LinkedInClient.getInstance();
-        githubClient = GithubClient.getInstance(this);
+        githubClient = GithubClient.getInstance(getApplicationContext());
 
         // initialize user and end all social media sessions
         user = new User();
@@ -233,7 +233,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
-                        socialMedia.setUsername(Profile.getCurrentProfile().getName().toString());
+                        socialMedia.setUsername(Profile.getCurrentProfile().getName());
                         socialMedia.setProfileUrl(Profile.getCurrentProfile().getLinkUri().toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();

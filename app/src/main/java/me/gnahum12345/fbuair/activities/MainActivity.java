@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -230,8 +231,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         startConnectionService();
     }
 
-
-
     @Override
     public void onBackPressed() {
 
@@ -278,48 +277,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
-    @Override
-    // opens details screen for passed in user
-    public void launchDetails(String uid) {
-        fragments.set(DETAILS_FRAGMENT, ProfileFragmentTwo.newInstance(uid));
-        bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
-        Objects.requireNonNull(getSupportActionBar()).hide();
-    }
-
-    @Override
-    public void launchEditProfile() {
-        Objects.requireNonNull(getSupportActionBar()).show();
-    }
-
-    @Override
-    public void launchUrlView(String url) {
-        Intent i = new Intent(Intent.ACTION_VIEW);
-        i.setData(Uri.parse(url));
-        startActivity(i);
-    }
-
-    @Override
-    public void deleteAccount() {
-        userManager.deleteCurrentUser();
-        startActivity(new Intent(this, SignUpActivity.class));
-        finish();
-    }
-
     void clearMenus() {
         bind.historyMenu.setVisibility(View.GONE);
     }
 
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String query) {
-        historyFragment.historyAdapter.getFilter().filter(query);
-        return true;
-    }
-
+    /* fragemnt adapter */
     static class Adapter extends FragmentStatePagerAdapter {
 
         // The list of fragments which we are going to be displaying in the view pager.
@@ -340,6 +302,47 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         public int getCount() {
             return fragments.size();
         }
+    }
+
+    /* implementation for switching fragments (OnFragmentChangeListener) */
+    @Override
+    // opens details screen for passed in user
+    public void launchDetails(String uid) {
+        fragments.set(DETAILS_FRAGMENT, ProfileFragmentTwo.newInstance(uid));
+        bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+        Objects.requireNonNull(getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void launchEditProfile() {
+        Toast.makeText(this, "Launch Edit Profile", Toast.LENGTH_SHORT).show();
+        // Objects.requireNonNull(getSupportActionBar()).show();
+    }
+
+    @Override
+    public void launchUrlView(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    @Override
+    public void deleteAccount() {
+        userManager.deleteCurrentUser();
+        startActivity(new Intent(this, SignUpActivity.class));
+        finish();
+    }
+
+    /* implementations for searching through history */
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        historyFragment.historyAdapter.getFilter().filter(query);
+        return true;
     }
 
 

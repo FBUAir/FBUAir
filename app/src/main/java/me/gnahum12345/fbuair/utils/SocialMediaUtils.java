@@ -68,16 +68,19 @@ public class SocialMediaUtils {
     // or edits old one if already existed
     public static void addSocialMedia (SocialMedia socialMedia, List<SocialMedia> socialMedias) {
         int targetIndex = getIndex(socialMedia.getName(), socialMediaNames);
+        int currentIndex;
+        int previousIndex = 0;
         for (int i = 0; i < socialMedias.size(); i++) {
-            String currentName = socialMedias.get(i).getName();
-            if (targetIndex == getIndex(currentName, socialMediaNames)) {
+            currentIndex = getIndex(socialMedias.get(i).getName(), socialMediaNames);
+            if (targetIndex == currentIndex) {
                 socialMedias.get(i).setUsername(socialMedia.getUsername());
                 return;
             }
-            else if (targetIndex > getIndex(currentName, socialMediaNames)) {
+            else if (targetIndex > previousIndex && targetIndex < currentIndex) {
                 socialMedias.add(i, socialMedia);
                 return;
             }
+            previousIndex = currentIndex;
         }
         socialMedias.add(socialMedia);
     }

@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -30,14 +29,26 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     public HistoryAdapter historyAdapter;
     ArrayList<User> history = new ArrayList<>();
-    RecyclerView rvUser;
-    SharedPreferences sharedpreferences;
+    RecyclerView rvHistory;
     UserManager userManager = UserManager.getInstance();
     Activity activity;
-    private SwipeRefreshLayout swipeContainer;
+    SwipeRefreshLayout swipeContainer;
+    LinearLayoutManager linearLayoutManager;
+
     public HistoryFragment() {
         // Required empty public constructor
+    }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        // get reference to main activity
+        activity = getActivity();
+
+        // initialize adapter, dataset, and linear manager
+        history = new ArrayList<>();
+        historyAdapter = new HistoryAdapter(getContext(), history);
+        linearLayoutManager = new LinearLayoutManager(activity);
     }
 
     @Override
@@ -50,8 +61,6 @@ public class HistoryFragment extends Fragment implements UserListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        // get reference to main activity
-        activity = getActivity();
 
         // configure swipe container
         swipeContainer = view.findViewById(R.id.swipeContainer);
@@ -70,16 +79,12 @@ public class HistoryFragment extends Fragment implements UserListener {
                 android.R.color.holo_orange_light,
                 android.R.color.holo_red_light);
 
-        rvUser = view.findViewById(R.id.rvContact);
-        history = new ArrayList<>();
+        // attach adapter and layout manager
+        rvHistory = view.findViewById(R.id.rvHistory);
+        rvHistory.setAdapter(historyAdapter);
+        rvHistory.setLayoutManager(new LinearLayoutManager(activity));
 
-        historyAdapter = new HistoryAdapter(getContext(), history);
-
-        rvUser.setLayoutManager(new LinearLayoutManager(activity));
-        rvUser.setAdapter(historyAdapter);
-
-        // clear old history and add fake users to history
-//        clearHistory();
+        // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
         fakeHistory = new JSONObject[]{
@@ -89,9 +94,8 @@ public class HistoryFragment extends Fragment implements UserListener {
         User user = userManager.getCurrentUser();
         user.setNumConnections(fakeHistory.length);
         userManager.commitCurrentUser(user);
-//            user = userManager.getCurrentUser(); //TODO: delete this. this is for debugging purposes to see that the current user has been updated.
         for (JSONObject jsonUser : fakeHistory) {
-            addToHistory(User.fromJson(jsonUser));
+            userManager.addUser(User.fromJson(jsonUser));
         }
 
         // populate recycler view with history from shared preferences
@@ -99,31 +103,12 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     }
 
-    // adds a given user to history, noting the time (to be called right after sharing data)
-    void addToHistory(User user) {
-        UserManager.getInstance().addUser(user);
-    }
-
-    // gets history from shared preferences. return empty json array if no history has been added
-    List<User> getHistory() {
-        return UserManager.getInstance().getCurrHistory();
-    }
-
-
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
-        List<User> users = getHistory();
-        //TODO: make sure that history adapter is not null..
+        List<User> users = userManager.getCurrHistory();
         history.addAll(users);
-        if (historyAdapter != null) {
-            historyAdapter.notifyDataSetChanged();
-        }
-    }
-
-    // clears history
-    void clearHistory() {
-        UserManager.getInstance().clearHistory();
+        historyAdapter.notifyDataSetChanged();
     }
 
     private void clearHistoryList() {

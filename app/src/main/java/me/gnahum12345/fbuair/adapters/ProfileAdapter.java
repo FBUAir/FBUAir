@@ -156,10 +156,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         public void onClick(View view) {
             switch(view.getId()) {
-                case R.id.btAddContact:
+/*                case R.id.btAddContact:
                     break;
                 case R.id.btSendBack:
-                    break;
+                    break;*/
                 case R.id.btEditProfile:
                     onFragmentChangeListener.launchEditProfile();
                     break;
