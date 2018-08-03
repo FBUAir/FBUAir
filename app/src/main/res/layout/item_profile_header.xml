@@ -12,7 +12,7 @@
             android:id="@+id/llBackground"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/blue"
+            android:background="@drawable/gradient_welcome"
             android:orientation="vertical"
             android:padding="15dp">
 
