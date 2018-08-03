@@ -18,6 +18,7 @@ import android.widget.SearchView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
+import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -169,6 +170,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         UserManager.getInstance().addListener(historyFragment);
         connectService.addListener(discoverFragment);
+
+        // associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager)
+                getSystemService(Context.SEARCH_SERVICE);
+        bind.svSearch.setSearchableInfo(searchManager.
+                getSearchableInfo(getComponentName()));
+        bind.svSearch.setSubmitButtonEnabled(true);
+        bind.svSearch.setOnQueryTextListener(this);
     }
 
     private int fetchColor(@ColorRes int color) {
@@ -237,14 +246,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
 
         super.onBackPressed();
-
-        // associate searchable configuration with the SearchView
-        SearchManager searchManager = (SearchManager)
-                getSystemService(Context.SEARCH_SERVICE);
-        bind.svSearch.setSearchableInfo(searchManager.
-                getSearchableInfo(getComponentName()));
-        bind.svSearch.setSubmitButtonEnabled(true);
-        bind.svSearch.setOnQueryTextListener(this);
     }
 
     // Feature to send eveything at once.
@@ -317,4 +318,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             return fragments.size();
         }
     }
+
+
 }
