@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.graphics.Canvas;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,8 +22,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
+import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
+import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
@@ -49,6 +51,8 @@ public class HistoryFragment extends Fragment implements UserListener {
     String contactId;
     String rawContactId;
 
+    OnRequestAddContact onAddContactClickedListener;
+
     public HistoryFragment() {
         // Required empty public constructor
     }
@@ -61,6 +65,9 @@ public class HistoryFragment extends Fragment implements UserListener {
         history = new ArrayList<>();
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
+        onAddContactClickedListener = (OnRequestAddContact)context;
+
+
     }
 
     @Override
@@ -102,7 +109,12 @@ public class HistoryFragment extends Fragment implements UserListener {
             public void onLeftClicked(int position) {
                 addContactResult = ContactUtils.findConflict(getContext(), history.get(position));
                 if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
-                    addContact(history.get(position));
+                    onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
+                        // can do stuff here if contact was successfully added
+                        @Override
+                        public void onSuccess() {
+                        }
+                    });
                 }
             }
         });
@@ -183,14 +195,4 @@ public class HistoryFragment extends Fragment implements UserListener {
     public void userRemoved(User user) {
         populateHistory();
     }
-
-    public void addContact(User user) {
-        String ids[] = ContactUtils.addContact(getContext(), user);
-        contactId = ids[0];
-        rawContactId = ids[1];
-        if (ContactUtils.mergeOccurred(getContext(), contactId)) {
-            Toast.makeText(getContext(), "Contact was linked with duplicate", Toast.LENGTH_LONG).show();
-        }
-    }
-
 }
