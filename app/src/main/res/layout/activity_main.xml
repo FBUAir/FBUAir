@@ -1,123 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/white"
-    tools:context=".activities.MainActivity">
-
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar"
+    xmlns:tools="http://schemas.android.com/tools">
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentTop="true"
-        android:background="@color/color_white"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme">
+        android:layout_height="match_parent"
+        android:background="@android:color/white"
+        tools:context=".activities.MainActivity">
 
-        <RelativeLayout
-            android:id="@+id/editProfileMenu"
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:background="@color/color_white"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme">
 
-            <ImageView
-                android:id="@+id/ivBack"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/editProfileMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/ic_back" />
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <ImageView
+                    android:id="@+id/ivBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:src="@drawable/ic_back" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_toEndOf="@id/ivBack"
+                    android:text="Title"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
+
+                <ImageView
+                    android:id="@+id/ivCheck"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
+                    android:src="@drawable/ic_check" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/historyMenu"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="10dp"
-                android:layout_toEndOf="@id/ivBack"
-                android:text="Title"
-                android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <ImageView
-                android:id="@+id/ivCheck"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="15dp"
-                android:src="@drawable/ic_check" />
-        </RelativeLayout>
+                <SearchView
+                    android:id="@+id/svSearch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true" />
+            </RelativeLayout>
+        </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout
-            android:id="@+id/historyMenu"
+        <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
+            android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone">
+            android:layout_above="@id/bottomNavigationView"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/toolbar"
+            />
 
-            <SearchView
-                android:id="@+id/svSearch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true" />
-        </RelativeLayout>
-    </android.support.v7.widget.Toolbar>
+        <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
+            android:id="@+id/bottomNavigationView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentStart="true"
+            android:layout_gravity="bottom"
+            android:background="@color/color_white"
+            app:itemIconTint="@drawable/nav_colors"
+            app:itemTextColor="@drawable/nav_colors"/>
 
-    <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
-        android:id="@+id/viewPager"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/bottomNavigationView"
-        android:layout_alignParentStart="true"
-        android:layout_below="@id/toolbar"
-        />
-    <!--<android.support.v4.view.ViewPager-->
-        <!--android:id="@+id/viewPager"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:layout_above="@id/bottomNavigationView"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:layout_below="@+id/toolbar" />-->
+        <View
+            android:id="@+id/horizontalLine"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_below="@id/toolbar"/>
 
-    <!--<android.support.design.widget.BottomNavigationView-->
-        <!--android:id="@+id/bottomNavigationView"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_alignParentBottom="true"-->
-        <!--android:layout_alignParentStart="true"-->
-        <!--android:background="@color/color_white"-->
-        <!--app:itemIconTint="@drawable/nav_colors"-->
-        <!--app:itemTextColor="@drawable/nav_colors"-->
-        <!--app:menu="@menu/bottom_navigation_menu" />-->
+        <View
+            android:id="@+id/horizontalLine2"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@android:color/darker_gray"
+            android:layout_above="@id/bottomNavigationView"/>
 
-
-    <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
-        android:id="@+id/bottomNavigationView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true"
-        android:layout_gravity="bottom"
-        android:background="@color/color_white"
-        app:itemIconTint="@drawable/nav_colors"
-        app:itemTextColor="@drawable/nav_colors"/>
-
-
-    <View
-        android:id="@+id/horizontalLine"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/toolbar"/>
-
-    <View
-        android:id="@+id/horizontalLine2"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_above="@id/bottomNavigationView"/>
-
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

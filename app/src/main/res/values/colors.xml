@@ -33,5 +33,6 @@
     <color name="color_black">#000000</color>
     <color name="color_blue_orchid">#1F45FC</color>
     <color name="notification">#F63D2B</color>
+    <color name="blue">#87d1f1</color>
 
 </resources>

@@ -35,16 +35,6 @@ public class MyApplication extends Application {
         this.registerReceiver(br, filter);
 
         // Connection...
-
-        // set up twitter.
-        String CONSUMER_KEY = getResources().getString(R.string.com_twitter_sdk_android_CONSUMER_KEY);
-        String CONSUMER_SECRET = getResources().getString(R.string.com_twitter_sdk_android_CONSUMER_SECRET);
-        TwitterConfig config = new TwitterConfig.Builder(this)
-                .logger(new DefaultLogger(Log.DEBUG))
-                .twitterAuthConfig(new TwitterAuthConfig(CONSUMER_KEY, CONSUMER_SECRET))
-                .debug(true)
-                .build();
-        Twitter.initialize(config);
     }
 
     @Override

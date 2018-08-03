@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="40dp"
-    android:background="@drawable/gradient_welcome"
+    android:background="@color/color_white"
     tools:context=".fragments.WelcomeFragment">
 
 
@@ -17,7 +17,7 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="100dp"
-        app:srcCompat="@drawable/ic_launcher_app" />
+        app:srcCompat="@drawable/ic_launcher_app_color" />
 
     <TextView
         android:id="@+id/tvAppName"
@@ -28,7 +28,7 @@
         android:layout_marginBottom="187dp"
         android:fontFamily="@font/fugaz_one"
         android:text="@string/app_name"
-        android:textColor="@color/color_white"
+        android:textColor="@color/color_black"
         android:textSize="60sp" />
 
     <TextView
@@ -40,7 +40,7 @@
         android:layout_marginBottom="148dp"
         android:fontFamily="sans-serif"
         android:text="@string/app_motto"
-        android:textColor="@color/color_white"
+        android:textColor="@color/color_black"
         android:textSize="18sp" />
 
     <Button

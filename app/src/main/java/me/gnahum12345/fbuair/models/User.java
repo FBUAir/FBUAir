@@ -19,6 +19,8 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.ArrayList;
 
+import me.gnahum12345.fbuair.utils.SocialMediaUtils;
+
 @Parcel
 public class User implements Comparable {
 
@@ -76,7 +78,7 @@ public class User implements Comparable {
         return uid;
     }
 
-    public boolean setId() {
+    boolean setId() {
         if (this.name == null) {
             return false;
         }
@@ -128,15 +130,7 @@ public class User implements Comparable {
 
     // adds social media or edits old one with same name if it exists
     public void addSocialMedia(SocialMedia socialMedia) {
-        boolean exists = false;
-        for (SocialMedia socialMedia1 : socialMedias) {
-            if (socialMedia1.getName().equals(socialMedia.getName())) {
-                socialMedia1.setUsername(socialMedia.getUsername());
-                exists = true;
-                break;
-            }
-        }
-        if (!exists) socialMedias.add(socialMedia);
+        SocialMediaUtils.addSocialMedia(socialMedia, socialMedias);
     }
 
     // gets social media object from social media list by name. returns null if none exists

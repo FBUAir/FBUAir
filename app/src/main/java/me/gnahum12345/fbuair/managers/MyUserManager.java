@@ -7,7 +7,6 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.android.gms.nearby.connection.Payload;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,6 +24,8 @@ import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
+
+import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
@@ -116,7 +117,7 @@ public class MyUserManager {
             public void run() {
                 if (notificationsEnabled) {
                     count++;
-                    ((MainActivity) activity).bottomNavigation.setNotification(Integer.toString(count), 1);
+                    ((MainActivity) activity).bind.bottomNavigationView.setNotification(Integer.toString(count), 1);
                 }
             }
         }, 1000);
@@ -128,7 +129,7 @@ public class MyUserManager {
             public void run() {
                 if (notificationsEnabled) {
                     count = 0;
-                    ((MainActivity) activity).bottomNavigation.setNotification("", 1);
+                    ((MainActivity) activity).bind.bottomNavigationView.setNotification("", 1);
                     seenAllUsers();
                 }
             }
@@ -179,8 +180,14 @@ public class MyUserManager {
     public void commitCurrentUser(User user) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        JSONArray newHistoryArray = getJSONArray();
-        editor.putString("current_user", user.toString());
+        editor.putString(CURRENT_USER_KEY, user.toString());
+        editor.commit();
+    }
+
+    public void deleteCurrentUser() {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(CURRENT_USER_KEY, null);
         editor.commit();
     }
 
@@ -232,7 +239,7 @@ public class MyUserManager {
 
     public User getCurrentUser() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        String currentUser = sharedPreferences.getString("current_user", null);
+        String currentUser = sharedPreferences.getString(CURRENT_USER_KEY, null);
         User user = new User();
         if (currentUser != null) {
             try {

@@ -18,6 +18,7 @@ import com.android.volley.Response;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.linkedin.platform.errors.LIApiError;
@@ -36,9 +37,9 @@ import org.json.JSONObject;
 import java.util.Arrays;
 import java.util.Objects;
 
+import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.clients.GithubClient;
 import me.gnahum12345.fbuair.clients.LinkedInClient;
-import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.clients.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
@@ -48,6 +49,7 @@ import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -93,7 +95,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // get api clients
         twitterClient = TwitterClient.getInstance(this);
         linkedInClient = LinkedInClient.getInstance();
-        githubClient = GithubClient.getInstance(this);
+        githubClient = GithubClient.getInstance(getApplicationContext());
 
         // initialize user and end all social media sessions
         user = new User();
@@ -154,20 +156,13 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     // saves user profile and starts main activity when sign up is finished
     public void launchMainActivity() {
-        // add user json string to shared preferences for persistence
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        try {
-            editor.putString("current_user", User.toJson(user).toString());
-            editor.commit();
-            // launch Main Activity
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        MyUserManager userManager = MyUserManager.getInstance();
+        userManager.commitCurrentUser(user);
+        userManager.addUser(user);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     // prompts user to enter social media profile url and returns true if user does so successfully
@@ -238,6 +233,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
+                        socialMedia.setUsername(Profile.getCurrentProfile().getName());
+                        String id = Profile.getCurrentProfile().getId().toString();
+                        socialMedia.setProfileUrl("fb://page/{"+id+"}");
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -310,7 +308,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                 }
             }
         });
-
     }
 
     // shows dialog asking if user wants to remove added social media and removes if confirmed
