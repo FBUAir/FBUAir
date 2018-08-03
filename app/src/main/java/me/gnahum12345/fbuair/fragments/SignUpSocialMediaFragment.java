@@ -68,9 +68,8 @@ public class SignUpSocialMediaFragment extends Fragment{
         // Inflate the layout for this fragment
         bind = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_sign_up_social_media, container, false);
-        View view = bind.getRoot();
         this.container = container;
-        return view;
+        return bind.getRoot();
     }
 
     @Override

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <android.support.design.widget.CoordinatorLayout
+        android:id="@+id/container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp">
+
+        <LinearLayout
+            android:id="@+id/llBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/blue"
+            android:orientation="vertical"
+            android:padding="15dp">
+
+            <ImageView
+                android:id="@+id/ivProfileImage"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="15dp"
+                android:layout_marginTop="15dp"
+                app:srcCompat="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tvName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Name"
+                android:textColor="@android:color/black"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvOrganization"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="15dp"
+                android:text="Organization"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/tvConnections"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:text="Connection number"
+                android:textColor="@android:color/black" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llProfileOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_anchor="@id/llBackground"
+            app:layout_anchorGravity="bottom|end"
+            android:layout_marginEnd="15dp">
+
+            <Button
+                android:id="@+id/btEditProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Edit"/>
+
+            <Button
+                android:id="@+id/btDeleteProfile"
+                android:layout_marginStart="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Delete"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDetailsOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_anchor="@id/llBackground"
+            app:layout_anchorGravity="bottom|end"
+            android:layout_marginEnd="15dp">
+
+            <Button
+                android:id="@+id/btAddContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Contact"/>
+
+            <Button
+                android:id="@+id/btSendBack"
+                android:layout_marginStart="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Send back"/>
+        </LinearLayout>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

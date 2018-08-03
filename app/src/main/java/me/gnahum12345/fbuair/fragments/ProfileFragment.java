@@ -133,7 +133,7 @@ public class ProfileFragment extends Fragment {
             bind.btnProfileImage.setImageBitmap(user.getProfileImage());
 
             float numConnection = user.getNumConnections().floatValue();
-            bind.etNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
+            bind.tvNumConnections.setText("Number of Connections ("+user.getNumConnections()+")");
             bind.rbConnection.setRating(numConnection= numConnection > 0 ? numConnection / 5.0f : numConnection);
 
 

@@ -79,7 +79,7 @@ public class SocialMediaAdapter extends BaseAdapter {
         }
 
         final ViewHolder viewHolder = (ViewHolder)view.getTag(R.id.VIEW_HOLDER_KEY);
-        viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getDrawable(context, socialMedia));
+        viewHolder.ivImage.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
         viewHolder.tvName.setText(socialMedia.getName());
         boolean added = user.hasSocialMedia(socialMedia);
         viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
@@ -128,7 +128,6 @@ public class SocialMediaAdapter extends BaseAdapter {
                         onSignUpScreenChangeListener.launchUrl(socialMedia);
                 }
             }
-
         }
     }
 }

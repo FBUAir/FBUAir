@@ -49,6 +49,7 @@ import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
 import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
+import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -155,20 +156,13 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     // saves user profile and starts main activity when sign up is finished
     public void launchMainActivity() {
-        // add user json string to shared preferences for persistence
-        SharedPreferences sharedPreferences = getSharedPreferences(PREFERENCES_FILE_NAME_KEY,
-                Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        try {
-            editor.putString("current_user", User.toJson(user).toString());
-            editor.commit();
-            // launch Main Activity
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-            finish();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        UserManager userManager = UserManager.getInstance();
+        userManager.commitCurrentUser(user);
+        userManager.addUser(user);
+
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
     // prompts user to enter social media profile url and returns true if user does so successfully

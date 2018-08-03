@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.models.SocialMedia;
 
 public class SocialMediaUtils {
@@ -23,8 +24,8 @@ public class SocialMediaUtils {
 
     static HashMap<String, String> urlMap = getUrlMap();
 
-    // gets corresponding drawable from social media
-    public static Drawable getDrawable(Context context, SocialMedia socialMedia) {
+    // gets corresponding resource drawable for given social media
+    public static Drawable getIconDrawable(Context context, SocialMedia socialMedia) {
         String drawableName = "ic_" + socialMedia.getName().toLowerCase();
         int resId = context.getResources().getIdentifier
                 (drawableName, "drawable", context.getPackageName());
@@ -42,6 +43,7 @@ public class SocialMediaUtils {
         return socialMedias;
     }
 
+    // creates hashmap of social media to its profile url domain
     public static HashMap<String, String> getUrlMap() {
         HashMap<String, String> urlMap = new HashMap<String, String>();
         for (int i = 0; i < socialMediaNames.length; i++) {
@@ -50,6 +52,7 @@ public class SocialMediaUtils {
         return urlMap;
     }
 
+    // returns profile url created from username and domain
     public static String getProfileUrl(String socialMediaName, String username) {
         String profileUrl;
         String prefix = "https://www.";
@@ -61,4 +64,28 @@ public class SocialMediaUtils {
         return profileUrl;
     }
 
+    // adds social media object to list according to order defined by socialMediaNames
+    // or edits old one if already existed
+    public static void addSocialMedia (SocialMedia socialMedia, List<SocialMedia> socialMedias) {
+        int targetIndex = getIndex(socialMedia.getName(), socialMediaNames);
+        for (int i = 0; i < socialMedias.size(); i++) {
+            String currentName = socialMedias.get(i).getName();
+            if (targetIndex == getIndex(currentName, socialMediaNames)) {
+                socialMedias.get(i).setUsername(socialMedia.getUsername());
+                return;
+            }
+            else if (targetIndex > getIndex(currentName, socialMediaNames)) {
+                socialMedias.add(i, socialMedia);
+                return;
+            }
+        }
+        socialMedias.add(socialMedia);
+    }
+
+    private static int getIndex(String target, String[] list) {
+        for (int i = 0; i < list.length; i++) {
+            if (list[i] == target) return i;
+        }
+        throw new RuntimeException("SocialMediaUtils - Using getIndex on element not in list");
+    }
 }

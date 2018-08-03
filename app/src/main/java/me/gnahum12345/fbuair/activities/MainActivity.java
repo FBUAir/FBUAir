@@ -2,7 +2,10 @@ package me.gnahum12345.fbuair.activities;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.databinding.adapters.SearchViewBindingAdapter;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
@@ -13,7 +16,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.KeyEvent;
 import android.view.View;
-import android.widget.RelativeLayout;
 import android.widget.SearchView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -27,11 +29,13 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
 import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
-import me.gnahum12345.fbuair.fragments.ProfileFragment;
+import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
@@ -40,11 +44,11 @@ import me.gnahum12345.fbuair.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
-        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, HistoryAdapter.LaunchDetailsListener {
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener {
 
+    public ActivityMainBinding bind;
     // fragment position aliases
     final static int DISCOVER_FRAGMENT = 0;
-    // references to bottom navigation bar and toolbar
     final static int HISTORY_FRAGMENT = 1;
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
@@ -64,21 +68,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     connectService.sendToAll();
                 }
             };
-    android.support.v7.widget.Toolbar toolbar;
-    SearchView svSearch;
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
-    ProfileFragment profileFragment;
+    ProfileFragmentTwo profileFragment;
     DetailsFragment detailsFragment;
     UserManager userManager;
-    // menus
-    RelativeLayout historyMenu;
-    boolean debug;
-    // A reference to our view pager.
-    private AHBottomNavigationViewPager viewPager;
-    // BottomNavigationView bottomNavigation;
-    public AHBottomNavigation bottomNavigation;
+    boolean debug = true;
 
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
@@ -87,9 +83,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        debug = true;
+        bind = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
         userManager = UserManager.getInstance();
         userManager.loadContacts();
@@ -98,14 +92,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
 
         // set actionbar to be toolbar
-        toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setSupportActionBar(bind.toolbar);
         Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(true);
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
-        profileFragment = new ProfileFragment();
+        profileFragment = new ProfileFragmentTwo();
         detailsFragment = new DetailsFragment();
 
         // Create the fragments to be passed to the ViewPager
@@ -114,18 +107,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         fragments.add(profileFragment);
         fragments.add(detailsFragment);
 
-        // Grab a reference to our view pager.
-        viewPager = findViewById(R.id.viewPager);
-
         // Instantiate our Adapter which we will use in our ViewPager
         adapter = new Adapter(getSupportFragmentManager(), fragments);
 
-        // get references to menus
-        historyMenu = findViewById(R.id.historyMenu);
-
         // Attach our adapter to our view pager.
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+        bind.viewPager.setAdapter(adapter);
+        bind.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled
                     (int position, float positionOffset, int positionOffsetPixels) {
@@ -133,17 +120,19 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
             @Override
             public void onPageSelected(int position) {
+                getSupportActionBar().show();
                 clearMenus();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
-                        bottomNavigation.setCurrentItem(0);
+                        bind.bottomNavigationView.setCurrentItem(0);
                         break;
                     case HISTORY_FRAGMENT:
-                        bottomNavigation.setCurrentItem(1);
-                        historyMenu.setVisibility(View.VISIBLE);
+                        bind.bottomNavigationView.setCurrentItem(1);
+                        bind.historyMenu.setVisibility(View.VISIBLE);
                         break;
                     case PROFILE_FRAGMENT:
-                        bottomNavigation.setCurrentItem(2);
+                        bind.bottomNavigationView.setCurrentItem(2);
+                        getSupportActionBar().hide();
                         break;
                 }
             }
@@ -153,24 +142,20 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             }
         });
 
-
-        // Grab a reference to our bottom navigation view
-        bottomNavigation = findViewById(R.id.bottomNavigationView);
-
         int[] tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
         AHBottomNavigationAdapter navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu);
-        navigationAdapter.setupWithBottomNavigation(bottomNavigation, tabColors);
+        navigationAdapter.setupWithBottomNavigation(bind.bottomNavigationView, tabColors);
 
-        bottomNavigation.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
-        bottomNavigation.setNotificationBackgroundColor(fetchColor(R.color.notification));
-        bottomNavigation.setColoredModeColors(fetchColor(R.color.color_blue_orchid), fetchColor(R.color.color_black));
-        bottomNavigation.setTranslucentNavigationEnabled(true);
-        bottomNavigation.setColored(true);
+        bind.bottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
+        bind.bottomNavigationView.setNotificationBackgroundColor(fetchColor(R.color.notification));
+        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.color_blue_orchid), fetchColor(R.color.color_black));
+        bind.bottomNavigationView.setTranslucentNavigationEnabled(true);
+        bind.bottomNavigationView.setColored(true);
         // Handle the click for each item on the bottom navigation view.
-        bottomNavigation.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
+        bind.bottomNavigationView.setOnTabSelectedListener(new AHBottomNavigation.OnTabSelectedListener() {
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
-                viewPager.setCurrentItem(position, true);
+                bind.viewPager.setCurrentItem(position, true);
                 if (position == 1) {
                     UserManager.getInstance().clearNotification();
                 }
@@ -192,11 +177,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager)
                 getSystemService(Context.SEARCH_SERVICE);
-        svSearch = findViewById(R.id.svSearch);
-        svSearch.setSearchableInfo(searchManager.
+        bind.svSearch.setSearchableInfo(searchManager.
                 getSearchableInfo(getComponentName()));
-        svSearch.setSubmitButtonEnabled(true);
-        svSearch.setOnQueryTextListener(this);
+        bind.svSearch.setSubmitButtonEnabled(true);
+        bind.svSearch.setOnQueryTextListener(this);
     }
 
     private int fetchColor(@ColorRes int color) {
@@ -265,7 +249,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
 
         super.onBackPressed();
-
     }
 
     // Feature to send eveything at once.
@@ -295,14 +278,35 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
+    @Override
     // opens details screen for passed in user
-    public void launchDetails(User user) {
-        fragments.set(DETAILS_FRAGMENT, DetailsFragment.newInstance(user));
-        viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+    public void launchDetails(String uid) {
+        fragments.set(DETAILS_FRAGMENT, ProfileFragmentTwo.newInstance(uid));
+        bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+        Objects.requireNonNull(getSupportActionBar()).hide();
+    }
+
+    @Override
+    public void launchEditProfile() {
+        Objects.requireNonNull(getSupportActionBar()).show();
+    }
+
+    @Override
+    public void launchUrlView(String url) {
+        Intent i = new Intent(Intent.ACTION_VIEW);
+        i.setData(Uri.parse(url));
+        startActivity(i);
+    }
+
+    @Override
+    public void deleteAccount() {
+        userManager.deleteCurrentUser();
+        startActivity(new Intent(this, SignUpActivity.class));
+        finish();
     }
 
     void clearMenus() {
-        historyMenu.setVisibility(View.GONE);
+        bind.historyMenu.setVisibility(View.GONE);
     }
 
     @Override

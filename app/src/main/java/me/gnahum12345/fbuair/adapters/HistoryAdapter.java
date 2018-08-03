@@ -20,6 +20,7 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
@@ -33,7 +34,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<User> filteredHistory;
     private HistoryFilter historyFilter;
     private Context context;
-    private LaunchDetailsListener launchDetailsListener;
+    private OnFragmentChangeListener onFragmentChangeListener;
 
     public HistoryAdapter(Context context, List<User> history) {
         this.history = history;
@@ -41,9 +42,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         getFilter();
         // try to get listener
         try {
-            launchDetailsListener = ((LaunchDetailsListener) context); // This is null.
+            onFragmentChangeListener = ((OnFragmentChangeListener) context);
         } catch (ClassCastException e) {
-            throw new ClassCastException("MainActivity must implement LaunchDetailsListener.");
+            throw new ClassCastException("MainActivity must implement OnFragmentChangeListener.");
         }
     }
 
@@ -63,7 +64,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvName.setText(user.getName());
         Bitmap b = user.getProfileImage();
         if (b == null) {
-            Drawable drawable = ((MainActivity) launchDetailsListener).getResources().getDrawable(R.drawable.default_profile);
+            Drawable drawable = context.getResources().getDrawable(R.drawable.default_profile, null);
             viewHolder.ivProfileImage.setImageDrawable(drawable);
         } else {
             viewHolder.ivProfileImage.setImageBitmap(b);
@@ -81,7 +82,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchDetailsListener.launchDetails(user);
+                onFragmentChangeListener.launchDetails(user.getId());
             }
         });
     }
@@ -105,10 +106,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return historyFilter;
     }
 
-    public interface LaunchDetailsListener {
-        void launchDetails(User user);
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvName;
@@ -120,15 +117,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             tvName = view.findViewById(R.id.tvName);
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
-
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    int position = getAdapterPosition();
-//                    User user = history.get(position);
-//                    launchDetailsListener.launchDetails(user);
-//                }
-//            });
         }
 
     }
