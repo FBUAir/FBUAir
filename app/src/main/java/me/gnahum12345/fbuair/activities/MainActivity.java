@@ -1,17 +1,24 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.databinding.DataBindingUtil;
+import android.content.pm.PackageManager;
 import android.databinding.adapters.SearchViewBindingAdapter;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
@@ -26,7 +33,6 @@ import android.widget.SearchView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
-import com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -40,16 +46,20 @@ import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
+import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
+import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
-        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener {
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener, OnRequestAddContact {
 
     public ActivityMainBinding bind;
     // fragment position aliases
@@ -82,10 +92,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // menus
     RelativeLayout historyMenu;
     boolean debug;
-    // A reference to our view pager.
-    private AHBottomNavigationViewPager viewPager;
-    // BottomNavigationView bottomNavigation;
-    public AHBottomNavigation bottomNavigation;
+
+    OnContactAddedCallback onContactAddedCallback;
+
+    // request codes for permissions results
+    final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
+    // whether user granted Contacts permissions
+    boolean contactPermissionGranted;
 
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
@@ -224,6 +237,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         bind.svSearch.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         bind.svSearch.setSubmitButtonEnabled(true);
         bind.svSearch.setOnQueryTextListener(this);
+
+        // check whether user granted contacts permissions
+        contactPermissionGranted = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_CONTACTS)
+                == PackageManager.PERMISSION_GRANTED;
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {
@@ -291,8 +311,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             // don't do anything...
         }
     }
-
-
 
     @Override
     public void onBackPressed() {
@@ -413,5 +431,138 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         return true;
     }
 
+    /* CONTACT/CONTACT PERMISSIONS STUFF */
 
+    // check for permissions and conflicts before adding contact
+    @Override
+    public void requestAddContact(String uid, OnContactAddedCallback onContactAddedCallback) {
+        this.onContactAddedCallback = onContactAddedCallback;
+        User user = MyUserManager.getInstance().getUser(uid);
+        if (requestPermissionsIfNeeded()) {
+            ContactUtils.AddContactResult addContactResult = ContactUtils.findConflict(this, user);
+            if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
+                addContact(user);
+            } else showConflictDialog(user, addContactResult);
+        }
+    }
+
+    // adds contact to phone and shows snackbar
+    void addContact(User user) {
+        String contactId = ContactUtils.addContact(this, user)[0];
+        onContactAddedCallback.onSuccess();
+        showContactAddedDialog(contactId);
+    }
+
+    // shows options to undo and/or view as fake snackbar at bottom
+    void showContactAddedDialog(String contactId) {
+        Snackbar snackbar = Snackbar.make(bind.getRoot(),
+                R.string.contact_added_message, Snackbar.LENGTH_LONG);
+        snackbar.setAction("View", new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ContactUtils.viewContact(getBaseContext(), contactId);
+            }
+        });
+        snackbar.show();
+    }
+
+    // shows dialog about contact duplicate w/ action options
+    void showConflictDialog(User user, ContactUtils.AddContactResult addContactResult) {
+        int messageId = addContactResult.getResultCode() == ContactUtils.EMAIL_CONFLICT ?
+                R.string.email_conflict_message : R.string.phone_conflict_message;
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage(messageId)
+                .setTitle("Contact duplicate")
+                .setPositiveButton("Add anyway", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        addContact(user);
+                    }
+                })
+                .setNegativeButton("View existing", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        ContactUtils.viewContact(getBaseContext(), addContactResult.getContactId());
+                    }
+                });
+        builder.show();
+    }
+
+    // requests permissions if needed and returns true if permission is granted
+    boolean requestPermissionsIfNeeded() {
+        if (!contactPermissionGranted) {
+            requestPermissions(
+                    new String[]
+                            {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
+                    MY_PERMISSIONS_REQUEST_CONTACTS);
+            return false;
+        }
+        return true;
+    }
+
+    // show rationale for needing contact permissions and offer to request permissions again
+    void showPermissionsRationale() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(getBaseContext());
+        builder.setMessage(R.string.contact_permissions_rationale)
+                .setTitle("Permission Denied")
+                .setPositiveButton("I'm Sure", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                })
+                .setNegativeButton("Re-Try", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        requestPermissions(
+                                new String[]{Manifest.permission.READ_CONTACTS,
+                                        Manifest.permission.WRITE_CONTACTS},
+                                MY_PERMISSIONS_REQUEST_CONTACTS);
+                    }
+                })
+                .setCancelable(false);
+        builder.show();
+    }
+
+    // result after user accepts/denies permission
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        // set permissionsGranted variable to true if user granted all requested permissions. false otherwise.
+        contactPermissionGranted = (requestCode == MY_PERMISSIONS_REQUEST_CONTACTS
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED);
+        if (!contactPermissionGranted) {
+            boolean showRationale = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS) ||
+                    shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS);
+            // user checked "never ask again", show them message to go to Settings to change
+            if (!showRationale) {
+                showPermissionDeniedForeverDialog();
+            }
+            // user denied but didn't press press "never ask again". show rationale and request permission again
+            else {
+                showPermissionsRationale();
+            }
+        }
+    }
+
+    // allow user to go to settings to manually grant permissions if denied and pressed "Never show again"
+    void showPermissionDeniedForeverDialog() {
+        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
+        builder.setMessage("Go to App Permissions in Settings to change this.")
+                .setTitle("Missing Contact Permissions")
+                // go to settings if user wants to
+                .setPositiveButton("Go to Settings", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        startActivityForResult(new Intent(android.provider.Settings.ACTION_SETTINGS), 0);
+                    }
+                })
+                .setNegativeButton("Dismiss", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        return;
+                    }
+                });
+        builder.show();
+    }
 }

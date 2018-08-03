@@ -15,13 +15,12 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
-import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
-import me.gnahum12345.fbuair.interfaces.OnAddContactClickedListener;
+import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
+import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
-import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -38,11 +37,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     int difference;
 
     OnFragmentChangeListener onFragmentChangeListener;
-    OnAddContactClickedListener onAddContactClickedListener;
+    OnRequestAddContact onAddContactClickedListener;
 
     public ProfileAdapter(Context context, Contact contact, Header header,
-                          ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile,
-                          OnAddContactClickedListener onAddContactClickedListener)
+                          ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile)
     {
         this.header = header;
         this.contact = contact;
@@ -51,7 +49,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.isCurrentUserProfile = isCurrentUserProfile;
         difference = contact.isEmpty() ? 1 : 2;
         onFragmentChangeListener = (OnFragmentChangeListener)context;
-        this.onAddContactClickedListener = onAddContactClickedListener;
+        this.onAddContactClickedListener = (OnRequestAddContact)context;
     }
 
     @Override
@@ -88,14 +86,17 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             VHHeader vhHeader = (VHHeader)holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
+
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
             vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
+
             if (isCurrentUserProfile) {
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
+                vhHeader.bind.btAddContact.setEnabled(!contact.isAdded());
             }
 
         } else if (holder instanceof VHContact)
@@ -162,7 +163,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public void onClick(View view) {
             switch(view.getId()) {
                 case R.id.btAddContact:
-                    onAddContactClickedListener.requestAddContact(header.getUid());
+                    onAddContactClickedListener.requestAddContact(header.getUid(), new OnContactAddedCallback() {
+                        @Override
+                        public void onSuccess() {
+                            contact.setAdded(true);
+                            notifyItemChanged(0);
+                        }
+                    });
                     break;
                 case R.id.btSendBack:
                     // todo - send back functionality
