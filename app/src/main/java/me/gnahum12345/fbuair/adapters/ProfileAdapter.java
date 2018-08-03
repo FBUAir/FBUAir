@@ -1,29 +1,27 @@
 package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Bitmap;
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
 
-import java.security.acl.LastOwnerException;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
+import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
+import me.gnahum12345.fbuair.interfaces.OnAddContactClickedListener;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.models.Contact;
+import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
-import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
@@ -40,17 +38,20 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     int difference;
 
     OnFragmentChangeListener onFragmentChangeListener;
+    OnAddContactClickedListener onAddContactClickedListener;
 
-    public ProfileAdapter(Context context, String uid, boolean isCurrentUserProfile)
+    public ProfileAdapter(Context context, Contact contact, Header header,
+                          ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile,
+                          OnAddContactClickedListener onAddContactClickedListener)
     {
+        this.header = header;
+        this.contact = contact;
+        this.socialMedias = socialMedias;
         this.context = context;
-        this.header = new Header(uid);
-        this.contact = new Contact(uid);
-        this.socialMedias = UserManager.getInstance().getUser(uid).getSocialMedias();
         this.isCurrentUserProfile = isCurrentUserProfile;
         difference = contact.isEmpty() ? 1 : 2;
-
         onFragmentChangeListener = (OnFragmentChangeListener)context;
+        this.onAddContactClickedListener = onAddContactClickedListener;
     }
 
     @Override
@@ -87,7 +88,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             VHHeader vhHeader = (VHHeader)holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
-            if (header.organization.isEmpty()) {
+            if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
             vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
@@ -146,30 +147,35 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     // view holders for different items
-    class VHHeader extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class VHHeader extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemProfileHeaderBinding bind;
         VHHeader(ItemProfileHeaderBinding bind) {
             super(bind.getRoot());
-            bind.getRoot().setOnClickListener(this);
             this.bind = bind;
+            bind.btEditProfile.setOnClickListener(this);
+            bind.btDeleteProfile.setOnClickListener(this);
+            bind.btAddContact.setOnClickListener(this);
+            bind.btSendBack.setOnClickListener(this);
         }
 
+        @Override
         public void onClick(View view) {
             switch(view.getId()) {
-/*                case R.id.btAddContact:
+                case R.id.btAddContact:
+                    onAddContactClickedListener.requestAddContact(header.getUid());
                     break;
                 case R.id.btSendBack:
-                    break;*/
+                    // todo - send back functionality
+                    break;
                 case R.id.btEditProfile:
                     onFragmentChangeListener.launchEditProfile();
                     break;
                 case R.id.btDeleteProfile:
                     onFragmentChangeListener.deleteAccount();
                     break;
-                default:
-                    Toast.makeText(context, "header clicked", Toast.LENGTH_LONG).show();
             }
         }
+
     }
 
     class VHContact extends RecyclerView.ViewHolder{
@@ -194,64 +200,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             String url = socialMedias.get(position).getProfileUrl();
             Log.d("PROFILEADAPTER", "clicked link: " + url);
             onFragmentChangeListener.launchUrlView(url);
-        }
-    }
-
-    // header class containing main user info
-    class Header {
-        Bitmap profileImage;
-        String name;
-        String organization;
-        int connections;
-
-        public Header(String uid) {
-            User user = UserManager.getInstance().getUser(uid);
-            this.profileImage = user.getProfileImage();
-            this.name = user.getName();
-            this.organization = user.getOrganization();
-            this.connections = user.getNumConnections();
-        }
-
-        public Bitmap getProfileImage() {
-            return profileImage;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-
-        public String getOrganization() {
-            return organization;
-        }
-
-
-        public int getConnections() {
-            return connections;
-        }
-    }
-
-    // contact class containing user contact info
-    class Contact {
-        String phone;
-        String email;
-
-        public Contact(String uid) {
-            User user = UserManager.getInstance().getUser(uid);
-            this.phone = user.getPhoneNumber();
-            this.email = user.getEmail();
-        }
-
-        public String getPhone() {
-            return phone;
-        }
-
-        public String getEmail() {
-            return email;
-        }
-
-        public boolean isEmpty() {
-            return phone.isEmpty() && email.isEmpty();
         }
     }
 

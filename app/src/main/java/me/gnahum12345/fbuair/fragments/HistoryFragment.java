@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -40,14 +41,12 @@ public class HistoryFragment extends Fragment implements UserListener {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // get reference to main activity
+    public void onAttach(Context context) {
+        super.onAttach(context);
         activity = getActivity();
-
         // initialize adapter, dataset, and linear manager
         history = new ArrayList<>();
-        historyAdapter = new HistoryAdapter(getContext(), history);
+        historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
     }
 
