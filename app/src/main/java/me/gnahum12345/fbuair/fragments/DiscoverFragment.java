@@ -24,7 +24,7 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
@@ -121,20 +121,23 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     @Override
     public void updateEndpoint(ConnectionService.Endpoint endpoint, Object userData, boolean isProfile) {
         if (isProfile) {
+            if (rvAdapter == null) {
+                return;
+            }
             rvAdapter.put(endpoint, ((ProfileUser) userData));
             rvAdapter.notifyDataSetChanged();
         } else {
             if (userData instanceof User) {
                 User user = (User) userData;
-                saveUser(user);
+                saveUser(user, endpoint);
             }
         }
     }
 
-    private void saveUser(User user) {
+    private void saveUser(User user, ConnectionService.Endpoint endpoint) {
         //TODO: save user.
-        UserManager manager = UserManager.getInstance();
-        manager.addUser(user);
+        MyUserManager manager = MyUserManager.getInstance();
+        manager.addUser(user, endpoint);
     }
 
 
@@ -167,6 +170,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void permissionsNotGranted() {
         final String[] permissions = ConnectionService.getRequiredPermissions();
+        if (((MainActivity) mContext).connectService == null) {return; }
         if (!((MainActivity) mContext).connectService.isDiscovering()) {
             //TODO: put dialog to agree to permissions in order to discover.
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext)

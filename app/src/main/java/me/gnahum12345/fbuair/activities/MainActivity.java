@@ -1,12 +1,17 @@
 package me.gnahum12345.fbuair.activities;
 
+import android.app.ActivityManager;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.databinding.adapters.SearchViewBindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.adapters.SearchViewBindingAdapter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.ColorRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,8 +19,10 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
@@ -36,8 +43,8 @@ import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
-import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
@@ -74,23 +81,60 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     HistoryFragment historyFragment;
     ProfileFragmentTwo profileFragment;
     DetailsFragment detailsFragment;
-    UserManager userManager;
-    boolean debug = true;
+    MyUserManager userManager;
+    // menus
+    RelativeLayout historyMenu;
+    boolean debug;
+    // A reference to our view pager.
+    private AHBottomNavigationViewPager viewPager;
+    // BottomNavigationView bottomNavigation;
+    public AHBottomNavigation bottomNavigation;
 
     // The adapter used to display information for our bottom navigation view.
     private Adapter adapter;
 
+    private boolean mBound = false;
+    private boolean listened = false;
+    private ServiceConnection mConnection = new ServiceConnection() {
+        // Called when the connection with the service is established
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // Because we have bound to an explicit
+            // service that is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            ConnectionService.LocalBinder binder = (ConnectionService.LocalBinder) service;
+            connectService = binder.getService();
+            mBound = true;
+            if (discoverFragment != null) {
+                connectService.addListener(discoverFragment);
+                listened = true;
+            }
+            startConnectionService();
+        }
+
+        // Called when the connection with the service disconnects unexpectedly
+        public void onServiceDisconnected(ComponentName className) {
+            Log.e(TAG, "onServiceDisconnected");
+            mBound = false;
+            listened = false;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bind = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
-        userManager = UserManager.getInstance();
+        userManager = MyUserManager.getInstance();
         userManager.loadContacts();
         userManager.setNotificationAbility(true, this);
         // set up ConnectionService
-        connectService = new ConnectionService(this); //TODO: add the parameters that are missing.
+
+        Intent intent = new Intent(MainActivity.this, ConnectionService.class);
+        if (!isMyServiceRunning(ConnectionService.class)) {
+            startService(intent);
+        }
+
+        bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
@@ -158,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             public boolean onTabSelected(int position, boolean wasSelected) {
                 bind.viewPager.setCurrentItem(position, true);
                 if (position == 1) {
-                    UserManager.getInstance().clearNotification();
+                    MyUserManager.getInstance().clearNotification();
                 }
 
                 //TODO: Delete this.. this is a proof of concept that if a user is added, it will be added to the HistoryAdapter.
@@ -166,22 +210,34 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     User u = new User();
                     u.setName("this is a fake user...");
                     u.setTimeAddedToHistory(Utils.getRelativeTimeAgo(Calendar.getInstance().getTime()));
-                    UserManager.getInstance().addUser(u);
+                    MyUserManager.getInstance().addUser(u);
                 }
                 return true;
             }
         });
 
-        UserManager.getInstance().addListener(historyFragment);
-        connectService.addListener(discoverFragment);
+        MyUserManager.getInstance().addListener(historyFragment);
+        if (mBound && !listened) {
+            connectService.addListener(discoverFragment);
+        }
 
         // associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager)
                 getSystemService(Context.SEARCH_SERVICE);
-        bind.svSearch.setSearchableInfo(searchManager.
-                getSearchableInfo(getComponentName()));
+        bind.svSearch.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
         bind.svSearch.setSubmitButtonEnabled(true);
         bind.svSearch.setOnQueryTextListener(this);
+    }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+
     }
 
     private int fetchColor(@ColorRes int color) {
@@ -191,26 +247,28 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private void startConnectionService() {
         connectService.startDiscovering();
         connectService.startAdvertising();
-        connectService.startMedia();
+        connectService.startMedia(this);
     }
 
     private void stopConnectionService() {
+        if (connectService == null) { return; }
         connectService.stopAdvertising();
         connectService.stopDiscovering();
-        connectService.stopMedia();
+        connectService.stopMedia(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        connectService.startMedia();
-        //TODO: start service.
+        if (mBound) {
+            connectService.startMedia(this);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        stopConnectionService();
+//        stopConnectionService();
 
         //TODO: put notification or widget for advertising... and stop discovering..
         //TODO: stop discovering, but possibly keep advertising.
@@ -221,32 +279,39 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        connectService.removeListener(discoverFragment);
-        stopConnectionService();
+        if (mBound) {
+            connectService.removeListener(discoverFragment);
+            stopConnectionService();
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        startConnectionService();
+        if (mBound) {
+            startConnectionService();
+        } else {
+            // don't do anything...
+        }
     }
 
 
 
     @Override
     public void onBackPressed() {
+        if (mBound) {
+            if (debug) {
+                connectService.debug();
+            }
+            if (discoverFragment.rvAdapter == null) {return;}
+            if (!discoverFragment.rvAdapter.isEmpty()) {
+                connectService.onBackPressed();
+                return;
+            }
 
-        if (debug) {
-            connectService.debug();
-        }
-
-        if (!discoverFragment.rvAdapter.isEmpty()) {
-            connectService.onBackPressed();
-            return;
-        }
-
-        if (debug) {
-            return;
+            if (debug) {
+                return;
+            }
         }
 
         super.onBackPressed();
@@ -255,9 +320,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // Feature to send eveything at once.
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
-        if (!discoverFragment.rvAdapter.isEmpty() &&
-                mGestureDetector.onKeyEvent(event)) {
-            return true;
+        if (discoverFragment != null && discoverFragment.rvAdapter != null) {
+            if (!discoverFragment.rvAdapter.isEmpty() &&
+                    mGestureDetector.onKeyEvent(event)) {
+                return true;
+            }
         }
         return super.dispatchKeyEvent(event);
     }
@@ -274,8 +341,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void addToListener(ConnectionListener listener) {
-        if (!connectService.contains(listener)) {
-            connectService.addListener(listener);
+        if (mBound) {
+            if (!connectService.contains(listener)) {
+                connectService.addListener(listener);
+            }
         }
     }
 
@@ -340,6 +409,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public boolean onQueryTextChange(String query) {
+        if (historyFragment.historyAdapter == null) {
+            return false;
+        }
         historyFragment.historyAdapter.getFilter().filter(query);
         return true;
     }

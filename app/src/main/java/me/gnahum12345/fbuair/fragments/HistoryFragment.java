@@ -21,7 +21,7 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.interfaces.UserListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
@@ -30,8 +30,8 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     public HistoryAdapter historyAdapter;
     ArrayList<User> history = new ArrayList<>();
+    MyUserManager userManager = MyUserManager.getInstance();
     RecyclerView rvHistory;
-    UserManager userManager = UserManager.getInstance();
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
@@ -48,13 +48,6 @@ public class HistoryFragment extends Fragment implements UserListener {
         history = new ArrayList<>();
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
-    }
-
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
     @Override
@@ -102,11 +95,37 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     }
 
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_history, container, false);
+    }
+
+    // adds a given user to history, noting the time (to be called right after sharing data)
+    void addToHistory(User user) {
+        MyUserManager.getInstance().addUser(user);
+    }
+
+    // gets history from shared preferences. return empty json array if no history has been added
+    List<User> getHistory() {
+        return MyUserManager.getInstance().getCurrHistory();
+    }
+
+
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
         List<User> users = userManager.getCurrHistory();
         history.addAll(users);
+        if (historyAdapter != null) {
+            historyAdapter.notifyDataSetChanged();
+        }
+    }
+
+    // clears history
+    void clearHistory() {
+        MyUserManager.getInstance().clearHistory();
         historyAdapter.notifyDataSetChanged();
     }
 
