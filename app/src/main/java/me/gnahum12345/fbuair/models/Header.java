@@ -2,7 +2,7 @@ package me.gnahum12345.fbuair.models;
 
 import android.graphics.Bitmap;
 
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 
 // header class containing main user info
 public class Header {
@@ -13,7 +13,7 @@ public class Header {
     int connections;
 
     public Header(String uid) {
-        User user = UserManager.getInstance().getUser(uid);
+        User user = MyUserManager.getInstance().getUser(uid);
         this.uid = uid;
         this.profileImage = user.getProfileImage();
         this.name = user.getName();

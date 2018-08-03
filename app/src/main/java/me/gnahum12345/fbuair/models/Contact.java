@@ -1,6 +1,6 @@
 package me.gnahum12345.fbuair.models;
 
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 
 // contact class containing user contact info
 public class Contact {
@@ -9,7 +9,7 @@ public class Contact {
     boolean isAdded;
 
     public Contact(String uid) {
-        User user = UserManager.getInstance().getUser(uid);
+        User user = MyUserManager.getInstance().getUser(uid);
         this.phone = user.getPhoneNumber();
         this.email = user.getEmail();
     }
