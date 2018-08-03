@@ -7,16 +7,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <Button
-            android:id="@+id/btEditProfile"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginTop="132dp"
-            android:text="Edit"
-            app:layout_anchor="@id/llBackground"
-            app:layout_anchorGravity="bottom|right|end" />
-
         <LinearLayout
             android:id="@+id/llBackground"
             android:layout_width="match_parent"
@@ -54,6 +44,46 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
                 android:text="Connection number" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llProfileOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_anchor="@id/llBackground"
+            app:layout_anchorGravity="bottom|right|end"
+            android:visibility="gone">
+            <Button
+                android:id="@+id/btEditProfile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="132dp"
+                android:text="Edit"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llDetailsOptions"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_anchor="@id/llBackground"
+            app:layout_anchorGravity="bottom|right|end"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btAddContact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="132dp"
+                android:text="Add Contact"/>
+
+            <Button
+                android:id="@+id/btSendBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="132dp"
+                android:text="Send back"/>
         </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 </layout>

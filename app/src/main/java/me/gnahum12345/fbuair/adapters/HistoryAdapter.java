@@ -47,6 +47,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
+    public interface LaunchDetailsListener {
+        void launchDetails(String uid);
+    }
+
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int i) {
@@ -81,7 +85,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                launchDetailsListener.launchDetails(user);
+                launchDetailsListener.launchDetails(user.getId());
             }
         });
     }
@@ -105,10 +109,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return historyFilter;
     }
 
-    public interface LaunchDetailsListener {
-        void launchDetails(User user);
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         public TextView tvName;
@@ -120,15 +120,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             tvName = view.findViewById(R.id.tvName);
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
-
-//            view.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View view) {
-//                    int position = getAdapterPosition();
-//                    User user = history.get(position);
-//                    launchDetailsListener.launchDetails(user);
-//                }
-//            });
         }
 
     }

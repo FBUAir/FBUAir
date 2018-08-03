@@ -24,7 +24,7 @@ public class SocialMediaUtils {
     static HashMap<String, String> urlMap = getUrlMap();
 
     // gets corresponding drawable from social media
-    public static Drawable getDrawable(Context context, SocialMedia socialMedia) {
+    public static Drawable getIconDrawable(Context context, SocialMedia socialMedia) {
         String drawableName = "ic_" + socialMedia.getName().toLowerCase();
         int resId = context.getResources().getIdentifier
                 (drawableName, "drawable", context.getPackageName());

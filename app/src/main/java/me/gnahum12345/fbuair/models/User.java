@@ -76,7 +76,7 @@ public class User implements Comparable {
         return uid;
     }
 
-    public boolean setId() {
+    boolean setId() {
         if (this.name == null) {
             return false;
         }
