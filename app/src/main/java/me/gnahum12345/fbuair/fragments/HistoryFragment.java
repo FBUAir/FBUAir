@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
+import android.graphics.Canvas;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,9 +9,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -19,9 +22,13 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.UserManager;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.services.SwipeController;
+import me.gnahum12345.fbuair.services.SwipeControllerActions;
+import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
 
@@ -34,6 +41,11 @@ public class HistoryFragment extends Fragment implements UserListener {
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
+    SwipeController swipeController = null;
+    ContactUtils.AddContactResult addContactResult;
+    FragmentDetailsBinding bind;
+    String contactId;
+    String rawContactId;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -84,6 +96,34 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvHistory.setAdapter(historyAdapter);
         rvHistory.setLayoutManager(new LinearLayoutManager(activity));
 
+        swipeController = new SwipeController(new SwipeControllerActions() {
+            @Override
+            public void onRightClicked(int position) {
+                UserManager.getInstance().removeUser(history.get(position));
+                history.remove(position);
+                historyAdapter.notifyItemRemoved(position);
+                historyAdapter.notifyItemRangeChanged(position, historyAdapter.getItemCount());
+            }
+
+            @Override
+            public void onLeftClicked(int position) {
+                addContactResult = ContactUtils.findConflict(getContext(), history.get(position));
+                if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
+                    addContact(history.get(position));
+                }
+            }
+        });
+
+        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
+        itemTouchhelper.attachToRecyclerView(rvHistory);
+
+        rvHistory.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                swipeController.onDraw(c);
+            }
+        });
+
         // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
@@ -124,4 +164,14 @@ public class HistoryFragment extends Fragment implements UserListener {
     public void userRemoved(User user) {
         populateHistory();
     }
+
+    public void addContact(User user) {
+        String ids[] = ContactUtils.addContact(getContext(), user);
+        contactId = ids[0];
+        rawContactId = ids[1];
+        if (ContactUtils.mergeOccurred(getContext(), contactId)) {
+            Toast.makeText(getContext(), "Contact was linked with duplicate", Toast.LENGTH_LONG).show();
+        }
+    }
+
 }
