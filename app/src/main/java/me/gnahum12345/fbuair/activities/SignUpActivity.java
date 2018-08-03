@@ -234,7 +234,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
                         socialMedia.setUsername(Profile.getCurrentProfile().getName());
-                        socialMedia.setProfileUrl(Profile.getCurrentProfile().getLinkUri().toString());
+                        String id = Profile.getCurrentProfile().getId().toString();
+                        socialMedia.setProfileUrl("fb://page/{"+id+"}");
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
