@@ -1,2 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="/Users/garciag2/FBU_AIR/FBUAir/linkedin-sdk/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/garciag2/FBU_AIR/FBUAir/linkedin-sdk/src/debug/shaders"/></dataSet></merger>
+=======
+<merger version="3"><dataSet config="main"><source path="/Users/mariamdiallo/AndroidStudioProjects/FBUAir/linkedin-sdk/src/main/shaders"/></dataSet><dataSet config="debug"><source path="/Users/mariamdiallo/AndroidStudioProjects/FBUAir/linkedin-sdk/src/debug/shaders"/></dataSet></merger>
+>>>>>>> 75d8f1f4964b93fd99f63aa112573ccd1df7b4d3

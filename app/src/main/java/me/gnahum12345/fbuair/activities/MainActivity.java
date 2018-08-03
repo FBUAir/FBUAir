@@ -295,6 +295,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
+
+
     @Override
     public void onBackPressed() {
         if (mBound) {
@@ -350,7 +352,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         bind.historyMenu.setVisibility(View.GONE);
     }
 
-    /* fragemnt adapter */
     static class Adapter extends FragmentStatePagerAdapter {
 
         // The list of fragments which we are going to be displaying in the view pager.
@@ -384,8 +385,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void launchEditProfile() {
-        Toast.makeText(this, "Launch Edit Profile", Toast.LENGTH_SHORT).show();
-        // Objects.requireNonNull(getSupportActionBar()).show();
     }
 
     @Override
