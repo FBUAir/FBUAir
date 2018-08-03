@@ -39,4 +39,6 @@
     <color name="gradient_blue">#0093d7</color>
     <color name="gradient_red">#FF3366</color>
 
+    <color name="translucent_highlighted">#4bFFFF00</color>
+
 </resources>

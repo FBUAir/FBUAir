@@ -6,7 +6,6 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.databinding.adapters.SearchViewBindingAdapter;
 import android.databinding.DataBindingUtil;
 import android.databinding.adapters.SearchViewBindingAdapter;
 import android.net.Uri;
@@ -24,7 +23,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -36,15 +34,14 @@ import java.util.List;
 import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
 import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
-import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
@@ -193,7 +190,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         bind.bottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bind.bottomNavigationView.setNotificationBackgroundColor(fetchColor(R.color.notification));
-        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.color_blue_orchid), fetchColor(R.color.color_black));
+        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.gradient_blue), fetchColor(R.color.color_black));
         bind.bottomNavigationView.setTranslucentNavigationEnabled(true);
         bind.bottomNavigationView.setColored(true);
         // Handle the click for each item on the bottom navigation view.
