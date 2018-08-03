@@ -30,7 +30,7 @@ import java.util.Objects;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.databinding.FragmentProfileBinding;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -113,7 +113,7 @@ public class ProfileFragment extends Fragment {
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
-            SharedPreferences.Editor editor = sh    aredpreferences.edit();
+            SharedPreferences.Editor editor = sharedpreferences.edit();
             editor.putString(CURRENT_USER_KEY, null);
             editor.commit();
             startActivity(new Intent(activity, SignUpActivity.class));
@@ -124,7 +124,7 @@ public class ProfileFragment extends Fragment {
     private void setUserInfo() throws JSONException {
         // get json user from preferences and convert to user java object
 //        String userJsonString = sharedpreferences.getString("current_user", null);
-        user = UserManager.getInstance().getCurrentUser();
+        user = MyUserManager.getInstance().getCurrentUser();
         if (user != null) {
             // set views to display info
             bind.etName.setText(user.getName());

@@ -21,7 +21,7 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.interfaces.UserListener;
-import me.gnahum12345.fbuair.managers.UserManager;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
@@ -32,7 +32,7 @@ public class HistoryFragment extends Fragment implements UserListener {
     ArrayList<User> history = new ArrayList<>();
     RecyclerView rvUser;
     SharedPreferences sharedpreferences;
-    UserManager userManager = UserManager.getInstance();
+    MyUserManager userManager = MyUserManager.getInstance();
     Activity activity;
     private SwipeRefreshLayout swipeContainer;
     public HistoryFragment() {
@@ -101,12 +101,12 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     // adds a given user to history, noting the time (to be called right after sharing data)
     void addToHistory(User user) {
-        UserManager.getInstance().addUser(user);
+        MyUserManager.getInstance().addUser(user);
     }
 
     // gets history from shared preferences. return empty json array if no history has been added
     List<User> getHistory() {
-        return UserManager.getInstance().getCurrHistory();
+        return MyUserManager.getInstance().getCurrHistory();
     }
 
 
@@ -123,7 +123,7 @@ public class HistoryFragment extends Fragment implements UserListener {
 
     // clears history
     void clearHistory() {
-        UserManager.getInstance().clearHistory();
+        MyUserManager.getInstance().clearHistory();
     }
 
     private void clearHistoryList() {

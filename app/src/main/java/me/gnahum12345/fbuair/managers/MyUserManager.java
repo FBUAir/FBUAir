@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 
+import com.google.android.gms.nearby.connection.Payload;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -17,28 +19,35 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.services.ConnectionService;
+
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
-public class UserManager {
+public class MyUserManager {
 
-    private static final UserManager ourInstance = new UserManager();
+    private static final MyUserManager ourInstance = new MyUserManager();
     private static final String TAG = "UserManagerTAG";
-    private Context mContext;
-    public static UserManager getInstance() {
-        return ourInstance;
-    }
-    private Handler handler = new Handler();
-    private boolean notificationsEnabled = false;
-    private Activity activity;
     Map<String, User> currentUsers;
     ArrayList<UserListener> listeners;
     int count = 0;
+    private Context mContext;
+    private Handler handler = new Handler();
+    private boolean notificationsEnabled = false;
+    private Activity activity;
+    private MyUserManager() {
+        currentUsers = new TreeMap<>();
+        listeners = new ArrayList<UserListener>();
+    }
+
+    public static MyUserManager getInstance() {
+        return ourInstance;
+    }
 
     public void setContext(Context c) {
         mContext = c;
@@ -46,11 +55,6 @@ public class UserManager {
 
     private boolean isInBackground() {
         return !MyLifecycleHandler.isApplicationInForeground() || !MyLifecycleHandler.isApplicationVisible();
-    }
-
-    private UserManager() {
-        currentUsers = new TreeMap<>();
-        listeners = new ArrayList<UserListener>();
     }
 
     public User getUser(String id) {
@@ -75,8 +79,26 @@ public class UserManager {
         } else {
             title = "User has been updated!";
         }
+        currentUsers.put(user.getId(), user);
+        if (commit()) {
+            notifyListeners(user, true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public boolean addUser(User user, ConnectionService.Endpoint endpoint) {
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        String title;
+        if (!currentUsers.containsKey(user.getId())) {
+            runBadgeNotification();
+            title = "New User has been added!";
+        } else {
+            title = "User has been updated!";
+        }
         if (isInBackground()) {
-            AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user);
+            AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user, endpoint);
         }
         currentUsers.put(user.getId(), user);
         if (commit()) {
@@ -99,6 +121,7 @@ public class UserManager {
             }
         }, 1000);
     }
+
     public void clearNotification() {
         handler.postDelayed(new Runnable() {
             @Override
@@ -139,6 +162,7 @@ public class UserManager {
         currentUsers.remove(user);
         commit();
     }
+
     public void clearHistory() {
         currentUsers.clear();
         commit();
@@ -152,7 +176,7 @@ public class UserManager {
         return editor.commit();
     }
 
-    public void commitCurrentUser(User user){
+    public void commitCurrentUser(User user) {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         JSONArray newHistoryArray = getJSONArray();
@@ -168,7 +192,7 @@ public class UserManager {
                 jArr.put(User.toJson(u));
             } catch (JSONException e) {
                 e.printStackTrace();
-                Log.e(TAG, String.format("getJSONArray: User {%s} failed to convert to JSON", u.toString()), e );
+                Log.e(TAG, String.format("getJSONArray: User {%s} failed to convert to JSON", u.toString()), e);
             }
         }
 
@@ -199,6 +223,7 @@ public class UserManager {
             }
         }
     }
+
 
 
     public List<User> getCurrHistory() {

@@ -21,6 +21,8 @@
 
     <!-- Required for Prefilling Phone Number -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.READ_SMS"/>
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
     <!-- For shake-to-advertise -->
     <uses-permission android:name="android.permission.VIBRATE" />
 
@@ -67,6 +69,9 @@
             android:name=".services.ConnectionService"
             android:enabled="true">
         </service>
+
+        <!--<receiver android:name=".services.ConnectionService$ConnectionServiceBroadcastReceiver"-->
+            <!--android:enabled="true"/>-->
 
         <receiver
             android:name=".services.MyBroadcastReceiver"
