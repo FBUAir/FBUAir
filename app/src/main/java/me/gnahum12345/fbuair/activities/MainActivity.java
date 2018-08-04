@@ -206,7 +206,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         bind.bottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bind.bottomNavigationView.setNotificationBackgroundColor(fetchColor(R.color.notification));
-        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.color_blue_orchid), fetchColor(R.color.color_black));
+        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.gradient_blue), fetchColor(R.color.color_black));
         bind.bottomNavigationView.setTranslucentNavigationEnabled(true);
         bind.bottomNavigationView.setColored(true);
         // Handle the click for each item on the bottom navigation view.
