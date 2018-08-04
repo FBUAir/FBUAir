@@ -23,6 +23,7 @@ import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
+import me.gnahum12345.fbuair.utils.Utils;
 
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
@@ -35,7 +36,7 @@ public class MyUserManager {
     private static final MyUserManager ourInstance = new MyUserManager();
     private static final String TAG = "UserManagerTAG";
     Map<String, User> currentUsers;
-    ArrayList<UserListener> listeners;
+    ArrayList<UserListener> userListeners;
     int count = 0;
     private Context mContext;
     private Handler handler = new Handler();
@@ -43,7 +44,7 @@ public class MyUserManager {
     private Activity activity;
     private MyUserManager() {
         currentUsers = new TreeMap<>();
-        listeners = new ArrayList<UserListener>();
+        userListeners = new ArrayList<UserListener>();
     }
 
     public static MyUserManager getInstance() {
@@ -60,15 +61,16 @@ public class MyUserManager {
 
     public User getUser(String id) {
         //TODO: get user given the id.
-        return currentUsers.get(id);
+        User currUser = getCurrentUser();
+        return currUser.getId().equals(id) ? currUser : currentUsers.get(id);
     }
 
     public void addListener(UserListener listener) {
-        listeners.add(listener);
+        userListeners.add(listener);
     }
 
     public void removeListener(UserListener listener) {
-        listeners.remove(listener);
+        userListeners.remove(listener);
     }
 
     public boolean addUser(User user) {
@@ -144,11 +146,11 @@ public class MyUserManager {
 
     public void notifyListeners(User user, boolean added) {
         if (added) {
-            for (UserListener listener : listeners) {
+            for (UserListener listener : userListeners) {
                 listener.userAdded(user);
             }
         } else {
-            for (UserListener listener : listeners) {
+            for (UserListener listener : userListeners) {
                 listener.userRemoved(user);
             }
         }
@@ -252,8 +254,19 @@ public class MyUserManager {
         return user;
     }
 
-    public boolean isAvaliable(User user) {
-
+    public ConnectionService.Endpoint avaliableEndpoint(String uid) {
+        User user = getUser(uid);
+        //TODO get add endpoint to the user???
+        List<ConnectionService.Endpoint> currEndpoints = ((MainActivity) activity).getCurrEndpoints();
+        if (currEndpoints == null) {
+            return null;
+        }
+        for (ConnectionService.Endpoint e :  currEndpoints) {
+            if (e.getName().contains(user.getName())) {
+                return e;
+            }
+        }
+        return null;
     }
 
 }

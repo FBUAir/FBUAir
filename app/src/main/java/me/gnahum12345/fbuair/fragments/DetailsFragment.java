@@ -8,7 +8,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -72,8 +71,7 @@ public class DetailsFragment extends Fragment {
         super.onCreateView(inflater, container, savedInstanceState);
         bind = DataBindingUtil.inflate
                 (inflater, R.layout.fragment_details, container, false);
-        View rootView = bind.getRoot();
-        return rootView;
+        return bind.getRoot();
     }
 
     @Override
@@ -186,7 +184,7 @@ public class DetailsFragment extends Fragment {
     }
 
     // override addContact from utilities to also show appropriate messages and options
-    void addContact(User user) {
+    public void addContact(User user) {
         String ids[] = ContactUtils.addContact(context, user);
         showOptions(ContactUtils.SUCCESS, true);
         contactId = ids[0];

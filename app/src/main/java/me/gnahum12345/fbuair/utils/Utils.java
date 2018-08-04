@@ -60,14 +60,13 @@ public class Utils {
         return relativeDate;
     }
 
-    public static <T extends Object> T isMyServiceRunning(Class<T> serviceClass, Context context) {
+    public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
             if (serviceClass.getClass().equals(service.service.getClass())) {
-                return service.service;
+                return true;
             }
         }
-
-        return null;
+        return false;
     }
 }

@@ -205,7 +205,9 @@ public class ContactUtils {
             addContactResult.setContactId(emailConflictId);
         }
         // return success if no conflicts
-        addContactResult.setResultCode(SUCCESS);
+        if (phoneConflictId == null && emailConflictId == null) {
+            addContactResult.setResultCode(SUCCESS);
+        }
         return addContactResult;
     }
 
