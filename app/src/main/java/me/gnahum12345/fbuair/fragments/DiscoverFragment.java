@@ -18,6 +18,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.skyfishjy.library.RippleBackground;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -41,6 +43,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     //TODO: delete the listener.
     private DiscoverFragmentListener mListener;
     private TextView tvRVEmpty;
+    private RippleBackground rippleBackground;
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -81,8 +84,12 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
         tvRVEmpty = view.findViewById(R.id.tvRVEmptyView);
         rvDevicesView = view.findViewById(R.id.rvDevicesView);
+        rippleBackground = view.findViewById(R.id.rippleBackground);
 
         tvRVEmpty.setVisibility(View.VISIBLE);
+        rippleBackground.setVisibility(View.VISIBLE);
+        rippleBackground.startRippleAnimation();
+
         rvDevicesView.setVisibility(View.GONE);
         LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
 
@@ -148,6 +155,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
         rvAdapter.add(endpoint);
         tvRVEmpty.setVisibility(View.GONE);
+        rippleBackground.stopRippleAnimation();
+        rippleBackground.setVisibility(View.GONE);
         rvDevicesView.setVisibility(View.VISIBLE);
     }
 
@@ -160,6 +169,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         if (rvAdapter.isEmpty()) {
             rvDevicesView.setVisibility(View.GONE);
             tvRVEmpty.setVisibility(View.VISIBLE);
+            rippleBackground.setVisibility(View.VISIBLE);
+            rippleBackground.startRippleAnimation();
         }
     }
 
