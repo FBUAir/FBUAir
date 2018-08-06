@@ -26,10 +26,10 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
 public class DiscoverFragment extends Fragment implements ConnectionListener {

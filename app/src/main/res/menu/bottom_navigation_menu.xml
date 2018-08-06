@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/action_discover"
         android:icon="@drawable/ic_discover"
-        android:title="Discover"/>
+        android:title="Discover"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_history"
         android:icon="@drawable/ic_history"
-        android:title="History"/>
+        android:title="Recent"
+        app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_profile"
         android:icon="@drawable/default_profile"
-        android:title="Profile"/>
+        android:title="Profile"
+        app:showAsAction="always"/>
 </menu>

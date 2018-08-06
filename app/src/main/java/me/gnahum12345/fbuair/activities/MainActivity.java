@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.activities;
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -9,8 +8,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
-import android.databinding.adapters.SearchViewBindingAdapter;
 import android.databinding.DataBindingUtil;
+import android.databinding.adapters.SearchViewBindingAdapter;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,9 +46,9 @@ import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
