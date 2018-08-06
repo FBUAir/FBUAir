@@ -96,7 +96,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                vhHeader.bind.btAddContact.setEnabled(!contact.isAdded());
+                if (contact.isAdded()) {
+                    vhHeader.bind.btAddContact.setEnabled(false);
+                    vhHeader.bind.btAddContact.setText("Added");
+                }
             }
 
         } else if (holder instanceof VHContact)

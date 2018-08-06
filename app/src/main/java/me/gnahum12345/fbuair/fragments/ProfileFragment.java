@@ -106,9 +106,6 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
-
-
         bind.btSubmit.setOnClickListener(view1 -> saveProfile());
 
         bind.btDeleteProfile.setOnClickListener(view12 -> {
