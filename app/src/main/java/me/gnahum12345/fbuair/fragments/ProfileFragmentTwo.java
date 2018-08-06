@@ -27,6 +27,7 @@ import me.gnahum12345.fbuair.models.User;
 
 public class ProfileFragmentTwo extends Fragment {
 
+    private ProfileFragmentListener mListener;
     FragmentProfileTwoBinding bind;
     final static String ARG_UID = "uid";
 
@@ -70,10 +71,14 @@ public class ProfileFragmentTwo extends Fragment {
             isCurrentUserProfile = true;
         }
         socialMedias = user.getSocialMedias();
+
         Contact contact = new Contact(uid);
         Header header = new Header(uid);
         profileAdapter = new ProfileAdapter(getContext(), contact, header,
                 socialMedias, isCurrentUserProfile);
+        if (mListener != null) {
+            profileAdapter.setListener(mListener);
+        }
     }
 
     @Override
@@ -91,7 +96,20 @@ public class ProfileFragmentTwo extends Fragment {
         // attach adapter and layout manager
         bind.rvRecyclerView.setAdapter(profileAdapter);
         bind.rvRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        // get context
-        context = getContext();
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof ProfileFragmentListener) {
+            mListener = (ProfileFragmentListener) context;
+        } else {
+            throw new RuntimeException(context.toString() +
+                        " must implement ProfileFragmentListener");
+        }
+    }
+
+    public interface ProfileFragmentListener {
+        public void sendBack(String uid);
     }
 }

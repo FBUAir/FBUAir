@@ -50,7 +50,6 @@ import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
-import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
@@ -59,7 +58,8 @@ import me.gnahum12345.fbuair.utils.Utils;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
-        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener, OnRequestAddContact {
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener,
+        OnRequestAddContact, ProfileFragmentTwo.ProfileFragmentListener {
 
     public ActivityMainBinding bind;
     // fragment position aliases
@@ -140,7 +140,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // set up ConnectionService
 
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
-        if (!isMyServiceRunning(ConnectionService.class)) {
+
+
+
+        if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
             startService(intent);
         }
 
@@ -246,16 +249,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private boolean isMyServiceRunning(Class<?> serviceClass) {
-        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-            if (serviceClass.getName().equals(service.service.getClassName())) {
-                return true;
-            }
-        }
-        return false;
 
-    }
 
     private int fetchColor(@ColorRes int color) {
         return ContextCompat.getColor(this, color);
@@ -280,13 +274,18 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (mBound) {
             connectService.startMedia(this);
         }
+        if (connectService != null) {
+            connectService.startDiscovering();
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
 //        stopConnectionService();
-
+        if (connectService != null) {
+            connectService.stopDiscovering();
+        }
         //TODO: put notification or widget for advertising... and stop discovering..
         //TODO: stop discovering, but possibly keep advertising.
         userManager.commit();
@@ -544,6 +543,18 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             }
         }
     }
+
+    @Override
+    public void sendBack(String uid) {
+        if (connectService == null) {
+            return;
+        }
+        ConnectionService.Endpoint e = MyUserManager.getInstance().avaliableEndpoint(uid);
+        if (e != null) {
+            connectService.sendToEndpoint(e);
+        }
+    }
+
 
     // allow user to go to settings to manually grant permissions if denied and pressed "Never show again"
     void showPermissionDeniedForeverDialog() {

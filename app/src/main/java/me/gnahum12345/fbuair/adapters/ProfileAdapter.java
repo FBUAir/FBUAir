@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.adapters;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,13 +10,14 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
+import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
@@ -30,6 +30,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_SOCIAL_MEDIA = 2;
 
     Context context;
+    ProfileFragmentTwo.ProfileFragmentListener mListener;
     Header header;
     Contact contact;
     ArrayList<SocialMedia> socialMedias;
@@ -48,6 +49,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.context = context;
         this.isCurrentUserProfile = isCurrentUserProfile;
         difference = contact.isEmpty() ? 1 : 2;
+
         onFragmentChangeListener = (OnFragmentChangeListener)context;
         this.onAddContactClickedListener = (OnRequestAddContact)context;
     }
@@ -56,20 +58,17 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater =
                 LayoutInflater.from(parent.getContext());
-        if(viewType == TYPE_HEADER)
-        {
+        if (viewType == TYPE_HEADER) {
             ItemProfileHeaderBinding headerBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout.item_profile_header, parent,
                             false);
             return new VHHeader(headerBinding);
-        } else if(viewType == TYPE_CONTACT)
-        {
+        } else if (viewType == TYPE_CONTACT) {
             ItemContactCardBinding contactBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout.item_contact_card, parent,
                             false);
             return new VHContact(contactBinding);
-        } else if(viewType == TYPE_SOCIAL_MEDIA)
-        {
+        } else if (viewType == TYPE_SOCIAL_MEDIA) {
             ItemSocialMediaCardBinding socialMediaBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout.item_social_media_card, parent,
                             false);
@@ -81,9 +80,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         // populate views in each item
-        if (holder instanceof VHHeader)
-        {
-            VHHeader vhHeader = (VHHeader)holder;
+        if (holder instanceof VHHeader) {
+            VHHeader vhHeader = (VHHeader) holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
 
@@ -102,9 +100,21 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             }
 
-        } else if (holder instanceof VHContact)
-        {
-            VHContact vhContact = (VHContact)holder;
+
+            if (!isAvaliable(header.getUid()) || !isListener()) {
+                vhHeader.bind.btSendBack.setVisibility(View.INVISIBLE);
+                return;
+            }
+            vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
+            vhHeader.bind.btSendBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.sendBack(header.getUid());
+                }
+            });
+
+        } else if (holder instanceof VHContact) {
+            VHContact vhContact = (VHContact) holder;
             if (contact.getPhone().isEmpty()) {
                 vhContact.bind.llPhone.setVisibility(View.GONE);
                 vhContact.bind.horizontalLine.setVisibility(View.GONE);
@@ -121,13 +131,20 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
                 vhContact.bind.tvEmail.setText(contact.getEmail());
             }
-        } else if (holder instanceof VHSocialMedia)
-        {
+        } else if (holder instanceof VHSocialMedia) {
             SocialMedia socialMedia = socialMedias.get(position - difference);
             VHSocialMedia vhSocialMedia = (VHSocialMedia) holder;
             vhSocialMedia.bind.tvUsername.setText(socialMedia.getUsername());
             vhSocialMedia.bind.ivIcon.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
         }
+    }
+
+    private boolean isAvaliable(String uid) {
+        return MyUserManager.getInstance().avaliableEndpoint(uid) != null;
+    }
+
+    private boolean isListener() {
+        return mListener != null;
     }
 
     // overriding this method for different types
@@ -150,9 +167,14 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return socialMedias.size() + difference;
     }
 
+    public void setListener(ProfileFragmentTwo.ProfileFragmentListener listener) {
+        mListener = listener;
+    }
+
     // view holders for different items
     class VHHeader extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemProfileHeaderBinding bind;
+
         VHHeader(ItemProfileHeaderBinding bind) {
             super(bind.getRoot());
             this.bind = bind;
@@ -164,7 +186,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View view) {
-            switch(view.getId()) {
+            switch (view.getId()) {
                 case R.id.btAddContact:
                     onAddContactClickedListener.requestAddContact(header.getUid(), new OnContactAddedCallback() {
                         @Override
@@ -185,11 +207,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
             }
         }
-
     }
 
-    class VHContact extends RecyclerView.ViewHolder{
+    class VHContact extends RecyclerView.ViewHolder {
         ItemContactCardBinding bind;
+
         VHContact(ItemContactCardBinding bind) {
             super(bind.getRoot());
             this.bind = bind;
@@ -198,6 +220,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     class VHSocialMedia extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemSocialMediaCardBinding bind;
+
         VHSocialMedia(ItemSocialMediaCardBinding bind) {
             super(bind.getRoot());
             bind.getRoot().setOnClickListener(this);
@@ -207,11 +230,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition() - difference;
-            String url = socialMedias.get(position).getProfileUrl();
-            Log.d("PROFILEADAPTER", "clicked link: " + url);
-            onFragmentChangeListener.launchUrlView(url);
+
+//            String url = socialMedias.get(position).getProfileUrl();
+//            Log.d("PROFILEADAPTER", "clicked link: " + url);
+//            onFragmentChangeListener.launchUrlView(url);
         }
     }
-
-
 }
