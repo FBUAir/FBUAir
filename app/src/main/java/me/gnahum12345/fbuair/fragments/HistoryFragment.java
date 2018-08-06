@@ -24,7 +24,6 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
-import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
@@ -47,9 +46,6 @@ public class HistoryFragment extends Fragment implements UserListener {
     LinearLayoutManager linearLayoutManager;
     SwipeController swipeController = null;
     ContactUtils.AddContactResult addContactResult;
-    FragmentDetailsBinding bind;
-    String contactId;
-    String rawContactId;
 
     OnRequestAddContact onAddContactClickedListener;
 

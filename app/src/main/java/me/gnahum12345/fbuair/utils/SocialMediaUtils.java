@@ -2,13 +2,11 @@ package me.gnahum12345.fbuair.utils;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.models.SocialMedia;
 
 public class SocialMediaUtils {

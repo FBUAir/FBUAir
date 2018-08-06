@@ -13,7 +13,7 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
-import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
+import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
@@ -30,7 +30,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_SOCIAL_MEDIA = 2;
 
     Context context;
-    ProfileFragmentTwo.ProfileFragmentListener mListener;
+    ProfileFragment.ProfileFragmentListener mListener;
     Header header;
     Contact contact;
     ArrayList<SocialMedia> socialMedias;
@@ -167,7 +167,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return socialMedias.size() + difference;
     }
 
-    public void setListener(ProfileFragmentTwo.ProfileFragmentListener listener) {
+    public void setListener(ProfileFragment.ProfileFragmentListener listener) {
         mListener = listener;
     }
 
