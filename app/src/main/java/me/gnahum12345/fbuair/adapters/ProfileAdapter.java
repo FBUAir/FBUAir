@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +14,7 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
-import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
+import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
@@ -30,7 +31,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_SOCIAL_MEDIA = 2;
 
     Context context;
-    ProfileFragmentTwo.ProfileFragmentListener mListener;
+    ProfileFragment.ProfileFragmentListener mListener;
     Header header;
     Contact contact;
     ArrayList<SocialMedia> socialMedias;
@@ -84,7 +85,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             VHHeader vhHeader = (VHHeader) holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
-
+            Bitmap profileImage = header.getProfileImage();
+            if (profileImage == null) {
+                vhHeader.bind.ivProfileImage.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.default_profile, null));
+            } else vhHeader.bind.ivProfileImage.setImageBitmap(profileImage);
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
@@ -94,7 +99,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                vhHeader.bind.btAddContact.setEnabled(!contact.isAdded());
+                if (contact.isAdded()) {
+                    vhHeader.bind.btAddContact.setEnabled(false);
+                    vhHeader.bind.btAddContact.setText("Added");
+                }
             }
 
 
@@ -164,7 +172,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return socialMedias.size() + difference;
     }
 
-    public void setListener(ProfileFragmentTwo.ProfileFragmentListener listener) {
+    public void setListener(ProfileFragment.ProfileFragmentListener listener) {
         mListener = listener;
     }
 

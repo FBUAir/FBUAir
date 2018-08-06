@@ -31,13 +31,6 @@ public class HistoryActivity extends AppCompatActivity {
     String MyPREFERENCES = "MyPrefs";
     private SwipeRefreshLayout swipeContainer;
 
-    //creating my shared preferences array of fake contacts
-    public static void onContactAddClick() {
-        JSONObject rando = createRando();
-        listRandos.put(rando);
-        Log.d("addContacts", String.valueOf(listRandos));
-    }
-
     public static JSONObject createRando() {
         FakeUsers fakeUsers = new FakeUsers();
 

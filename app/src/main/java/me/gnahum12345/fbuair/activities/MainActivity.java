@@ -40,10 +40,9 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
-import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
-import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
+import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
@@ -58,7 +57,7 @@ import me.gnahum12345.fbuair.utils.Utils;
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener,
         SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener, OnFragmentChangeListener,
-        OnRequestAddContact, ProfileFragmentTwo.ProfileFragmentListener {
+        OnRequestAddContact, ProfileFragment.ProfileFragmentListener {
 
     public ActivityMainBinding bind;
     // fragment position aliases
@@ -66,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     final static int HISTORY_FRAGMENT = 1;
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
@@ -85,8 +83,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
-    ProfileFragmentTwo profileFragment;
-    DetailsFragment detailsFragment;
+    ProfileFragment profileFragment;
+    ProfileFragment detailsFragment;
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
@@ -155,8 +153,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
-        profileFragment = new ProfileFragmentTwo();
-        detailsFragment = new DetailsFragment();
+        profileFragment = new ProfileFragment();
+        detailsFragment = new ProfileFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
@@ -391,7 +389,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     // opens details screen for passed in user
     public void launchDetails(String uid) {
-        fragments.set(DETAILS_FRAGMENT, ProfileFragmentTwo.newInstance(uid));
+        fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
