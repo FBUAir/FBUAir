@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     final static int HISTORY_FRAGMENT = 1;
     final static int PROFILE_FRAGMENT = 2;
     final static int DETAILS_FRAGMENT = 3;
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();

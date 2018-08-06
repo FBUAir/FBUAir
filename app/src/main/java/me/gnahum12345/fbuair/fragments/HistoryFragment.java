@@ -103,15 +103,13 @@ public class HistoryFragment extends Fragment implements UserListener {
 
             @Override
             public void onLeftClicked(int position) {
-                addContactResult = ContactUtils.findConflict(getContext(), history.get(position));
-                if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
-                    onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
-                        // can do stuff here if contact was successfully added
-                        @Override
-                        public void onSuccess() {
-                        }
-                    });
-                }
+                onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
+                    // can do stuff here if contact was successfully added
+                    @Override
+                    public void onSuccess() {
+                    }
+                });
+
             }
         });
 

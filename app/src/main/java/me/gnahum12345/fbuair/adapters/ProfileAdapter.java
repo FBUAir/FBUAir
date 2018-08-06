@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -84,7 +85,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             VHHeader vhHeader = (VHHeader) holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
-
+            Bitmap profileImage = header.getProfileImage();
+            if (profileImage == null) {
+                vhHeader.bind.ivProfileImage.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.default_profile, null));
+            } else vhHeader.bind.ivProfileImage.setImageBitmap(profileImage);
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
