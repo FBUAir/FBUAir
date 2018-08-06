@@ -49,4 +49,8 @@
     <string name="reply_label">Send Back!</string>
     <string name="extra_notification_label">extra notification id</string>
     <string name="connection_service">ConnectionService</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="configure_menu_bar">Configure</string>
 </resources>

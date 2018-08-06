@@ -12,10 +12,12 @@
         android:id="@+id/rvDevicesView" />
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:layout_gravity="bottom|center"
         android:id="@+id/tvRVEmptyView"
-        android:textSize="25sp"
+        android:textSize="20sp"
         android:text="I can't seem to find anyone nearby...."
         android:visibility="gone" />
 

@@ -30,6 +30,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -41,6 +42,7 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
+import me.gnahum12345.fbuair.fragments.ConfigureFragment;
 import me.gnahum12345.fbuair.fragments.DetailsFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
@@ -63,10 +65,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     public ActivityMainBinding bind;
     // fragment position aliases
-    final static int DISCOVER_FRAGMENT = 0;
-    final static int HISTORY_FRAGMENT = 1;
-    final static int PROFILE_FRAGMENT = 2;
-    final static int DETAILS_FRAGMENT = 3;
+    private final static int DISCOVER_FRAGMENT = 0;
+    private final static int HISTORY_FRAGMENT = 1;
+    private final static int PROFILE_FRAGMENT = 2;
+    private final static int CONFIGURE_FRAGMENT = 3;
+    private final static int DETAILS_FRAGMENT = 4;
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
@@ -88,6 +91,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     HistoryFragment historyFragment;
     ProfileFragmentTwo profileFragment;
     DetailsFragment detailsFragment;
+    ConfigureFragment configureFragment;
+
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
@@ -141,8 +146,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
 
-
-
         if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
             startService(intent);
         }
@@ -158,11 +161,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragmentTwo();
         detailsFragment = new DetailsFragment();
-
+        configureFragment = new ConfigureFragment();
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
+        fragments.add(configureFragment);
         fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
@@ -191,6 +195,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);
                         getSupportActionBar().hide();
+                        break;
+                    case CONFIGURE_FRAGMENT:
+                        bind.bottomNavigationView.setCurrentItem(3);
                         break;
                 }
             }
@@ -310,6 +317,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             // don't do anything...
         }
     }
+
 
     @Override
     public void onBackPressed() {

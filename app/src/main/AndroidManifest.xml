@@ -3,6 +3,7 @@
     package="me.gnahum12345.fbuair">
 
     <!-- Required for writing into Contacts and viewing social media profiles -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />

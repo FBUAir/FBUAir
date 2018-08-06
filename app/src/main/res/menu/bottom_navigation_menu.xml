@@ -14,4 +14,9 @@
         android:id="@+id/action_profile"
         android:icon="@drawable/default_profile"
         android:title="Profile"/>
+
+    <item
+        android:id="@+id/configure_medias"
+        android:icon="@drawable/com_facebook_close"
+        android:title="@string/configure_menu_bar" />
 </menu>
