@@ -163,8 +163,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         public ViewHolder(@NonNull View view) {
             super(view);
-            mtvDeviceName = view.findViewById(R.id.tvNameofDevice);
-            mivProfilePic = view.findViewById(R.id.ivProfilePic);
+            mtvDeviceName = view.findViewById(R.id.tvName);
+            mivProfilePic = view.findViewById(R.id.ivProfileImage);
         }
     }
 }
