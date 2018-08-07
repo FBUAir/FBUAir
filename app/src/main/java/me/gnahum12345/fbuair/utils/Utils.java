@@ -38,10 +38,10 @@ public class Utils {
 
     // validity checkers for sign up
     public static boolean isValidEmail(CharSequence email) {
-        return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
+        return (TextUtils.isEmpty(email) || Patterns.EMAIL_ADDRESS.matcher(email).matches());
     }
     public static boolean isValidPhoneNumber(String number) {
-        return (!TextUtils.isEmpty(number) && android.util.Patterns.PHONE.matcher(number).matches());
+        return (TextUtils.isEmpty(number) || android.util.Patterns.PHONE.matcher(number).matches());
     }
 
     // hides keyboard

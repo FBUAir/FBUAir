@@ -35,7 +35,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Arrays;
-import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.clients.GithubClient;
@@ -101,8 +100,13 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         user = new User();
         endAllSessions();
 
-        // configure toolbar
-        configureToolbar();
+        hideMenu();
+        bind.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                fragmentManager.popBackStack();
+            }
+        });
 
         // initialize fragments
         welcomeFragment = new WelcomeFragment();
@@ -115,17 +119,12 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     }
 
-    // sets toolbar for sign up screens and not welcome screen
-    void configureToolbar() {
-        setSupportActionBar(bind.toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(false);
-        bind.tvTitle.setText("Create Account");
-        bind.ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                fragmentManager.popBackStack();
-            }
-        });
+    public void hideMenu() {
+        bind.menu.setVisibility(View.GONE);
+    }
+
+    public void showMenu() {
+        bind.menu.setVisibility(View.VISIBLE);
     }
 
     // starts a given fragment
@@ -234,7 +233,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
                         socialMedia.setUsername(Profile.getCurrentProfile().getName());
-                        String id = Profile.getCurrentProfile().getId().toString();
+                        String id = Profile.getCurrentProfile().getId();
                         socialMedia.setProfileUrl("fb://page/{"+id+"}");
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();

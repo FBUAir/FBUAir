@@ -51,10 +51,8 @@ public class WelcomeFragment extends Fragment {
         // get reference to activity
         activity = (SignUpActivity) getActivity();
 
-        // hide toolbar
-        if (activity != null) {
-            Objects.requireNonNull(activity.getSupportActionBar()).hide();
-        }
+        // hide menu
+        activity.hideMenu();
 
         // go to signup if user presses 'get started'
         btGetStarted = view.findViewById(R.id.btGetStarted);
