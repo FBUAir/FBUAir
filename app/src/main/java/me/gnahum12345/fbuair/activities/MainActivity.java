@@ -26,6 +26,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
+                        bind.historyMenu.setVisibility(View.INVISIBLE);
                         getSupportActionBar().setTitle("Discover");
                         getSupportActionBar().setLogo(R.drawable.logo_app_round);
                         getSupportActionBar().setDisplayUseLogoEnabled(true);
@@ -580,5 +582,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     }
                 });
         builder.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_discover, menu);
+        return super.onCreateOptionsMenu(menu);
     }
 }
