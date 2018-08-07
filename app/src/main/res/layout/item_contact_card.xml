@@ -29,12 +29,7 @@
                     android:layout_height="25dp"
                     android:layout_marginEnd="20dp"
                     android:contentDescription="Icon"
-<<<<<<< HEAD
                     app:srcCompat="@drawable/call" />
-=======
-                    android:textSize="@dimen/profile_card_icon_size"
-                    app:srcCompat="@drawable/ic_phone" />
->>>>>>> 76b4193a27d1dbfd3e65cd49b5c5f11d8895a207
 
                 <TextView
                     android:id="@+id/tvPhone"

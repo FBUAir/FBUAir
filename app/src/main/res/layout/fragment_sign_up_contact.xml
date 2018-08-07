@@ -122,7 +122,6 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:background="@android:color/transparent"
-<<<<<<< HEAD
             android:src="@drawable/user_add"
             android:scaleType="centerCrop" />
 
