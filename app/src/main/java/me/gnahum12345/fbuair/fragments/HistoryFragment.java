@@ -2,7 +2,6 @@ package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,10 +11,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -25,13 +27,10 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
-import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.services.SwipeController;
-import me.gnahum12345.fbuair.services.SwipeControllerActions;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
@@ -45,10 +44,11 @@ public class HistoryFragment extends Fragment implements UserListener {
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
-//    SwipeController swipeController = null;
+    //    SwipeController swipeController = null;
     ContactUtils.AddContactResult addContactResult;
 
     OnRequestAddContact onAddContactClickedListener;
+
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -62,7 +62,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         history = new ArrayList<>();
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
-        onAddContactClickedListener = (OnRequestAddContact)context;
+        onAddContactClickedListener = (OnRequestAddContact) context;
 
 
     }
@@ -92,6 +92,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvHistory = view.findViewById(R.id.rvHistory);
         rvHistory.setAdapter(historyAdapter);
         rvHistory.setLayoutManager(new LinearLayoutManager(activity));
+
 
         clearHistory();
         // add fake users to history
