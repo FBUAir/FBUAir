@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,7 +30,10 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
+import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.utils.ContactUtils;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.getHistoryDate;
@@ -64,11 +68,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 case R.id.add_menu_action:
                     //TODO: add it all selected to contacts.
                     Toast.makeText(context, String.format("Adding %d users to contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                    addContacts(selectedUsers);
                     actionMode.finish();
                     return true;
                 case R.id.delete_menu_action:
                     //TODO: delete all selected
                     Toast.makeText(context, String.format("Deleting %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                    deleteContacts(selectedUsers);
                     actionMode.finish();
                     return true;
                 case R.id.star_menu_action:
@@ -88,6 +94,22 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             notifyDataSetChanged();
         }
     };
+
+
+    private void addContacts(List<User> users) {
+        for (int i = 0; i < users.size(); i++) {
+//            ContactUtils.addContact(context, users.);
+        }
+    }
+
+    private void deleteContacts(List<User> users) {
+        for (int i = 0; i < users.size(); i++) {
+            MyUserManager.getInstance().removeUser(users.get(i));
+            history.remove(users.get(i));
+        }
+        notifyDataSetChanged();
+    }
+
 
     public HistoryAdapter(Context context, List<User> history) {
         this.history = history;

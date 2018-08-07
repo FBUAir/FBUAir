@@ -94,7 +94,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvHistory.setLayoutManager(new LinearLayoutManager(activity));
 
 
-        clearHistory();
+//        clearHistory();
         // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
