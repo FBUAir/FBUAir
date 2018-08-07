@@ -35,6 +35,7 @@ import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
 import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
@@ -114,11 +115,6 @@ public class SignUpContactFragment extends Fragment {
                 final String name = bind.etName.getText().toString();
                 final String organization = bind.etOrganization.getText().toString();
                 final String email = bind.etEmail.getText().toString();
-
-                if (profileImage == null) {
-                    profileImage = BitmapFactory.decodeResource(getResources(),
-                            R.drawable.default_profile);
-                }
                 // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
                     User user = activity.user;
@@ -177,17 +173,16 @@ public class SignUpContactFragment extends Fragment {
             // if user captured image
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-                // set image icon to newly selected image
-                bind.btnProfileImage.setImageBitmap(bitmap);
+                // set image icon to newly captured image
                 profileImage = bitmap;
-
+                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = activity.getContentResolver().openInputStream(
                         Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
                 profileImage = bitmap;
-                bind.btnProfileImage.setImageBitmap(bitmap);
+                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
                 if (stream != null) {
                     stream.close();
                 }

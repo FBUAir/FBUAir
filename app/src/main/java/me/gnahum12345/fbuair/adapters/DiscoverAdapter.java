@@ -24,6 +24,8 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {
     //TODO: possibly add this to sharedPreferences.
@@ -114,7 +116,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                 Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
                 viewHolder.mivProfilePic.setImageDrawable(drawable);
             } else {
-                viewHolder.mivProfilePic.setImageBitmap(profileUser.getIvProfileImage());
+                viewHolder.mivProfilePic.setImageBitmap(getCircularBitmap(profileUser.getIvProfileImage()));
             }
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
