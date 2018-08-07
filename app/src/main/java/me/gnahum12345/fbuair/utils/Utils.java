@@ -23,8 +23,12 @@ import android.util.Patterns;
 import android.view.inputmethod.InputMethodManager;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 public class Utils {
     // shared preferences keys
@@ -37,18 +41,7 @@ public class Utils {
         return (!TextUtils.isEmpty(email) && Patterns.EMAIL_ADDRESS.matcher(email).matches());
     }
     public static boolean isValidPhoneNumber(String number) {
-        return android.util.Patterns.PHONE.matcher(number).matches();
-    }
-    public static boolean isValidFacebookUrl(String facebookUrlString) {
-        return (Patterns.WEB_URL.matcher(facebookUrlString).matches() && facebookUrlString.toLowerCase().contains("facebook"));
-    }
-
-    public static boolean isValidInstagramUrl(String instagramUrlString) {
-        return (Patterns.WEB_URL.matcher(instagramUrlString).matches() && instagramUrlString.toLowerCase().contains("instagram"));
-    }
-
-    public static boolean isValidLinkedInUrl(String linkedInUrlString) {
-        return (Patterns.WEB_URL.matcher(linkedInUrlString).matches() && linkedInUrlString.toLowerCase().contains("linkedin"));
+        return (!TextUtils.isEmpty(number) && android.util.Patterns.PHONE.matcher(number).matches());
     }
 
     // hides keyboard
@@ -63,7 +56,8 @@ public class Utils {
     }
 
     // JSON date string formatter
-    public static DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    public static DateFormat dateFormatter = new SimpleDateFormat
+            ("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
 
     // gets relative time from json format date
     public static String getRelativeTimeAgo(Date date) {
@@ -74,6 +68,41 @@ public class Utils {
         return relativeDate;
     }
 
+    // returns time if in the same day, return day of week if in same week, return month and day otherwise
+    public static String getHistoryDate(String dateString) {
+        String formattedDate = "";
+        try {
+            Date date = dateFormatter.parse(dateString);
+            Date beginningOfDay;
+            Date beginningOfWeek;
+
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.HOUR_OF_DAY, 0);
+            cal.clear(Calendar.MINUTE);
+            cal.clear(Calendar.SECOND);
+            cal.clear(Calendar.MILLISECOND);
+            beginningOfDay = cal.getTime();
+
+            cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
+            beginningOfWeek = cal.getTime();
+
+            if (date.after(beginningOfDay)) {
+                DateFormat format = new SimpleDateFormat("h:mm a", Locale.US);
+                formattedDate = format.format(date);
+            } else if (date.after(beginningOfWeek)) {
+                DateFormat format = new SimpleDateFormat("EEE", Locale.US);
+                formattedDate = format.format(date);
+            } else {
+                DateFormat format = new SimpleDateFormat("MMM d", Locale.US);
+                formattedDate = format.format(date);
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return formattedDate;
+    }
+
     public static boolean isMyServiceRunning(Class<?> serviceClass, Context context) {
         ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
         for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
@@ -82,17 +111,6 @@ public class Utils {
             }
         }
         return false;
-    }
-
-    public static int getTintedColor(int color, float factor) {
-        int a = Color.alpha(color);
-        int r = Math.round(Color.red(color) * factor);
-        int g = Math.round(Color.green(color) * factor);
-        int b = Math.round(Color.blue(color) * factor);
-        return Color.argb(a,
-                Math.min(r,255),
-                Math.min(g,255),
-                Math.min(b,255));
     }
 
 }

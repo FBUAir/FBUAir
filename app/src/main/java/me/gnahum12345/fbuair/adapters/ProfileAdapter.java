@@ -17,6 +17,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
@@ -100,17 +103,26 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
             Bitmap profileImage = header.getProfileImage();
-            // set profile image
-            vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
-            // set cover photo/background for default profile
-            if (header.getColor() == NO_COLOR) {
-                Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
-                coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
-                vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
-            // set cover photo for non-default
-            } /*else {
+            // set profile image for fake users (real ones should never be null)
+            if (profileImage == null) {
+                ColorGenerator generator = ColorGenerator.MATERIAL;
+                TextDrawable drawable = TextDrawable.builder()
+                        .buildRound(Character.toString(header.getName().toCharArray()[0]).toUpperCase(),
+                                generator.getRandomColor());
+                vhHeader.bind.ivProfileImage.setImageDrawable(drawable);
+            } else {
+                // set profile image
+                vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
+                // set cover photo/background for non-default profile pics
+                if (header.getColor() == NO_COLOR) {
+                    Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
+                    coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
+                    vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
+                    // set cover photo for non-default
+                } /*else {
                 vhHeader.bind.ivBackground.setBackgroundColor(header.getColor());
             }*/
+            }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else {
@@ -217,7 +229,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         } else if (holder instanceof VHSocialMedia) {
             SocialMedia socialMedia = socialMedias.get(position - difference);
             VHSocialMedia vhSocialMedia = (VHSocialMedia) holder;
-            vhSocialMedia.bind.tvUsername.setText(socialMedia.getUsername());
+            String username = socialMedia.getUsername();
+            if (socialMedia.getName().equals("Twitter") || socialMedia.getName().equals("Instagram")) {
+                username = "@" + username;
+            }
+            vhSocialMedia.bind.tvUsername.setText(username);
             vhSocialMedia.bind.ivIcon.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
         }
     }
