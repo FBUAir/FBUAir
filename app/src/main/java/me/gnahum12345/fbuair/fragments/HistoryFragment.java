@@ -76,6 +76,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                history.clear();
                 historyAdapter.clear();
                 populateHistory();
                 swipeContainer.setRefreshing(false);
@@ -126,10 +127,6 @@ public class HistoryFragment extends Fragment implements UserListener {
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
-    // adds a given user to history, noting the time (to be called right after sharing data)
-    void addToHistory(User user) {
-        MyUserManager.getInstance().addUser(user);
-    }
 
     // gets history from shared preferences. return empty json array if no history has been added
     List<User> getHistory() {
@@ -140,7 +137,7 @@ public class HistoryFragment extends Fragment implements UserListener {
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
-        List<User> users = userManager.getCurrHistory();
+        List<User> users = getHistory();
         history.addAll(users);
         if (historyAdapter != null) {
             historyAdapter.notifyDataSetChanged();

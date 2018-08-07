@@ -399,7 +399,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // opens details screen for passed in user
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
+        bind.bottomNavigationView.setCurrentItem(-1);
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
@@ -420,7 +422,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
-
+    
 
     /* implementations for searching through history */
     @Override
