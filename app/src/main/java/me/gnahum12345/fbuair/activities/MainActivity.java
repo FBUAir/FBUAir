@@ -138,8 +138,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
 
-
-
         if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
             startService(intent);
         }
@@ -148,7 +146,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Discover");
+        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -180,10 +182,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
+                        getSupportActionBar().setTitle("Discover");
+                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
                         bind.historyMenu.setVisibility(View.VISIBLE);
+                        getSupportActionBar().setTitle("Recent");
+                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);

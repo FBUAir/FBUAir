@@ -54,12 +54,12 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     /**
      * TODO: put in activity.
      * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
      * false}.
      */
+
     public static boolean hasPermissions(Context context, String... permissions) {
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(context, permission)
@@ -79,7 +79,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             permissionsNotGranted();
 
         }
-
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
         tvRVEmpty = view.findViewById(R.id.tvRVEmptyView);

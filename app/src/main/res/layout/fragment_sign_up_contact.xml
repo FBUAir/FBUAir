@@ -105,7 +105,7 @@
             android:layout_height="46dp"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tvPhoneError"
-            app:srcCompat="@drawable/ic_phone" />
+            app:srcCompat="@drawable/call" />
 
         <ImageView
             android:id="@+id/ivEmail"
@@ -113,7 +113,7 @@
             android:layout_height="46dp"
             android:layout_alignParentStart="true"
             android:layout_below="@+id/tvEmailError"
-            app:srcCompat="@drawable/ic_email" />
+            app:srcCompat="@drawable/email" />
 
         <ImageButton
             android:id="@+id/btnProfileImage"
@@ -122,7 +122,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/ic_camera"
+            android:src="@drawable/user_add"
             android:scaleType="centerCrop" />
 
         <TextView

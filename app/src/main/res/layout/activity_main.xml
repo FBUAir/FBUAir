@@ -2,6 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -19,44 +20,12 @@
             android:theme="?attr/actionBarTheme">
 
             <RelativeLayout
-                android:id="@+id/editProfileMenu"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <ImageView
-                    android:id="@+id/ivBack"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true"
-                    android:src="@drawable/ic_back" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:layout_marginStart="10dp"
-                    android:layout_toEndOf="@id/ivBack"
-                    android:text="Title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title" />
-
-                <ImageView
-                    android:id="@+id/ivCheck"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_marginEnd="15dp"
-                    android:src="@drawable/ic_check" />
-            </RelativeLayout>
-
-            <RelativeLayout
                 android:id="@+id/historyMenu"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@id/toolbar"
                 android:orientation="horizontal"
-                android:visibility="gone">
+                android:visibility="invisible">
 
                 <SearchView
                     android:id="@+id/svSearch"
@@ -67,14 +36,14 @@
             </RelativeLayout>
         </android.support.v7.widget.Toolbar>
 
+
         <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@id/bottomNavigationView"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/toolbar"
-            />
+            android:layout_below="@id/toolbar" />
 
         <com.aurelhubert.ahbottomnavigation.AHBottomNavigation
             android:id="@+id/bottomNavigationView"
@@ -85,21 +54,21 @@
             android:layout_gravity="bottom"
             android:background="@color/color_white"
             app:itemIconTint="@drawable/nav_colors"
-            app:itemTextColor="@drawable/nav_colors"/>
+            app:itemTextColor="@drawable/nav_colors" />
 
         <View
             android:id="@+id/horizontalLine"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_below="@id/toolbar"/>
+            android:layout_below="@id/toolbar"
+            android:background="@android:color/darker_gray" />
 
         <View
             android:id="@+id/horizontalLine2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            android:layout_above="@id/bottomNavigationView"/>
+            android:layout_above="@id/bottomNavigationView"
+            android:background="@android:color/darker_gray" />
 
     </RelativeLayout>
 </layout>
