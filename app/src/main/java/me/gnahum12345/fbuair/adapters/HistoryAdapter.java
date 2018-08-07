@@ -14,6 +14,9 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +26,7 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
 
@@ -62,12 +66,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         final User user = filteredHistory.get(position);
         viewHolder.tvName.setText(user.getName());
-        Bitmap b = user.getProfileImage();
-        if (b == null) {
-            Drawable drawable = context.getResources().getDrawable(R.drawable.default_profile, null);
+        Bitmap bitmap = user.getProfileImage();
+        // generate fake profile images (real users should never have null)
+        if (bitmap == null) {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
+                            generator.getRandomColor());
             viewHolder.ivProfileImage.setImageDrawable(drawable);
         } else {
-            viewHolder.ivProfileImage.setImageBitmap(b);
+            viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
         }
         String relativeTimeString;
         try {

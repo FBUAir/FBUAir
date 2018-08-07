@@ -3,6 +3,7 @@ package me.gnahum12345.fbuair.models;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.util.Base64;
@@ -33,8 +34,11 @@ public class User implements Comparable {
     Bitmap profileImage;
     String timeAddedToHistory;
     Integer numConnections;
+    int color;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
     boolean seen = false;
+
+    public static int NO_COLOR = Integer.MIN_VALUE;
 
     // empty constructor needed by the Parceler library
     public User() {
@@ -153,6 +157,14 @@ public class User implements Comparable {
         socialMedias.remove(socialMedia);
     }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
     @Override
     public int compareTo(@NonNull Object o) {
         if (o instanceof User) {
@@ -202,7 +214,7 @@ public class User implements Comparable {
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
             user.numConnections = json.optInt("numConnections");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
-
+            user.color = json.optInt("color");
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -236,6 +248,7 @@ public class User implements Comparable {
         json.put("timeAddedToHistory", timeAddedToHistory);
         json.put("socialMedias", socialMedias);
         json.put("numConnections",numConnections);
+        json.put("color", user.getColor());
         return json;
 
     }

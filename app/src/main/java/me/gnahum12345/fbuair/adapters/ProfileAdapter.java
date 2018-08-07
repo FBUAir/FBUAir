@@ -8,6 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.PhoneNumberUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,8 @@ import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getTintedColor;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 
@@ -93,17 +96,17 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
             Bitmap profileImage = header.getProfileImage();
-            if (profileImage == null) {
-                vhHeader.bind.ivProfileImage.setImageDrawable(context.getResources()
-                        .getDrawable(R.drawable.default_profile, null));
-            } else {
-                // set profile
-                vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
-                // set cover photo/background
+            // set profile image
+            vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
+            // set cover photo/background for default profile
+            if (header.getColor() == NO_COLOR) {
                 Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
                 coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
                 vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
-            }
+            // set cover photo for non-default
+            } /*else {
+                vhHeader.bind.ivBackground.setBackgroundColor(header.getColor());
+            }*/
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
@@ -254,10 +257,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition() - difference;
-
-//            String url = socialMedias.get(position).getProfileUrl();
-//            Log.d("PROFILEADAPTER", "clicked link: " + url);
-//            onFragmentChangeListener.launchUrlView(url);
+            String url = socialMedias.get(position).getProfileUrl();
+            Log.d("PROFILEADAPTER", "clicked link: " + url);
+            onFragmentChangeListener.launchUrlView(url);
         }
     }
 }

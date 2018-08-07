@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
@@ -25,6 +26,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -35,6 +39,8 @@ import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
+import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
 import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
@@ -92,19 +98,12 @@ public class SignUpContactFragment extends Fragment {
         // clear placeholder text in errors
         clearErrors();
 
-        //working with getting the phones number programmatically
-        final String phone;
-        final String phoneID;
         bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 
-        if (getPhoneNum() != null) {
-            phone = getPhoneNum();
+        //working with getting the phones number programmatically
+        String phone = getPhoneNum();
+        if (phone != null) {
             bind.etPhone.setText(phone);
-        } else {
-            phoneID = getPhoneID();
-            Toast.makeText(getContext(), "Did not have a phone num", Toast.LENGTH_SHORT).show();
-            Toast.makeText(getContext(), "Phone id is" + phoneID, Toast.LENGTH_SHORT).show();
-            phone = bind.etPhone.getText().toString();
         }
 
         // go to next sign up screen when user clicks on button
@@ -115,6 +114,16 @@ public class SignUpContactFragment extends Fragment {
                 final String name = bind.etName.getText().toString();
                 final String organization = bind.etOrganization.getText().toString();
                 final String email = bind.etEmail.getText().toString();
+                String phone = bind.etPhone.getText().toString();
+                int color = NO_COLOR;
+                if (profileImage == null) {
+                    ColorGenerator generator = ColorGenerator.MATERIAL;
+                    color = generator.getRandomColor();
+                    TextDrawable drawable = TextDrawable.builder()
+                            .buildRound(Character.toString(name.toCharArray()[0]).toUpperCase(),
+                                    color);
+                    profileImage = drawableToBitmap(drawable);
+                }
                 // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name, phone, email)) {
                     User user = activity.user;
@@ -123,6 +132,7 @@ public class SignUpContactFragment extends Fragment {
                     user.setPhoneNumber(phone);
                     user.setEmail(email);
                     user.setProfileImage(profileImage);
+                    user.setColor(color);
                     activity.user = user;
                     onSignUpScreenChangeListener.launchSignUpSocialMedia();
                 }

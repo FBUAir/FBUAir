@@ -11,6 +11,7 @@ public class Header {
     String name;
     String organization;
     int connections;
+    int color;
 
     public Header(String uid) {
         User user = MyUserManager.getInstance().getUser(uid);
@@ -19,6 +20,7 @@ public class Header {
         this.name = user.getName();
         this.organization = user.getOrganization();
         this.connections = user.getNumConnections();
+        this.color = user.getColor();
     }
 
     public Bitmap getProfileImage() {
@@ -39,5 +41,13 @@ public class Header {
 
     public String getUid() {
         return uid;
+    }
+
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
     }
 }
