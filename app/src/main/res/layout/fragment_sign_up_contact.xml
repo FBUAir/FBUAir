@@ -18,7 +18,7 @@
             android:ems="10"
             android:hint="Email"
             android:inputType="textEmailAddress"
-            android:textColor="@android:color/black" />
+            android:textColor="@color/color_black" />
 
 
         <TextView

@@ -38,6 +38,18 @@
     <color name="gradient_purple">#b721ff</color>
     <color name="gradient_blue">#0093d7</color>
     <color name="gradient_red">#FF3366</color>
+    <color name="gradient_light_blue">#B3E5FC</color>
+    <color name="gradient_extremely_light_blue">#E1F5FE</color>
+    <color name="gradient_aqua">#16BAC5</color>
+    <color name="gradient_mauve">#AC80A0</color>
+    <color name="gradient_cobalt_blue">#89AAE6</color>
+    <color name="gradient_steel_blue">#3685B5</color>
+    <color name="gradient_plum">#8F3985</color>
+    <color name="gradient_cloud_blue">#98DFEA</color>
+    <color name="gradient_melon">#EEB4B3</color>
+    <color name="gradient_violet">#C179B9</color>
+    <color name="gradient_dark_violet">#502274</color>
+
 
     <color name="translucent_highlighted">#4bFFFF00</color>
 

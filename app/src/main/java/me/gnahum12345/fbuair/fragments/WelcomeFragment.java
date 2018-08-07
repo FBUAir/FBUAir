@@ -42,7 +42,7 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_welcome_v3, container, false);
+        return inflater.inflate(R.layout.fragment_welcome, container, false);
     }
 
     @Override
