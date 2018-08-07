@@ -35,7 +35,7 @@ import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
-import static me.gnahum12345.fbuair.utils.Utils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
 import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 

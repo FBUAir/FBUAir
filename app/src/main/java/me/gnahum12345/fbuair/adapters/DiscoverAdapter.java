@@ -24,7 +24,7 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
-import static me.gnahum12345.fbuair.utils.Utils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {

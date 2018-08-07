@@ -28,8 +28,8 @@ import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
-import static me.gnahum12345.fbuair.utils.Utils.getCircularBitmap;
-import static me.gnahum12345.fbuair.utils.Utils.getDarkenedBitmap;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
