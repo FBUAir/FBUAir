@@ -30,13 +30,11 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -156,9 +154,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         setSupportActionBar(bind.toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Discover");
-        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -194,15 +189,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.bottomNavigationView.setCurrentItem(0);
                         bind.historyMenu.setVisibility(View.INVISIBLE);
                         getSupportActionBar().setTitle("Discover");
-                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
                         bind.historyMenu.setVisibility(View.VISIBLE);
                         getSupportActionBar().setTitle("Recent");
-                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);

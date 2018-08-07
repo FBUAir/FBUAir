@@ -149,11 +149,6 @@ public class HistoryFragment extends Fragment implements UserListener {
         // Inflate the layout for this fragment
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
-
-        // Read your drawable from somewhere
-        //Drawable dr = getResources().getDrawable(R.drawable.ic_launcher_app_color);
-        //Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
-        //Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
         ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
 
