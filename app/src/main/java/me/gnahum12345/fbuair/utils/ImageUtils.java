@@ -11,6 +11,7 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.support.v4.content.ContextCompat;
@@ -68,20 +69,32 @@ public class ImageUtils {
         return output;
     }
 
-    // list of colors for default profiles
-    public static String[] colors =
-            {
-                    "#EE6096", // pink
-                    "#EC7063", // red
-                    "#AF7AC5", // purple
-                    "#5499C7", // dark blue
-                    "#5DADE2", // light blue
-                    "#48C9B0", // teal
-                    "##52BE80", // green
-                    "#F4D03F", // yellow
-                    "#F5B041", // orange
-                    "#AAB7B8", // grey
-                    "#5D6D7E", // dark grey/blue
-            };
+    public static Bitmap drawableToBitmap (Drawable drawable) {
+        if (drawable instanceof BitmapDrawable) {
+            return ((BitmapDrawable)drawable).getBitmap();
+        }
+        int width = drawable.getIntrinsicWidth();
+        width = width > 0 ? width : 96; // Replaced the 1 by a 96
+        int height = drawable.getIntrinsicHeight();
+        height = height > 0 ? height : 96; // Replaced the 1 by a 96
+
+        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
+        drawable.draw(canvas);
+
+        return bitmap;
+    }
+
+    public static int getTintedColor(int color, float factor) {
+        int a = Color.alpha(color);
+        int r = Math.round(Color.red(color) * factor);
+        int g = Math.round(Color.green(color) * factor);
+        int b = Math.round(Color.blue(color) * factor);
+        return Color.argb(a,
+                Math.min(r,255),
+                Math.min(g,255),
+                Math.min(b,255));
+    }
 
 }

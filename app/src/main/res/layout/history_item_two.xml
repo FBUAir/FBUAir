@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:focusable="true"
     android:clickable="true"
-    android:layout_marginTop="@dimen/profile_card_top_margin"
-    android:layout_marginStart="@dimen/profile_card_side_margin"
-    android:layout_marginEnd="@dimen/profile_card_side_margin"
     android:background="?android:attr/selectableItemBackground">
 
     <LinearLayout
@@ -64,7 +61,13 @@
         </LinearLayout>
     </LinearLayout>
 
-</android.support.v7.widget.CardView>
+    <View
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/tw__light_gray"/>
 
-
+</RelativeLayout>
 

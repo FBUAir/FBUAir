@@ -36,10 +36,10 @@
                         android:layout_height="@dimen/profile_image_size"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="5dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="60dp"
                         android:cropToPadding="false"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/default_profile" />
+                        app:srcCompat="@color/color_black" />
 
                     <TextView
                         android:id="@+id/tvName"
@@ -91,7 +91,7 @@
                 android:layout_marginStart="@dimen/profile_header_side_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:text="Delete"/>
 
             <ImageView

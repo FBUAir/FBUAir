@@ -14,6 +14,11 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
+import com.amulyakhare.textdrawable.util.ColorGenerator;
+
+import org.w3c.dom.Text;
+
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +28,9 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
+import static me.gnahum12345.fbuair.utils.Utils.getHistoryDate;
 import static me.gnahum12345.fbuair.utils.Utils.getRelativeTimeAgo;
 
 
@@ -53,7 +60,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int i) {
         context = holder.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contactView = inflater.inflate(R.layout.history_item, holder, false);
+        View contactView = inflater.inflate(R.layout.history_item_two, holder, false);
         // return a new viewHolder,
         return new ViewHolder(contactView);
     }
@@ -62,14 +69,24 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
         final User user = filteredHistory.get(position);
         viewHolder.tvName.setText(user.getName());
-        Bitmap b = user.getProfileImage();
-        if (b == null) {
-            Drawable drawable = context.getResources().getDrawable(R.drawable.default_profile, null);
+        if (user.getOrganization().isEmpty()) {
+            viewHolder.tvOrganization.setVisibility(View.GONE);
+        }
+        else {
+            viewHolder.tvOrganization.setText(user.getOrganization());
+        }
+        Bitmap bitmap = user.getProfileImage();
+        // generate fake profile images (real users should never have null)
+        if (bitmap == null) {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
+                            generator.getRandomColor());
             viewHolder.ivProfileImage.setImageDrawable(drawable);
         } else {
-            viewHolder.ivProfileImage.setImageBitmap(b);
+            viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
         }
-        String relativeTimeString;
+/*        String relativeTimeString;
         try {
             relativeTimeString =
                     getRelativeTimeAgo(dateFormatter.parse(user.getTimeAddedToHistory()));
@@ -77,7 +94,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             e.printStackTrace();
             relativeTimeString = "";
         }
-        viewHolder.tvTime.setText(relativeTimeString);
+        viewHolder.tvTime.setText(relativeTimeString);*/
+        viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -111,12 +129,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView tvName;
         public TextView tvTime;
         public ImageView ivProfileImage;
+        public TextView tvOrganization;
 
         ViewHolder(@NonNull View view) {
             super(view);
             tvName = view.findViewById(R.id.tvName);
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
+            tvOrganization = view.findViewById(R.id.tvOrganization);
         }
 
     }
