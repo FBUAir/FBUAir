@@ -19,10 +19,5 @@
         android:icon="@drawable/user_circle_bold"
         android:title="Profile"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/configure_medias"
-        android:icon="@drawable/com_facebook_close"
-        android:title="@string/configure_menu_bar"
-        app:showAsAction="always"/>
 
 </menu>
