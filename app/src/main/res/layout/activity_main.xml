@@ -17,24 +17,24 @@
             android:layout_alignParentTop="true"
             android:background="@color/color_white"
             android:minHeight="?attr/actionBarSize"
-            android:theme="?attr/actionBarTheme">
+            android:theme="?attr/actionBarTheme" />
 
-            <RelativeLayout
-                android:id="@+id/historyMenu"
-                android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/historyMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:background="@color/color_white"
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <SearchView
+                android:id="@+id/svSearch"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/toolbar"
-                android:orientation="horizontal"
-                android:visibility="invisible">
-
-                <SearchView
-                    android:id="@+id/svSearch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_alignParentTop="true" />
-            </RelativeLayout>
-        </android.support.v7.widget.Toolbar>
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true" />
+        </RelativeLayout>
 
 
         <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager

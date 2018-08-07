@@ -25,17 +25,18 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
-import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.Objects;
 
@@ -155,9 +156,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         setSupportActionBar(bind.toolbar);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         getSupportActionBar().setTitle("Discover");
-        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-        getSupportActionBar().setDisplayUseLogoEnabled(true);
-
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -191,23 +189,17 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
+                        bind.historyMenu.setVisibility(View.INVISIBLE);
                         getSupportActionBar().setTitle("Discover");
-                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
                         bind.historyMenu.setVisibility(View.VISIBLE);
                         getSupportActionBar().setTitle("Recent");
-                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
-                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);
                         getSupportActionBar().hide();
-                        break;
-                    case CONFIGURE_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(3);
                         break;
                 }
             }
@@ -372,6 +364,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
+    @Override
+    public void startAction(ActionMode.Callback callback) {
+        startActionMode(callback);
+    }
     void clearMenus() {
         bind.historyMenu.setVisibility(View.GONE);
     }
@@ -424,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
+
 
     /* implementations for searching through history */
     @Override
@@ -585,5 +582,17 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     }
                 });
         builder.show();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_discover, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: item selected" + item.toString());
+        return super.onOptionsItemSelected(item);
     }
 }

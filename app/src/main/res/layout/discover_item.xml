@@ -1,28 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:focusable="true"
+    android:clickable="true"
+    android:background="?android:attr/selectableItemBackground">
 
-    <!--TODO: Make the drawable circular.-->
-    <ImageView
-        android:id="@+id/ivProfilePic"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:adjustViewBounds="false"
-        android:scaleType="centerCrop"
-        app:srcCompat="@drawable/user" />
-
-    <TextView
-        android:id="@+id/tvNameofDevice"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/ivProfilePic"
-        android:hint="Name"
-        android:inputType="textPersonName"
-        android:textSize="18sp" />
+        android:orientation="horizontal"
+        android:padding="@dimen/profile_card_padding">
+
+        <ImageView
+            android:id="@+id/ivProfileImage"
+            android:layout_width="@dimen/history_profile_image_size"
+            android:layout_height="@dimen/history_profile_image_size"
+            android:layout_marginEnd="@dimen/profile_card_side_margin"/>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginBottom="@dimen/card_subtitle_margin"
+                    android:textColor="@android:color/black"
+                    android:textSize="@dimen/profile_card_font_size"
+                    android:textStyle="bold"
+                    tools:text="Mark Zuck" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <View
+        android:id="@+id/horizontalLine"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:background="@color/tw__light_gray"/>
 
 </RelativeLayout>
+

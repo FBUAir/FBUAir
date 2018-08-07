@@ -221,10 +221,10 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // authenticate linked in and add new social media on success
     @Override
     public void facebookLogin(SocialMedia socialMedia) {
-        if (mCallbackManager!=null){
+        /**if (mCallbackManager!=null){
             LoginManager.getInstance().unregisterCallback(mCallbackManager);
         }
-
+**/
         mCallbackManager = CallbackManager.Factory.create();
 
         LoginManager.getInstance().registerCallback(mCallbackManager,

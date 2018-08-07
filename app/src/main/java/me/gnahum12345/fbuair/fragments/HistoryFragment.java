@@ -2,7 +2,6 @@ package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,10 +11,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -25,13 +27,10 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
-import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.services.SwipeController;
-import me.gnahum12345.fbuair.services.SwipeControllerActions;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
@@ -45,10 +44,11 @@ public class HistoryFragment extends Fragment implements UserListener {
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
-    SwipeController swipeController = null;
+    //    SwipeController swipeController = null;
     ContactUtils.AddContactResult addContactResult;
 
     OnRequestAddContact onAddContactClickedListener;
+
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -62,7 +62,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         history = new ArrayList<>();
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
-        onAddContactClickedListener = (OnRequestAddContact)context;
+        onAddContactClickedListener = (OnRequestAddContact) context;
 
 
     }
@@ -93,37 +93,8 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvHistory.setAdapter(historyAdapter);
         rvHistory.setLayoutManager(new LinearLayoutManager(activity));
 
-        swipeController = new SwipeController(new SwipeControllerActions() {
-            @Override
-            public void onRightClicked(int position) {
-                MyUserManager.getInstance().removeUser(history.get(position));
-                history.remove(position);
-                historyAdapter.notifyItemRemoved(position);
-                historyAdapter.notifyItemRangeChanged(position, historyAdapter.getItemCount());
-            }
 
-            @Override
-            public void onLeftClicked(int position) {
-                onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
-                    // can do stuff here if contact was successfully added
-                    @Override
-                    public void onSuccess() {
-                    }
-                });
-
-            }
-        });
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(rvHistory);
-
-        rvHistory.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-
+//        clearHistory();
         // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
@@ -149,11 +120,6 @@ public class HistoryFragment extends Fragment implements UserListener {
         // Inflate the layout for this fragment
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
-
-        // Read your drawable from somewhere
-        //Drawable dr = getResources().getDrawable(R.drawable.ic_launcher_app_color);
-        //Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
-        //Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
         ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
 

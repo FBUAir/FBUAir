@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,37 +8,70 @@
 
 
     <android.support.v7.widget.RecyclerView
+        android:id="@+id/rvDevicesView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/rvDevicesView" />
+        android:layout_height="match_parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:layout_gravity="bottom|center"
-        android:id="@+id/tvRVEmptyView"
-        android:textSize="20sp"
-        android:text="I can't seem to find anyone nearby...."
-        android:visibility="gone" />
-
-    <com.skyfishjy.library.RippleBackground
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/rippleBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"
-        android:id="@+id/rippleBackground"
         app:rb_color="#0099CC"
+        app:rb_duration="4000"
         app:rb_radius="32dp"
         app:rb_rippleAmount="4"
-        app:rb_duration="4000"
         app:rb_scale="6">
+
         <ImageView
+            android:id="@+id/centerImage"
             android:layout_width="64dp"
             android:layout_height="64dp"
             android:layout_centerInParent="true"
-            android:id="@+id/centerImage"
-            android:src="@drawable/phone_searching"/>
+            android:src="@drawable/phone_searching" />
     </com.skyfishjy.library.RippleBackground>
-</FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="bottom|center"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="center_vertical"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvRVEmptyView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center"
+                android:padding="10dp"
+                android:text="Air lets you share instantly with people nearby"
+                android:textAlignment="center"
+                android:textColor="@color/color_black"
+                android:textSize="19sp"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvRVEmptyAddView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:padding="10dp"
+            android:text="@string/discover_add_friends"
+            android:textAlignment="center"
+            android:textColor="@color/gradient_blue"
+            android:textSize="16sp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>
