@@ -173,17 +173,16 @@ public class SignUpContactFragment extends Fragment {
             // if user captured image
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
-                // set image icon to newly selected image
-                bind.btnProfileImage.setImageBitmap(bitmap);
-                profileImage = getCircularBitmap(bitmap);
-
+                // set image icon to newly captured image
+                profileImage = bitmap;
+                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = activity.getContentResolver().openInputStream(
                         Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                profileImage = getCircularBitmap(bitmap);
-                bind.btnProfileImage.setImageBitmap(bitmap);
+                profileImage = bitmap;
+                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
                 if (stream != null) {
                     stream.close();
                 }

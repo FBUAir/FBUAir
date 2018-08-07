@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,8 @@ import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
-import static me.gnahum12345.fbuair.utils.Utils.getBitmapFromVectorDrawable;
+import static me.gnahum12345.fbuair.utils.Utils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.Utils.getDarkenedBitmap;
 
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -95,7 +97,12 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.ivProfileImage.setImageDrawable(context.getResources()
                         .getDrawable(R.drawable.default_profile, null));
             } else {
-                vhHeader.bind.ivProfileImage.setImageBitmap(profileImage);
+                // set profile
+                vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
+                // set cover photo/background
+                Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
+                coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
+                vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
             }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
@@ -136,7 +143,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 vhContact.bind.llPhone.setVisibility(View.VISIBLE);
                 vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
-                vhContact.bind.tvPhone.setText(contact.getPhone());
+                String formattedNumber = PhoneNumberUtils.formatNumber(contact.getPhone(), "US");
+                vhContact.bind.tvPhone.setText(formattedNumber);
             }
             if (contact.getEmail().isEmpty()) {
                 vhContact.bind.llEmail.setVisibility(View.GONE);

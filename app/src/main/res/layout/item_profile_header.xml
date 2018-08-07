@@ -14,56 +14,65 @@
             android:layout_height="wrap_content"
             app:cardElevation="10dp"
             app:cardCornerRadius="0dp">
-
-            <LinearLayout
-                android:id="@+id/llHeader"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#afb3dd"
-                android:orientation="vertical">
-
+                android:layout_height="wrap_content">
                 <ImageView
-                    android:id="@+id/ivProfileImage"
-                    android:layout_width="@dimen/profile_image_size"
-                    android:layout_height="@dimen/profile_image_size"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginBottom="5dp"
-                    android:layout_marginTop="15dp"
-                    android:cropToPadding="false"
-                    android:scaleType="centerCrop"
-                    app:srcCompat="@android:color/black" />
+                    android:id="@+id/ivBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#898989"
+                    android:scaleType="centerCrop"/>
 
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:id="@+id/llHeader"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Name"
-                    android:textColor="@color/color_white"
-                    android:textSize="@dimen/profile_name_font_size"
-                    android:textStyle="bold" />
+                    android:orientation="vertical">
 
-                <TextView
-                    android:id="@+id/tvOrganization"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
-                    android:text="Organization"
-                    android:textColor="@color/color_white"
-                    android:textSize="@dimen/profile_header_font_size" />
+                    <ImageView
+                        android:id="@+id/ivProfileImage"
+                        android:layout_width="@dimen/profile_image_size"
+                        android:layout_height="@dimen/profile_image_size"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="20dp"
+                        android:cropToPadding="false"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/default_profile" />
 
-                <TextView
-                    android:id="@+id/tvConnections"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="left"
-                    android:layout_marginBottom="10dp"
-                    android:layout_marginStart="@dimen/profile_header_side_margin"
-                    android:layout_marginTop="@dimen/profile_header_side_margin"
-                    android:text="Connection number"
-                    android:textColor="@color/color_white"
-                    android:textSize="@dimen/profile_header_font_size" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Name"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_name_font_size"
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:id="@+id/tvOrganization"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Organization"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_header_font_size" />
+
+                    <TextView
+                        android:id="@+id/tvConnections"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="@dimen/profile_header_side_margin"
+                        android:layout_marginTop="@dimen/profile_header_side_margin"
+                        android:text="Connection number"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_header_font_size" />
+                </LinearLayout>
+            </FrameLayout>
         </android.support.v7.widget.CardView>
 
         <LinearLayout
@@ -82,14 +91,15 @@
                 android:layout_marginStart="@dimen/profile_header_side_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Delete"
-                android:visibility="gone"/>
+                android:visibility="gone"
+                android:text="Delete"/>
 
             <ImageView
                 android:id="@+id/btEditProfile"
                 android:layout_width="@dimen/profile_header_button_size"
                 android:layout_height="@dimen/profile_header_button_size"
-                android:src="@drawable/ic_edit_button"/>
+                android:src="@drawable/ic_edit_button"
+                android:elevation="10dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -107,14 +117,16 @@
                 android:id="@+id/btAddContact"
                 android:layout_width="@dimen/profile_header_button_size"
                 android:layout_height="@dimen/profile_header_button_size"
-                android:src="@drawable/ic_add_button"/>
+                android:src="@drawable/ic_add_button"
+                android:elevation="10dp"/>
 
             <ImageView
                 android:id="@+id/btSendBack"
                 android:layout_width="@dimen/profile_header_button_size"
                 android:layout_height="@dimen/profile_header_button_size"
                 android:layout_marginStart="@dimen/profile_header_side_margin"
-                android:src="@drawable/ic_share_button" />
+                android:src="@drawable/ic_share_button"
+                android:elevation="10dp"/>
         </LinearLayout>
     </RelativeLayout>
 </layout>
