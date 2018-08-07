@@ -37,7 +37,7 @@ public class FakeUsers {
                     .put("socialMedias", "[]");
 
             jsonUser2 = new JSONObject()
-                    .put("name", "Reese Jones")
+                    .put("name", "Reese Amazing")
                     .put("uId", "13232")
                     .put("phoneNumber", "7482034937")
                     .put("email", "")

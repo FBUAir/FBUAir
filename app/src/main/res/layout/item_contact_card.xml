@@ -29,8 +29,7 @@
                     android:layout_height="25dp"
                     android:layout_marginEnd="20dp"
                     android:contentDescription="Icon"
-                    android:textSize="@dimen/profile_card_icon_size"
-                    app:srcCompat="@drawable/ic_phone" />
+                    app:srcCompat="@drawable/call" />
 
                 <TextView
                     android:id="@+id/tvPhone"
@@ -63,7 +62,7 @@
                     android:layout_height="@dimen/profile_card_icon_size"
                     android:layout_marginEnd="20dp"
                     android:contentDescription="Icon"
-                    app:srcCompat="@drawable/ic_email" />
+                    app:srcCompat="@drawable/email" />
 
                 <TextView
                     android:id="@+id/tvEmail"

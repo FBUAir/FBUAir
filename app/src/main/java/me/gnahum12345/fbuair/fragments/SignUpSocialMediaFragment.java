@@ -52,7 +52,6 @@ public class SignUpSocialMediaFragment extends Fragment{
 
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);
         try {
             onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {

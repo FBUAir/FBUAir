@@ -29,6 +29,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -40,6 +41,7 @@ import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
+import me.gnahum12345.fbuair.fragments.ConfigureFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
@@ -61,10 +63,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     public ActivityMainBinding bind;
     // fragment position aliases
-    final static int DISCOVER_FRAGMENT = 0;
-    final static int HISTORY_FRAGMENT = 1;
-    final static int PROFILE_FRAGMENT = 2;
-    final static int DETAILS_FRAGMENT = 3;
+    private final static int DISCOVER_FRAGMENT = 0;
+    private final static int HISTORY_FRAGMENT = 1;
+    private final static int PROFILE_FRAGMENT = 2;
+    private final static int CONFIGURE_FRAGMENT = 3;
+    private final static int DETAILS_FRAGMENT = 4;
+    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
+
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
@@ -85,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
     ProfileFragment detailsFragment;
+    ConfigureFragment configureFragment;
+
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
@@ -138,8 +145,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
 
-
-
         if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
             startService(intent);
         }
@@ -148,18 +153,24 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
-        Objects.requireNonNull(getSupportActionBar()).setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+        getSupportActionBar().setTitle("Discover");
+        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+        getSupportActionBar().setDisplayUseLogoEnabled(true);
+
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
         detailsFragment = new ProfileFragment();
+        configureFragment = new ConfigureFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
+        fragments.add(configureFragment);
         fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
@@ -180,14 +191,23 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
+                        getSupportActionBar().setTitle("Discover");
+                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
                         bind.historyMenu.setVisibility(View.VISIBLE);
+                        getSupportActionBar().setTitle("Recent");
+                        getSupportActionBar().setLogo(R.drawable.logo_app_round);
+                        getSupportActionBar().setDisplayUseLogoEnabled(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);
                         getSupportActionBar().hide();
+                        break;
+                    case CONFIGURE_FRAGMENT:
+                        bind.bottomNavigationView.setCurrentItem(3);
                         break;
                 }
             }
@@ -213,14 +233,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 bind.viewPager.setCurrentItem(position, true);
                 if (position == 1) {
                     MyUserManager.getInstance().clearNotification();
-                }
-
-                //TODO: Delete this.. this is a proof of concept that if a user is added, it will be added to the HistoryAdapter.
-                if (position == 0) {
-                    User u = new User();
-                    u.setName("this is a fake user...");
-                    u.setTimeAddedToHistory(Utils.getRelativeTimeAgo(Calendar.getInstance().getTime()));
-                    MyUserManager.getInstance().addUser(u);
                 }
                 return true;
             }
@@ -307,6 +319,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             // don't do anything...
         }
     }
+
 
     @Override
     public void onBackPressed() {

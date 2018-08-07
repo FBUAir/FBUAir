@@ -1,17 +1,21 @@
 package me.gnahum12345.fbuair.adapters;
 
+import android.Manifest;
+import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.support.v4.app.ActivityCompat;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -31,6 +35,7 @@ import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getTintedColor;
+import static android.content.Context.CLIPBOARD_SERVICE;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 
@@ -52,8 +57,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     OnRequestAddContact onAddContactClickedListener;
 
     public ProfileAdapter(Context context, Contact contact, Header header,
-                          ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile)
-    {
+                          ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile) {
         this.header = header;
         this.contact = contact;
         this.socialMedias = socialMedias;
@@ -61,8 +65,8 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.isCurrentUserProfile = isCurrentUserProfile;
         difference = contact.isEmpty() ? 1 : 2;
 
-        onFragmentChangeListener = (OnFragmentChangeListener)context;
-        this.onAddContactClickedListener = (OnRequestAddContact)context;
+        onFragmentChangeListener = (OnFragmentChangeListener) context;
+        this.onAddContactClickedListener = (OnRequestAddContact) context;
     }
 
     @Override
@@ -109,9 +113,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }*/
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
-            } else vhHeader.bind.tvOrganization.setText(header.getOrganization());
-            vhHeader.bind.tvConnections.setText
-                    (String.valueOf(header.getConnections()) + " connections");
+            } else {
+                vhHeader.bind.tvOrganization.setText(header.getOrganization());
+            }
+            vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
 
             if (isCurrentUserProfile) {
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
@@ -146,6 +151,37 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 vhContact.bind.llPhone.setVisibility(View.VISIBLE);
                 vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
+                vhContact.bind.tvPhone.setText(contact.getPhone());
+                vhContact.bind.tvPhone.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        Intent intent = new Intent(Intent.ACTION_CALL);
+                        intent.setData(Uri.parse("tel:" + contact.getPhone()));
+
+                        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                            // TODO: Consider calling
+                            //    ActivityCompat#requestPermissions
+                            // here to request the missing permissions, and then overriding
+                            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+                            //                                          int[] grantResults)
+                            // to handle the case where the user grants the permission. See the documentation
+                            // for ActivityCompat#requestPermissions for more details.
+                            Toast.makeText(context, "calling unsuccessful, will copy instead.", Toast.LENGTH_SHORT).show();
+                            copy(context, contact.getPhone());
+                            return;
+                        }
+                        Toast.makeText(context, "Calling...", Toast.LENGTH_SHORT).show();
+
+                        context.startActivity(intent);
+                    }
+                });
+                vhContact.bind.tvPhone.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        return copy(context, contact.getPhone());
+                    }
+                });
                 String formattedNumber = PhoneNumberUtils.formatNumber(contact.getPhone(), "US");
                 vhContact.bind.tvPhone.setText(formattedNumber);
             }
@@ -156,6 +192,26 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhContact.bind.llEmail.setVisibility(View.VISIBLE);
                 vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
                 vhContact.bind.tvEmail.setText(contact.getEmail());
+                vhContact.bind.tvEmail.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Uri uri = Uri.parse("mailto:" + contact.getEmail())
+                                .buildUpon()
+                                .appendQueryParameter("subject", "AIR Subject: ")
+                                .build();
+
+                        Intent emailIntent = new Intent(Intent.ACTION_SENDTO, uri);
+                        context.startActivity(Intent.createChooser(emailIntent, "Email!"));
+
+                    }
+                });
+
+                vhContact.bind.tvEmail.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View view) {
+                        return copy(context, contact.getEmail());
+                    }
+                });
             }
 
         } else if (holder instanceof VHSocialMedia) {
@@ -223,9 +279,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         }
                     });
                     break;
-                case R.id.btSendBack:
-                    // todo - send back functionality
-                    break;
                 case R.id.btEditProfile:
                     onFragmentChangeListener.launchEditProfile();
                     break;
@@ -234,6 +287,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
             }
         }
+    }
+
+    private boolean copy(Context context, String msg) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
+        clipboard.setText(msg);
+        Toast.makeText(context, "Copied: " + clipboard.getPrimaryClip().toString(), Toast.LENGTH_SHORT).show();
+        return true;
     }
 
     class VHContact extends RecyclerView.ViewHolder {

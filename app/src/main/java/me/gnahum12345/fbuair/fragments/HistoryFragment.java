@@ -1,8 +1,10 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
-import android.graphics.Canvas;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +16,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -146,6 +147,16 @@ public class HistoryFragment extends Fragment implements UserListener {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
+
+        // Read your drawable from somewhere
+        //Drawable dr = getResources().getDrawable(R.drawable.ic_launcher_app_color);
+        //Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
+        //Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
+        ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
+
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
@@ -189,4 +200,5 @@ public class HistoryFragment extends Fragment implements UserListener {
     public void userRemoved(User user) {
         populateHistory();
     }
+
 }
