@@ -3,6 +3,8 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -71,8 +73,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvName.setText(user.getName());
         if (user.getOrganization().isEmpty()) {
             viewHolder.tvOrganization.setVisibility(View.GONE);
-        }
-        else {
+        } else {
             viewHolder.tvOrganization.setText(user.getOrganization());
         }
         Bitmap bitmap = user.getProfileImage();
@@ -86,15 +87,16 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         } else {
             viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
         }
-/*        String relativeTimeString;
-        try {
-            relativeTimeString =
-                    getRelativeTimeAgo(dateFormatter.parse(user.getTimeAddedToHistory()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-            relativeTimeString = "";
+
+        if (!user.isSeen()) {
+//            viewHolder.itemView.setBackgroundTintMode();
+//            viewHolder.itemView.setBackgroundColor();
+            viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
+        } else {
+            viewHolder.itemView.setBackgroundColor(Color.WHITE);
+            viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
         }
-        viewHolder.tvTime.setText(relativeTimeString);*/
+
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {

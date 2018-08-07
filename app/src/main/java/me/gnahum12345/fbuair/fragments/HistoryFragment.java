@@ -45,7 +45,7 @@ public class HistoryFragment extends Fragment implements UserListener {
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     LinearLayoutManager linearLayoutManager;
-    SwipeController swipeController = null;
+//    SwipeController swipeController = null;
     ContactUtils.AddContactResult addContactResult;
 
     OnRequestAddContact onAddContactClickedListener;
@@ -93,37 +93,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         rvHistory.setAdapter(historyAdapter);
         rvHistory.setLayoutManager(new LinearLayoutManager(activity));
 
-        swipeController = new SwipeController(new SwipeControllerActions() {
-            @Override
-            public void onRightClicked(int position) {
-                MyUserManager.getInstance().removeUser(history.get(position));
-                history.remove(position);
-                historyAdapter.notifyItemRemoved(position);
-                historyAdapter.notifyItemRangeChanged(position, historyAdapter.getItemCount());
-            }
-
-            @Override
-            public void onLeftClicked(int position) {
-                onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
-                    // can do stuff here if contact was successfully added
-                    @Override
-                    public void onSuccess() {
-                    }
-                });
-
-            }
-        });
-
-        ItemTouchHelper itemTouchhelper = new ItemTouchHelper(swipeController);
-        itemTouchhelper.attachToRecyclerView(rvHistory);
-
-        rvHistory.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
-                swipeController.onDraw(c);
-            }
-        });
-
+        clearHistory();
         // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
