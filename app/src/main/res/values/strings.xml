@@ -55,4 +55,7 @@
     <string name="configure_menu_bar">Configure</string>
     <string name="missing_something">Are you missing a platform? Click here to add!</string>
     <string name="add_social_media">Add</string>
+
+
+    <string name="discover_add_friends">Don\'t see who you\'re looking for? <u>Invite them!</u></string>
 </resources>
