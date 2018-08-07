@@ -16,6 +16,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -34,6 +36,7 @@ public class User implements Comparable {
     String timeAddedToHistory;
     Integer numConnections;
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
+    ArrayList<SocialMedia> sendingSocialMedias = new ArrayList<>();
     boolean seen = false;
 
     // empty constructor needed by the Parceler library
@@ -128,9 +131,14 @@ public class User implements Comparable {
         return socialMedias;
     }
 
+    public ArrayList<SocialMedia> getSendingSocialMedias() {
+        return sendingSocialMedias;
+    }
+
     // adds social media or edits old one with same name if it exists
     public void addSocialMedia(SocialMedia socialMedia) {
         SocialMediaUtils.addSocialMedia(socialMedia, socialMedias);
+        addSendingSocialMedia(socialMedia);
     }
 
     // gets social media object from social media list by name. returns null if none exists
@@ -148,9 +156,35 @@ public class User implements Comparable {
         return getSocialMedia(socialMedia.getName()) != null;
     }
 
+    public boolean isSendingSocialMedia(SocialMedia socialMedia) {
+        SocialMedia media = getSocialMedia(socialMedia.getName());
+        if (media == null) {
+            return false;
+        }
+        for (SocialMedia m : sendingSocialMedias) {
+            if (m.getName().equals(media.getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void addSendingSocialMedia(SocialMedia socialMedia) {
+        sendingSocialMedias.add(socialMedia);
+    }
+    public void removeSendingSocialMedia(SocialMedia socialMedia) {
+        for (int i = 0; i < sendingSocialMedias.size(); i++) {
+            if(sendingSocialMedias.get(i).getName().equals(socialMedia.getName())) {
+                sendingSocialMedias.remove(i);
+                return;
+            }
+        }
+    }
+
     // removes social media by object
     public void removeSocialMedia(SocialMedia socialMedia) {
         socialMedias.remove(socialMedia);
+        removeSendingSocialMedia(socialMedia);
     }
 
     @Override
@@ -190,6 +224,7 @@ public class User implements Comparable {
         }
     }
 
+
     public static User fromJson(JSONObject json){
         User user = new User();
         try {
@@ -202,7 +237,7 @@ public class User implements Comparable {
             user.timeAddedToHistory = json.optString("timeAddedToHistory");
             user.numConnections = json.optInt("numConnections");
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
-
+            user.sendingSocialMedias = User.jsonArrayToArrayList(json.optJSONArray("sendingSocialMedia"));
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -225,6 +260,7 @@ public class User implements Comparable {
         Integer numConnections = user.getNumConnections();
         String uid = user.getId();
         JSONArray socialMedias = User.arrayListToJsonArray(user.getSocialMedias());
+        JSONArray sendingSM = User.arrayListToJsonArray(user.getSendingSocialMedias());
 
         JSONObject json = new JSONObject();
         json.put("name", name);
@@ -235,6 +271,7 @@ public class User implements Comparable {
         json.put("profileImage", profileImageString);
         json.put("timeAddedToHistory", timeAddedToHistory);
         json.put("socialMedias", socialMedias);
+        json.put("sendingSocialMedia", sendingSM);
         json.put("numConnections",numConnections);
         return json;
 
