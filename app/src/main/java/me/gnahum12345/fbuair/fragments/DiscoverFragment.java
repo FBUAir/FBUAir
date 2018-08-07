@@ -26,10 +26,10 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
+import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
 public class DiscoverFragment extends Fragment implements ConnectionListener {
@@ -54,12 +54,12 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
     }
-
     /**
      * TODO: put in activity.
      * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
      * false}.
      */
+
     public static boolean hasPermissions(Context context, String... permissions) {
         for (String permission : permissions) {
             if (ContextCompat.checkSelfPermission(context, permission)
@@ -79,7 +79,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             permissionsNotGranted();
 
         }
-
         View view = inflater.inflate(R.layout.fragment_discover, container, false);
 
         tvRVEmpty = view.findViewById(R.id.tvRVEmptyView);
@@ -221,6 +220,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 
+    // todo - attribute vector authors: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
 }
 
 

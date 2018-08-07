@@ -96,6 +96,7 @@ public class ConfigureAdapter extends BaseAdapter {
                 notifyDataSetChanged();
             } else {
                 user.addSendingSocialMedia(socialMedia);
+                MyUserManager.getInstance().commitCurrentUser(user);
                 notifyDataSetChanged();
             }
 

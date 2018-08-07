@@ -1,8 +1,10 @@
 package me.gnahum12345.fbuair.fragments;
 
 import android.app.Activity;
-import android.graphics.Canvas;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +16,6 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import org.json.JSONObject;
 
@@ -24,7 +25,6 @@ import java.util.List;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
-import me.gnahum12345.fbuair.databinding.FragmentDetailsBinding;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
@@ -47,9 +47,6 @@ public class HistoryFragment extends Fragment implements UserListener {
     LinearLayoutManager linearLayoutManager;
     SwipeController swipeController = null;
     ContactUtils.AddContactResult addContactResult;
-    FragmentDetailsBinding bind;
-    String contactId;
-    String rawContactId;
 
     OnRequestAddContact onAddContactClickedListener;
 
@@ -107,15 +104,13 @@ public class HistoryFragment extends Fragment implements UserListener {
 
             @Override
             public void onLeftClicked(int position) {
-                addContactResult = ContactUtils.findConflict(getContext(), history.get(position));
-                if (addContactResult.getResultCode() == ContactUtils.SUCCESS) {
-                    onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
-                        // can do stuff here if contact was successfully added
-                        @Override
-                        public void onSuccess() {
-                        }
-                    });
-                }
+                onAddContactClickedListener.requestAddContact(history.get(position).getId(), new OnContactAddedCallback() {
+                    // can do stuff here if contact was successfully added
+                    @Override
+                    public void onSuccess() {
+                    }
+                });
+
             }
         });
 
@@ -152,6 +147,16 @@ public class HistoryFragment extends Fragment implements UserListener {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
+        Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
+
+        // Read your drawable from somewhere
+        //Drawable dr = getResources().getDrawable(R.drawable.ic_launcher_app_color);
+        //Bitmap bitmap = ((BitmapDrawable) dr).getBitmap();
+        //Drawable d = new BitmapDrawable(getResources(), Bitmap.createScaledBitmap(bitmap, 100, 100, true));
+        ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
+        ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
+
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
@@ -195,4 +200,5 @@ public class HistoryFragment extends Fragment implements UserListener {
     public void userRemoved(User user) {
         populateHistory();
     }
+
 }

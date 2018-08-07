@@ -8,7 +8,9 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.support.v4.app.ActivityCompat;
+import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
+import android.telephony.PhoneNumberUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +22,7 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
-import me.gnahum12345.fbuair.fragments.ProfileFragmentTwo;
+import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
@@ -31,6 +33,8 @@ import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -39,7 +43,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_SOCIAL_MEDIA = 2;
 
     Context context;
-    ProfileFragmentTwo.ProfileFragmentListener mListener;
+    ProfileFragment.ProfileFragmentListener mListener;
     Header header;
     Contact contact;
     ArrayList<SocialMedia> socialMedias;
@@ -92,7 +96,18 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             VHHeader vhHeader = (VHHeader) holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
-
+            Bitmap profileImage = header.getProfileImage();
+            if (profileImage == null) {
+                vhHeader.bind.ivProfileImage.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.default_profile, null));
+            } else {
+                // set profile
+                vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
+                // set cover photo/background
+                Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
+                coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
+                vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
+            }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
             } else {
@@ -104,12 +119,17 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                vhHeader.bind.btAddContact.setEnabled(!contact.isAdded());
+                if (contact.isAdded()) {
+                    vhHeader.bind.btAddContact.setEnabled(false);
+                    vhHeader.bind.btAddContact.setImageDrawable
+                            (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
+                                    null));
+                }
             }
-
-
             if (!isAvaliable(header.getUid()) || !isListener()) {
-                vhHeader.bind.btSendBack.setVisibility(View.INVISIBLE);
+                vhHeader.bind.btSendBack.setEnabled(false);
+                vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.ic_share_button_disabled, null));
                 return;
             }
             vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
@@ -132,7 +152,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhContact.bind.tvPhone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Toast.makeText(context, "Calling...", Toast.LENGTH_SHORT).show();
 
                         Intent intent = new Intent(Intent.ACTION_CALL);
                         intent.setData(Uri.parse("tel:" + contact.getPhone()));
@@ -145,20 +164,23 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             //                                          int[] grantResults)
                             // to handle the case where the user grants the permission. See the documentation
                             // for ActivityCompat#requestPermissions for more details.
+                            Toast.makeText(context, "calling unsuccessful, will copy instead.", Toast.LENGTH_SHORT).show();
+                            copy(context, contact.getPhone());
                             return;
                         }
+                        Toast.makeText(context, "Calling...", Toast.LENGTH_SHORT).show();
+
                         context.startActivity(intent);
                     }
                 });
                 vhContact.bind.tvPhone.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
-                        clipboard.setText(contact.getPhone());
-                        Toast.makeText(context, "Copied: " + clipboard.getPrimaryClip().toString(), Toast.LENGTH_SHORT).show();
-                        return true;
+                        return copy(context, contact.getPhone()); 
                     }
                 });
+                String formattedNumber = PhoneNumberUtils.formatNumber(contact.getPhone(), "US");
+                vhContact.bind.tvPhone.setText(formattedNumber);
             }
             if (contact.getEmail().isEmpty()) {
                 vhContact.bind.llEmail.setVisibility(View.GONE);
@@ -184,13 +206,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhContact.bind.tvEmail.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
-                        clipboard.setText(contact.getEmail());
-                        Toast.makeText(context, "Copied: " + clipboard.getPrimaryClip().toString(), Toast.LENGTH_SHORT).show();
-                        return true;
+                        return copy(context, contact.getEmail());
                     }
                 });
             }
+
         } else if (holder instanceof VHSocialMedia) {
             SocialMedia socialMedia = socialMedias.get(position - difference);
             VHSocialMedia vhSocialMedia = (VHSocialMedia) holder;
@@ -227,7 +247,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return socialMedias.size() + difference;
     }
 
-    public void setListener(ProfileFragmentTwo.ProfileFragmentListener listener) {
+    public void setListener(ProfileFragment.ProfileFragmentListener listener) {
         mListener = listener;
     }
 
@@ -266,6 +286,13 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         }
     }
 
+    private boolean copy(Context context, String msg) {
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(CLIPBOARD_SERVICE);
+        clipboard.setText(msg);
+        Toast.makeText(context, "Copied: " + clipboard.getPrimaryClip().toString(), Toast.LENGTH_SHORT).show();
+        return true;
+    }
+
     class VHContact extends RecyclerView.ViewHolder {
         ItemContactCardBinding bind;
 
@@ -287,10 +314,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         @Override
         public void onClick(View view) {
             int position = getAdapterPosition() - difference;
-
-//            String url = socialMedias.get(position).getProfileUrl();
-//            Log.d("PROFILEADAPTER", "clicked link: " + url);
-//            onFragmentChangeListener.launchUrlView(url);
         }
     }
 }

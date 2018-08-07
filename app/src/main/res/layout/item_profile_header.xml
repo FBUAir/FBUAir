@@ -1,82 +1,105 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.CoordinatorLayout
-        android:id="@+id/container"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="15dp">
+        android:layout_marginBottom="20dp">
 
-        <LinearLayout
-            android:id="@+id/llBackground"
+        <android.support.v7.widget.CardView
+            android:id="@+id/cvHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/gradient_welcome"
+            app:cardElevation="10dp"
+            app:cardCornerRadius="0dp">
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/ivBackground"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="#898989"
+                    android:scaleType="centerCrop"/>
 
-            android:orientation="vertical"
-            android:padding="15dp">
+                <LinearLayout
+                    android:id="@+id/llHeader"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
 
-            <ImageView
-                android:id="@+id/ivProfileImage"
-                android:layout_width="75dp"
-                android:layout_height="75dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                android:cropToPadding="false"
-                android:scaleType="centerCrop"
-                app:srcCompat="@android:color/black" />
+                    <ImageView
+                        android:id="@+id/ivProfileImage"
+                        android:layout_width="@dimen/profile_image_size"
+                        android:layout_height="@dimen/profile_image_size"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="5dp"
+                        android:layout_marginTop="20dp"
+                        android:cropToPadding="false"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/default_profile" />
 
-            <TextView
-                android:id="@+id/tvName"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Name"
-                android:textColor="@color/color_white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                    <TextView
+                        android:id="@+id/tvName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Name"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_name_font_size"
+                        android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/tvOrganization"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginBottom="20dp"
-                android:text="Organization"
-                android:textColor="@color/color_white" />
+                    <TextView
+                        android:id="@+id/tvOrganization"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="Organization"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_header_font_size" />
 
-            <TextView
-                android:id="@+id/tvConnections"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="left"
-                android:text="Connection number"
-                android:textColor="@color/color_white" />
-        </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvConnections"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:layout_marginBottom="10dp"
+                        android:layout_marginStart="@dimen/profile_header_side_margin"
+                        android:layout_marginTop="@dimen/profile_header_side_margin"
+                        android:text="Connection number"
+                        android:textColor="@color/color_white"
+                        android:textSize="@dimen/profile_header_font_size" />
+                </LinearLayout>
+            </FrameLayout>
+        </android.support.v7.widget.CardView>
 
         <LinearLayout
             android:id="@+id/llProfileOptions"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_anchor="@id/llBackground"
-            app:layout_anchorGravity="bottom|end"
-            android:layout_marginEnd="15dp">
-
-            <Button
-                android:id="@+id/btEditProfile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Edit"/>
+            android:layout_marginEnd="@dimen/profile_header_side_margin"
+            android:layout_marginTop="@dimen/profile_header_button_top_margin"
+            android:layout_below="@id/cvHeader"
+            android:layout_alignParentEnd="true"
+            android:elevation="10dp">
 
             <Button
                 android:id="@+id/btDeleteProfile"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="@dimen/profile_header_side_margin"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:text="Delete"/>
+
+            <ImageView
+                android:id="@+id/btEditProfile"
+                android:layout_width="@dimen/profile_header_button_size"
+                android:layout_height="@dimen/profile_header_button_size"
+                android:src="@drawable/ic_edit_button"
+                android:elevation="10dp"/>
         </LinearLayout>
 
         <LinearLayout
@@ -84,22 +107,26 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            app:layout_anchor="@id/llBackground"
-            app:layout_anchorGravity="bottom|end"
-            android:layout_marginEnd="15dp">
+            android:layout_marginEnd="@dimen/profile_header_side_margin"
+            android:layout_marginTop="@dimen/profile_header_button_top_margin"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/cvHeader"
+            android:elevation="10dp">
 
-            <Button
+            <ImageView
                 android:id="@+id/btAddContact"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Add Contact"/>
+                android:layout_width="@dimen/profile_header_button_size"
+                android:layout_height="@dimen/profile_header_button_size"
+                android:src="@drawable/ic_add_button"
+                android:elevation="10dp"/>
 
-            <Button
+            <ImageView
                 android:id="@+id/btSendBack"
-                android:layout_marginStart="15dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Send back"/>
+                android:layout_width="@dimen/profile_header_button_size"
+                android:layout_height="@dimen/profile_header_button_size"
+                android:layout_marginStart="@dimen/profile_header_side_margin"
+                android:src="@drawable/ic_share_button"
+                android:elevation="10dp"/>
         </LinearLayout>
-    </android.support.design.widget.CoordinatorLayout>
+    </RelativeLayout>
 </layout>

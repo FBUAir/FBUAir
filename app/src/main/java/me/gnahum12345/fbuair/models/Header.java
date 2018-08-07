@@ -18,7 +18,8 @@ public class Header {
         this.profileImage = user.getProfileImage();
         this.name = user.getName();
         this.organization = user.getOrganization();
-        this.connections = user.getNumConnections();
+
+        this.connections =  user.getNumConnections() == null ? 0 : user.getNumConnections();
     }
 
     public Bitmap getProfileImage() {
