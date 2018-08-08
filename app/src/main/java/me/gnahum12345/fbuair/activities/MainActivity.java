@@ -201,6 +201,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(3);
+                        getSupportActionBar().setTitle("Configure");
                         break;
                 }
             }

@@ -36,7 +36,6 @@
                 android:layout_alignParentTop="true" />
         </RelativeLayout>
 
-
         <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
             android:id="@+id/viewPager"
             android:layout_width="match_parent"

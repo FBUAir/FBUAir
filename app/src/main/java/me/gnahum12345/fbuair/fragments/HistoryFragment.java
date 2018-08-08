@@ -35,6 +35,8 @@ import me.gnahum12345.fbuair.services.SwipeControllerActions;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+
 
 public class HistoryFragment extends Fragment implements UserListener {
 
@@ -148,7 +150,7 @@ public class HistoryFragment extends Fragment implements UserListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
+        Drawable d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
         ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
 
