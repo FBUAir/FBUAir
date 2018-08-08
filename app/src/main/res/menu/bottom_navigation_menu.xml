@@ -19,10 +19,6 @@
         android:icon="@drawable/ic_user"
         android:title="Profile"
         app:showAsAction="always"/>
-    <item
-        android:id="@+id/configure_medias"
-        android:icon="@drawable/com_facebook_close"
-        android:title="@string/configure_menu_bar"
-        app:showAsAction="never"/>
+
 
 </menu>

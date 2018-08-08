@@ -86,6 +86,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         notifyDataSetChanged();
     }
 
+
+
     public void put(Endpoint e, ProfileUser profileUser) {
         if (profileUser.getName() == null || profileUser.getName().isEmpty()) {
             return;

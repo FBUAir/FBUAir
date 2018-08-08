@@ -219,14 +219,26 @@ public class User implements Comparable {
             }
         }
         try (FileOutputStream writer = context.openFileOutput(f.getName(), Context.MODE_PRIVATE)) {
-            String content = this.toString();
+            String content = fileString();
             writer.write(content.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
         return f;
+    }
+
+    public String fileString() {
+        try {
+            JSONObject object = User.toJson(this);
+            object.put("socialMedias", User.arrayListToJsonArray(getSendingSocialMedias()));
+            return object.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return null;
 
     }
+
     public String toString() {
         try {
             return User.toJson(this).toString();
