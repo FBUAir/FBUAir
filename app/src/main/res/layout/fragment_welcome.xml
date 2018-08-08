@@ -34,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:paddingTop="10dp"
-        android:text="All your Profiles in One Place"
+        android:text="@string/app_motto"
         android:textColor="@color/color_white"
         android:textSize="20sp" />
 

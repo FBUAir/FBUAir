@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
@@ -48,16 +49,16 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_CONTACT = 1;
     private static final int TYPE_SOCIAL_MEDIA = 2;
 
-    Context context;
-    ProfileFragment.ProfileFragmentListener mListener;
-    Header header;
-    Contact contact;
-    ArrayList<SocialMedia> socialMedias;
-    boolean isCurrentUserProfile;
-    int difference;
+    private Context context;
+    private ProfileFragment.ProfileFragmentListener mListener;
+    private Header header;
+    private Contact contact;
+    private ArrayList<SocialMedia> socialMedias;
+    private boolean isCurrentUserProfile;
+    private int difference;
 
-    OnFragmentChangeListener onFragmentChangeListener;
-    OnRequestAddContact onAddContactClickedListener;
+    private OnFragmentChangeListener onFragmentChangeListener;
+    private OnRequestAddContact onAddContactClickedListener;
 
     public ProfileAdapter(Context context, Contact contact, Header header,
                           ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile) {
@@ -72,6 +73,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.onAddContactClickedListener = (OnRequestAddContact) context;
     }
 
+    @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater =
@@ -96,7 +98,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         // populate views in each item
         if (holder instanceof VHHeader) {
             VHHeader vhHeader = (VHHeader) holder;
@@ -118,10 +120,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
                     coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
                     vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
-                    // set cover photo for non-default
-                } /*else {
-                vhHeader.bind.ivBackground.setBackgroundColor(header.getColor());
-            }*/
+                }
             }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);

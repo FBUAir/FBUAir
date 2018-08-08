@@ -12,13 +12,13 @@ import me.gnahum12345.fbuair.models.SocialMedia;
 public class SocialMediaUtils {
     // make sure drawable resource "ic_[social media name (lowercase)]" exists
     static String[] socialMediaNames = {"Facebook", "Instagram", "Twitter", "Snapchat", "LinkedIn",
-            "Google", "WhatsApp", "Youtube", "Reddit", "Pinterest", "Tumblr", "Soundcloud",
-            "Github", "DeviantArt", "Dribbble"};
+            "Google", "WhatsApp", "Youtube", "Pinterest", "Tumblr", "Soundcloud",
+            "Github"};
 
     static String[] socialMediaUrls = { "facebook.com", "instagram.com", "twitter.com",
             "snapchat.com/add", "linkedin.com/in", "plus.google.com", "wa.me",
-            "youtube.com/channel", "reddit.com/user","pinterest.com", "tumblr.com",
-            "soundcloud.com", "github.com", "deviantart.com", "dribbble.com"};
+            "youtube.com/channel", "pinterest.com", "tumblr.com",
+            "soundcloud.com", "github.com"};
 
     static HashMap<String, String> urlMap = getUrlMap();
 
