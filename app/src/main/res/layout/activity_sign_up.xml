@@ -8,41 +8,27 @@
         android:orientation="vertical"
         tools:context=".activities.SignUpActivity">
 
-        <RelativeLayout
+        <LinearLayout
             android:id="@+id/menu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginTop="@dimen/menu_item_top_margin">
+            android:paddingBottom="@dimen/menu_item_top_margin">
 
             <ImageView
                 android:id="@+id/ivBack"
                 android:layout_width="@dimen/menu_item_size"
                 android:layout_height="@dimen/menu_item_size"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
                 android:layout_marginStart="@dimen/menu_item_side_margin"
-                android:layout_marginBottom="@dimen/menu_item_side_margin"
+                android:layout_marginTop="@dimen/menu_item_top_margin"
                 android:src="@drawable/ic_back" />
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/menu_item_side_margin"
-                android:layout_below="@id/ivBack"
-                android:text="Create Account"
-                android:textColor="@color/color_black"
-                android:textSize="@dimen/title_font_size"
-                android:textStyle="bold" />
-
-        </RelativeLayout>
+        </LinearLayout>
 
         <FrameLayout
             android:id="@+id/fragmentContainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/color_white"/>
+            android:background="@color/color_white" />
 
     </LinearLayout>
 </layout>

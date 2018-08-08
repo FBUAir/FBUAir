@@ -5,7 +5,8 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="@dimen/menu_item_side_margin"
+        android:paddingStart="@dimen/side_margin"
+        android:paddingEnd="@dimen/side_margin"
         tools:context=".fragments.SignUpSocialMediaFragment">
 
         <in.srain.cube.views.GridViewWithHeaderAndFooter
