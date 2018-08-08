@@ -4,25 +4,25 @@
 
     <item
         android:id="@+id/action_discover"
-        android:icon="@drawable/wireless_bold_internet"
+        android:icon="@drawable/ic_wifi"
         android:title="Discover"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_history"
-        android:icon="@drawable/menu_bold"
+        android:icon="@drawable/ic_clock"
         android:title="Recent"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/action_profile"
-        android:icon="@drawable/user_circle_bold"
+        android:icon="@drawable/ic_user"
         android:title="Profile"
         app:showAsAction="always"/>
     <item
         android:id="@+id/configure_medias"
         android:icon="@drawable/com_facebook_close"
         android:title="@string/configure_menu_bar"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
 
 </menu>

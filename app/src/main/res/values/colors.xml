@@ -50,6 +50,8 @@
     <color name="gradient_violet">#C179B9</color>
     <color name="gradient_dark_violet">#502274</color>
 
+    <color name="light_grey">#f7f7f7</color>
+    <color name="grey">#7A7A7A</color>
 
     <color name="translucent_highlighted">#4bFFFF00</color>
 
