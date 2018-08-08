@@ -11,8 +11,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/side_margin"
             android:paddingEnd="@dimen/side_margin"
-            android:paddingBottom="@dimen/side_margin"
-            android:paddingTop="@dimen/title_top_margin">
+            android:paddingBottom="@dimen/side_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -28,16 +27,24 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:layout_marginBottom="@dimen/title_bottom_margin"
+                    android:layout_marginBottom="20dp"
                     android:text="Create Account"
                     android:textColor="@color/color_black"
                     android:textSize="@dimen/title_font_size"
                     android:textStyle="bold" />
 
+                <ImageView
+                    android:id="@+id/ivProfileImage"
+                    android:layout_width="@dimen/sign_up_profile_image_size"
+                    android:layout_height="@dimen/sign_up_profile_image_size"
+                    android:src="@drawable/ic_add_img2"
+                    android:layout_gravity="center_horizontal"/>
+
                 <EditText
                     android:id="@+id/etName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
                     android:ems="10"
                     android:focusedByDefault="true"
                     android:hint="Name"
@@ -61,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/edit_text_top_margin"
                     android:ems="10"
-                    android:hint="Organization"
+                    android:hint="Organization (optional)"
                     android:inputType="textPersonName"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/black" />

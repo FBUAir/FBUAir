@@ -10,7 +10,6 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="left"
-            android:layout_marginTop="@dimen/title_top_margin"
             android:layout_marginBottom="@dimen/sign_up_instructions_margin_bottom"
             android:text="Create Account"
             android:textColor="@color/color_black"
@@ -24,7 +23,7 @@
             android:layout_gravity="center_horizontal"
             android:textColor="@color/color_black"
             android:text="@string/social_media_instructions"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:layout_marginBottom="@dimen/sign_up_instructions_margin_bottom"/>
 
     </LinearLayout>

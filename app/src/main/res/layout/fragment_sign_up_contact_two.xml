@@ -12,8 +12,7 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/side_margin"
             android:paddingEnd="@dimen/side_margin"
-            android:paddingBottom="@dimen/side_margin"
-            android:paddingTop="@dimen/title_top_margin">
+            android:paddingBottom="@dimen/side_margin">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -34,31 +33,9 @@
                     android:textStyle="bold" />
 
                 <EditText
-                    android:id="@+id/etEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:ems="10"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:textAlignment="viewStart"
-                    android:textColor="@android:color/black" />
-
-
-                <TextView
-                    android:id="@+id/tvEmailError"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="email error"
-                    android:layout_marginStart="@dimen/error_side_margin"
-                    android:textColor="@android:color/holo_red_dark"
-                    android:textSize="12sp"
-                    android:visibility="gone" />
-
-                <EditText
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/edit_text_top_margin"
                     android:ems="10"
                     android:hint="Phone Number"
                     android:inputType="phone"
@@ -73,6 +50,28 @@
                     android:textSize="12sp"
                     android:visibility="gone"
                     tools:text="phone error" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/edit_text_top_margin"
+                    android:ems="10"
+                    android:hint="Email (optional)"
+                    android:inputType="textEmailAddress"
+                    android:textAlignment="viewStart"
+                    android:textColor="@android:color/black" />
+
+
+                <TextView
+                    android:id="@+id/tvEmailError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="email error"
+                    android:layout_marginStart="@dimen/error_side_margin"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 
