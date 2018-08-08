@@ -25,8 +25,10 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.SearchView;
@@ -366,6 +368,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
+    @Override
+    public void startAction(ActionMode.Callback callback) {
+        startActionMode(callback);
+    }
     void clearMenus() {
         bind.historyMenu.setVisibility(View.GONE);
     }
@@ -397,7 +403,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // opens details screen for passed in user
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
+        bind.bottomNavigationView.setCurrentItem(-1);
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
@@ -418,6 +426,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
+    
 
     /* implementations for searching through history */
     @Override
@@ -585,5 +594,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_discover, menu);
         return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
+
+        if (item.getItemId() == R.id.miCompose) {
+            bind.bottomNavigationView.setCurrentItem(-1);
+            bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

@@ -38,7 +38,8 @@
     <color name="gradient_purple">#b721ff</color>
     <color name="gradient_blue">#0093d7</color>
     <color name="gradient_red">#FF3366</color>
-    <color name="gradient_light_blue">#5FBFF9</color>
+    <color name="gradient_light_blue">#B3E5FC</color>
+    <color name="gradient_extremely_light_blue">#E1F5FE</color>
     <color name="gradient_aqua">#16BAC5</color>
     <color name="gradient_mauve">#AC80A0</color>
     <color name="gradient_cobalt_blue">#89AAE6</color>

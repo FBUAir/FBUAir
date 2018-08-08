@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -62,10 +61,8 @@ public class WelcomeFragment extends Fragment {
         // get reference to activity
         activity = (SignUpActivity) getActivity();
 
-        // hide toolbar
-        if (activity != null) {
-            Objects.requireNonNull(activity.getSupportActionBar()).hide();
-        }
+        // hide menu
+        activity.hideMenu();
 
         // go to signup if user presses 'get started'
         ivLogo = view.findViewById(R.id.ivLogo);

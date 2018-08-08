@@ -132,7 +132,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
-//                ((DiscoverActivity) mContext).sendToEndpoint(device);  //TODO figure out what mContext really is.
                 ((MainActivity) mContext).connectService.sendToEndpoint(device);
             }
         });
@@ -163,8 +162,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         public ViewHolder(@NonNull View view) {
             super(view);
-            mtvDeviceName = view.findViewById(R.id.tvNameofDevice);
-            mivProfilePic = view.findViewById(R.id.ivProfilePic);
+            mtvDeviceName = view.findViewById(R.id.tvName);
+            mivProfilePic = view.findViewById(R.id.ivProfileImage);
         }
     }
 }
