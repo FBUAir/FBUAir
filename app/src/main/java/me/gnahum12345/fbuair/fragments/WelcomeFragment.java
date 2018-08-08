@@ -4,7 +4,6 @@ import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.graphics.Path;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -22,15 +21,11 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.utils.Utils;
-import okhttp3.internal.Util;
 
 public class WelcomeFragment extends Fragment {
 
-    final Handler handler = new Handler();
     Button btGetStarted;
-    Button btSlide;
     ImageView ivLogo;
-    ViewGroup transitionsContainer;
     SignUpActivity activity;
     OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
@@ -79,8 +74,6 @@ public class WelcomeFragment extends Fragment {
                 float y = ivLogo.getY();
                 path.moveTo(x, y);
                 path.cubicTo(500, 500, 600, 10, 1500, 0);
-                //path.cubicTo();
-                //path.arcTo(0f, 0f, 1000f, 1000f, 40f, 180f, true);
                 ObjectAnimator animator = ObjectAnimator.ofFloat(ivLogo, View.X, View.Y, path);
                 animator.setDuration(2000);
                 animator.start();
