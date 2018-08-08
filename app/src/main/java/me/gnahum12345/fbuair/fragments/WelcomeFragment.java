@@ -32,10 +32,14 @@ public class WelcomeFragment extends Fragment {
     SignUpActivity activity;
     OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
-    public WelcomeFragment() {
-        // Required empty public constructor
-    }
 
+    public WelcomeFragment {
+
+
+
+
+
+    }
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
