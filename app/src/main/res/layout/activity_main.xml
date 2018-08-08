@@ -17,6 +17,7 @@
             android:layout_alignParentTop="true"
             android:background="@color/color_white"
             android:minHeight="?attr/actionBarSize"
+            android:fitsSystemWindows="true"
             android:theme="?attr/actionBarTheme" />
 
         <RelativeLayout

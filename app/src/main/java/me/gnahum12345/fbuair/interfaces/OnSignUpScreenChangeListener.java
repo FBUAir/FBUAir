@@ -5,6 +5,9 @@ import android.graphics.drawable.Icon;
 import me.gnahum12345.fbuair.models.SocialMedia;
 
 public interface OnSignUpScreenChangeListener {
+    /** hides menu */
+    void setMenuVisible(boolean flag);
+
     /** goes to sign up contact fragment */
     void launchSignUpContact();
 

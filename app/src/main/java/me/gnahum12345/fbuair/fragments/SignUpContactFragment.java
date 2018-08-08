@@ -82,7 +82,7 @@ public class SignUpContactFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
 
         // show menu
-        activity.showMenu();
+        onSignUpScreenChangeListener.setMenuVisible(true);
 
         bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
 

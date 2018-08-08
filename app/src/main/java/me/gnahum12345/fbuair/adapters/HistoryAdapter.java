@@ -45,49 +45,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private OnFragmentChangeListener onFragmentChangeListener;
     private boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
-    private ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
-        @Override
-        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-            multiSelectMode = true;
-            actionMode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
-            notifyDataSetChanged();
-            return true;
-        }
-
-        @Override
-        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-            return false;
-        }
-
-        @Override
-        public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-            switch (menuItem.getItemId()) {
-                case R.id.add_menu_action:
-                    Toast.makeText(context, String.format("Added %d users to contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                    addContacts(selectedUsers);
-                    actionMode.finish();
-                    return true;
-                case R.id.delete_menu_action:
-                    Toast.makeText(context, String.format("Deleted %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                    deleteContacts(selectedUsers);
-                    actionMode.finish();
-                    return true;
-                case R.id.star_menu_action:
-                    Toast.makeText(context, String.format("Starred %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                    actionMode.finish();
-                    return true;
-                default:
-                    return false;
-            }
-        }
-
-        @Override
-        public void onDestroyActionMode(ActionMode actionMode) {
-            multiSelectMode = false;
-            selectedUsers.clear();
-            notifyDataSetChanged();
-        }
-    };
 
     private void addContacts(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
@@ -121,7 +78,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup holder, int i) {
         context = holder.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
-        View contactView = inflater.inflate(R.layout.history_item_two, holder, false);
+        View contactView = inflater.inflate(R.layout.item_history, holder, false);
         // return a new viewHolder,
         return new ViewHolder(contactView);
     }
@@ -170,8 +127,53 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
-//                return false;
-                onFragmentChangeListener.startAction(actionModeCallBack);
+                ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
+                    @Override
+                    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                        multiSelectMode = true;
+                        onFragmentChangeListener.setMenuVisible(false);
+                        actionMode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
+                        notifyDataSetChanged();
+                        return true;
+                    }
+
+                    @Override
+                    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                        return false;
+                    }
+
+                    @Override
+                    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                        switch (menuItem.getItemId()) {
+                            case R.id.add_menu_action:
+                                Toast.makeText(context, String.format("Added %d users to contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                                addContacts(selectedUsers);
+                                actionMode.finish();
+                                return true;
+                            case R.id.delete_menu_action:
+                                Toast.makeText(context, String.format("Deleted %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                                deleteContacts(selectedUsers);
+                                actionMode.finish();
+                                return true;
+                            case R.id.star_menu_action:
+                                Toast.makeText(context, String.format("Starred %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                                actionMode.finish();
+                                return true;
+                            default:
+                                return false;
+                        }
+                    }
+
+                    @Override
+                    public void onDestroyActionMode(ActionMode actionMode) {
+                        multiSelectMode = false;
+                        selectedUsers.clear();
+                        notifyDataSetChanged();
+                        onFragmentChangeListener.setMenuVisible(true);
+                    }
+                };
+
+                onFragmentChangeListener.launchActionMode(actionModeCallBack);
                 selectItem(user, viewHolder);
                 return true;
             }

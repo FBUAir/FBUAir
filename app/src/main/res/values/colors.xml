@@ -70,5 +70,6 @@
     <color name="grey">#7A7A7A</color>
 
     <color name="translucent_highlighted">#4bFFFF00</color>
+    <color name="accent_material_light_1">#28ecd9</color>
 
 </resources>

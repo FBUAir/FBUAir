@@ -17,7 +17,7 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.adapters.SocialMediaAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
-import me.gnahum12345.fbuair.databinding.IconsFooterBinding;
+import me.gnahum12345.fbuair.databinding.ItemIconsFooterBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
@@ -35,7 +35,7 @@ public class SignUpSocialMediaFragment extends Fragment{
 
     // data bind to skip find view by id
     FragmentSignUpSocialMediaBinding bind;
-    IconsFooterBinding bindFooter;
+    ItemIconsFooterBinding bindFooter;
 
     public SignUpSocialMediaFragment() {
         // Required empty public constructor
@@ -79,7 +79,7 @@ public class SignUpSocialMediaFragment extends Fragment{
 
         // set footer (buttons for skip and next) in grid view
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-        bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.icons_footer, container,
+        bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.item_icons_footer, container,
                 false);
         View footerView = bindFooter.getRoot();
         bind.gvSocialMedias.addFooterView(footerView);

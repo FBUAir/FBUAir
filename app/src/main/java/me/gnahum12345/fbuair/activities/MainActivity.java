@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.activities;
 
 import android.Manifest;
+import android.app.ActionBar;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -69,7 +70,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int PROFILE_FRAGMENT = 2;
     private final static int CONFIGURE_FRAGMENT = 3;
     private final static int DETAILS_FRAGMENT = 4;
-    private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
 
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
@@ -369,9 +369,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
     @Override
-    public void startAction(ActionMode.Callback callback) {
+    public void launchActionMode(ActionMode.Callback callback) {
         startActionMode(callback);
     }
+
     void clearMenus() {
         bind.historyMenu.setVisibility(View.GONE);
     }
@@ -605,5 +606,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void setMenuVisible(boolean flag) {
+        android.support.v7.app.ActionBar supportActionBar = getSupportActionBar();
+        if (supportActionBar != null) {
+            if (flag) supportActionBar.show();
+            else supportActionBar.hide();
+        }
     }
 }

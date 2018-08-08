@@ -100,7 +100,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         user = new User();
         endAllSessions();
 
-        hideMenu();
+        setMenuVisible(false);
+
         bind.ivBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,19 +120,20 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     }
 
-    public void hideMenu() {
-        bind.menu.setVisibility(View.GONE);
-    }
-
-    public void showMenu() {
-        bind.menu.setVisibility(View.VISIBLE);
-    }
 
     // starts a given fragment
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
+    }
+
+    // sets large sign-up menu's visibility
+    @Override
+    public void setMenuVisible(boolean flag) {
+        if (flag) bind.menu.setVisibility(View.VISIBLE);
+        else bind.menu.setVisibility(View.GONE);
+
     }
 
     @Override

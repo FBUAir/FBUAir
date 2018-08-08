@@ -21,6 +21,8 @@ import java.util.TimerTask;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
+import me.gnahum12345.fbuair.utils.Utils;
+import okhttp3.internal.Util;
 
 public class WelcomeFragment extends Fragment {
 
@@ -32,14 +34,9 @@ public class WelcomeFragment extends Fragment {
     SignUpActivity activity;
     OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
-
-    public WelcomeFragment {
-
-
-
-
-
+    public WelcomeFragment() {
     }
+
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -65,8 +62,9 @@ public class WelcomeFragment extends Fragment {
         // get reference to activity
         activity = (SignUpActivity) getActivity();
 
-        // hide menu
-        activity.hideMenu();
+        // hide keyboard and menu
+        Utils.hideSoftKeyboard(activity);
+        onSignUpScreenChangeListener.setMenuVisible(false);
 
         // go to signup if user presses 'get started'
         ivLogo = view.findViewById(R.id.ivLogo);
