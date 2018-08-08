@@ -49,8 +49,27 @@
     <color name="gradient_melon">#EEB4B3</color>
     <color name="gradient_violet">#C179B9</color>
     <color name="gradient_dark_violet">#502274</color>
+    <color name="gradient_dark_salmon">#FF8671</color>
+    <color name="gradient_teal">#00BFB2</color>
+    <color name="gradient_orange">#FF5E5B</color>
+    <color name="gradient_dodger_blue">#2191FB</color>
+    <color name="gradient_maroon">#BA274A</color>
+    <color name="gradient_blue_green">#07A0C3</color>
+    <color name="gradient_sea_blue">#086788</color>
+    <color name="gradient_electric_blue">#7CFEF0</color>
+    <color name="gradient_aquamarine">#6BFFB8</color>
+    <color name="gradient_metallic_seaweed">#187795</color>
+    <color name="gradient_cornflower_blue">#2589BD</color>
+    <color name="gradient_lapiz">#306BAC</color>
+    <color name="gradient_tiffany">#0CBABA</color>
+    <color name="gradient_onyx">#3C3744</color>
+    <color name="gradient_rose">#e1bbb4</color>
 
+
+    <color name="light_grey">#f7f7f7</color>
+    <color name="grey">#7A7A7A</color>
 
     <color name="translucent_highlighted">#4bFFFF00</color>
+    <color name="accent_material_light_1">#28ecd9</color>
 
 </resources>

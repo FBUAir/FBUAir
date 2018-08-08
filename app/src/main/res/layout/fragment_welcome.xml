@@ -3,16 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="42dp"
-    android:background="@color/gradient_light_blue"
+    android:padding="10dp"
+    android:background="@drawable/messenger_gradient"
     tools:context=".fragments.WelcomeFragment" >
 
     <ImageView
         android:id="@+id/ivLogo"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
+        android:layout_marginTop="107dp"
         app:srcCompat="@drawable/ic_launcher_app" />
 
     <TextView
@@ -33,7 +34,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:paddingTop="10dp"
-        android:text="All your Profiles in One Place"
+        android:text="@string/app_motto"
         android:textColor="@color/color_white"
         android:textSize="20sp" />
 
@@ -41,6 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:id="@+id/transitions_container"
         android:layout_alignParentBottom="true">
 
         <Button
