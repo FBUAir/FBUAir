@@ -25,19 +25,15 @@ import me.gnahum12345.fbuair.models.User;
 
 public class ProfileFragment extends Fragment {
 
-    private ProfileFragmentListener mListener;
-    FragmentProfileBinding bind;
     final static String ARG_UID = "uid";
-
+    FragmentProfileBinding bind;
     Activity activity;
     ArrayList<SocialMedia> socialMedias;
     ProfileAdapter profileAdapter;
-
     Contact contact;
-
     ViewGroup container;
-
     User user;
+    private ProfileFragmentListener mListener;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -78,6 +74,7 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -102,7 +99,7 @@ public class ProfileFragment extends Fragment {
             mListener = (ProfileFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString() +
-                        " must implement ProfileFragmentListener");
+                    " must implement ProfileFragmentListener");
         }
     }
 
