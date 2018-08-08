@@ -162,8 +162,14 @@ public class MyUserManager {
     }
 
     public void removeUser(User user) {
-        currentUsers.remove(user);
-        commit();
+        for (String key : currentUsers.keySet()) {
+            User u = currentUsers.get(key);
+            if (u.equals(user)) {
+                currentUsers.remove(key);
+                commit();
+                return;
+            }
+        }
     }
 
     public void clearHistory() {

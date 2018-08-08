@@ -201,6 +201,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.bottomNavigationView.setCurrentItem(2);
                         getSupportActionBar().hide();
                         break;
+                    case CONFIGURE_FRAGMENT:
+                        bind.bottomNavigationView.setCurrentItem(3);
+                        getSupportActionBar().setTitle("Configure");
+                        break;
                 }
             }
 
@@ -399,7 +403,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // opens details screen for passed in user
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
+        bind.bottomNavigationView.setCurrentItem(-1);
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
 
@@ -420,7 +426,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
-
+    
 
     /* implementations for searching through history */
     @Override
@@ -592,7 +598,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected: item selected" + item.toString());
+        Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
+
+        if (item.getItemId() == R.id.miCompose) {
+            bind.bottomNavigationView.setCurrentItem(-1);
+            bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
+        }
         return super.onOptionsItemSelected(item);
     }
 }

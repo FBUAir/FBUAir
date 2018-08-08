@@ -34,6 +34,8 @@ import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+
 
 public class HistoryFragment extends Fragment implements UserListener {
 
@@ -76,6 +78,7 @@ public class HistoryFragment extends Fragment implements UserListener {
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                history.clear();
                 historyAdapter.clear();
                 populateHistory();
                 swipeContainer.setRefreshing(false);
@@ -119,17 +122,13 @@ public class HistoryFragment extends Fragment implements UserListener {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Drawable d = new BitmapDrawable(getResources(), MyUserManager.getInstance().getCurrentUser().getProfileImage());
+        Drawable d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
         ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
-    // adds a given user to history, noting the time (to be called right after sharing data)
-    void addToHistory(User user) {
-        MyUserManager.getInstance().addUser(user);
-    }
 
     // gets history from shared preferences. return empty json array if no history has been added
     List<User> getHistory() {
@@ -140,7 +139,7 @@ public class HistoryFragment extends Fragment implements UserListener {
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
-        List<User> users = userManager.getCurrHistory();
+        List<User> users = getHistory();
         history.addAll(users);
         if (historyAdapter != null) {
             historyAdapter.notifyDataSetChanged();
