@@ -115,7 +115,10 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         populateAdapter();
     }
 
-    private void populateAdapter() {
+    public void populateAdapter() {
+        if (rvAdapter == null) {
+            return;
+        }
         List<ConnectionService.Endpoint> currEndpoints = mListener.getCurrEndpoints();
         for (ConnectionService.Endpoint endpoint : currEndpoints) {
             if (!rvAdapter.contains(endpoint)) {
@@ -123,6 +126,14 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             }
         }
         rvAdapter.notifyDataSetChanged();
+
+        if (!rvAdapter.isEmpty()) {
+            tvRVEmpty.setVisibility(View.GONE);
+            tvRVEmptyAdd.setVisibility(View.GONE);
+            rippleBackground.stopRippleAnimation();
+            rippleBackground.setVisibility(View.GONE);
+            rvDevicesView.setVisibility(View.VISIBLE);
+        }
     }
 
 

@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
-    boolean debug;
+    boolean debug = true;
 
     OnContactAddedCallback onContactAddedCallback;
 
@@ -189,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
+                        discoverFragment.populateAdapter();
                         bind.historyMenu.setVisibility(View.INVISIBLE);
                         getSupportActionBar().setTitle("Discover");
                         break;
@@ -223,6 +224,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             @Override
             public boolean onTabSelected(int position, boolean wasSelected) {
                 bind.viewPager.setCurrentItem(position, true);
+                if (position == 0) {
+                    discoverFragment.populateAdapter();
+                }
                 if (position == 1) {
                     MyUserManager.getInstance().clearNotification();
                 }
