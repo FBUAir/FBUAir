@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,43 +15,50 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:background="@color/color_white"
                 android:orientation="vertical"
                 tools:context=".fragments.SignUpContactFragment">
 
                 <EditText
-                    android:id="@+id/etName"
+                    android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:ems="10"
-                    android:focusedByDefault="true"
-                    android:hint="Name"
-                    android:inputType="textPersonName"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/black" />
 
+
                 <TextView
-                    android:id="@+id/tvNameError"
+                    android:id="@+id/tvEmailError"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="email error"
                     android:layout_marginStart="@dimen/error_side_margin"
-                    android:text="name error"
                     android:textColor="@android:color/holo_red_dark"
                     android:textSize="12sp"
                     android:visibility="gone" />
 
                 <EditText
-                    android:id="@+id/etOrganization"
+                    android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/edit_text_top_margin"
                     android:ems="10"
-                    android:hint="Organization"
-                    android:inputType="textPersonName"
-                    android:textAlignment="viewStart"
+                    android:hint="Phone Number"
+                    android:inputType="phone"
                     android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/tvPhoneError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:layout_marginStart="@dimen/error_side_margin"
+                    android:textSize="12sp"
+                    android:visibility="gone"
+                    tools:text="phone error" />
 
             </LinearLayout>
 

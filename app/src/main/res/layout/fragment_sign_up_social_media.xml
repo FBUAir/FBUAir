@@ -5,24 +5,14 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="15dp"
+        android:padding="@dimen/menu_item_side_margin"
         tools:context=".fragments.SignUpSocialMediaFragment">
-        <TextView
-            android:id="@+id/tvInstructions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="5dp"
-            android:text="@string/social_media_instructions"
-            android:textSize="16sp" />
 
         <in.srain.cube.views.GridViewWithHeaderAndFooter
             android:id="@+id/gvSocialMedias"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/tvInstructions"
             android:layout_centerHorizontal="true"
-            android:horizontalSpacing="10dp"
             android:numColumns="3"
             android:stretchMode="columnWidth"
             android:verticalSpacing="10dp" />

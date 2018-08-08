@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/ivImage"
-        android:layout_width="75dp"
-        android:layout_height="79dp"
+        android:layout_width="@dimen/social_media_size"
+        android:layout_height="@dimen/social_media_size"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         app:srcCompat="@android:color/black" />
@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ivImage"
         android:layout_centerHorizontal="true"
-        android:text="TextView" />
+        android:text="TextView"
+        android:textColor="@android:color/black" />
 
     <ImageView
         android:id="@+id/ivCheck"

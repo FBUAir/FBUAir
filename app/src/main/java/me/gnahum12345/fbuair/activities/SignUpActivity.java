@@ -42,6 +42,7 @@ import me.gnahum12345.fbuair.clients.LinkedInClient;
 import me.gnahum12345.fbuair.clients.TwitterClient;
 import me.gnahum12345.fbuair.databinding.ActivitySignUpBinding;
 import me.gnahum12345.fbuair.fragments.SignUpContactFragment;
+import me.gnahum12345.fbuair.fragments.SignUpContactFragmentTwo;
 import me.gnahum12345.fbuair.fragments.SignUpSocialMediaFragment;
 import me.gnahum12345.fbuair.fragments.UrlFragment;
 import me.gnahum12345.fbuair.fragments.ValidateProfileFragment;
@@ -63,6 +64,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public User user;
     // fragments to be used
     SignUpContactFragment signUpContactFragment;
+    SignUpContactFragmentTwo signUpContactFragmentTwo;
     SignUpSocialMediaFragment signUpSocialMediaFragment;
     WelcomeFragment welcomeFragment;
     FragmentManager fragmentManager;
@@ -112,6 +114,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // initialize fragments
         welcomeFragment = new WelcomeFragment();
         signUpContactFragment = new SignUpContactFragment();
+        signUpContactFragmentTwo = new SignUpContactFragmentTwo();
         signUpSocialMediaFragment = new SignUpSocialMediaFragment();
 
         // show welcome screen first
@@ -140,6 +143,11 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // starts fragment to add user contact info
     public void launchSignUpContact() {
         startFragment(signUpContactFragment, "signUpContactFragment");
+    }
+
+    @Override
+    public void launchSignUpContactTwo() {
+        startFragment(signUpContactFragmentTwo, "signUpContactFragmentTwo");
     }
 
     @Override

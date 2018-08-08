@@ -27,7 +27,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
-import me.gnahum12345.fbuair.databinding.FragmentSignUpContactBinding;
+import me.gnahum12345.fbuair.databinding.FragmentSignUpContactTwoBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.User;
 
@@ -36,18 +36,18 @@ import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
 import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
-public class SignUpContactFragment extends Fragment {
+public class SignUpContactFragmentTwo extends Fragment {
 
-    Bitmap profileImage;
+    final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
 
     // reference to Sign Up Activity
     SignUpActivity activity;
 
     OnSignUpScreenChangeListener onSignUpScreenChangeListener;
 
-    FragmentSignUpContactBinding bind;
+    FragmentSignUpContactTwoBinding bind;
 
-    public SignUpContactFragment() {
+    public SignUpContactFragmentTwo() {
         // Required empty public constructor
     }
 
@@ -56,7 +56,7 @@ public class SignUpContactFragment extends Fragment {
         try {
             onSignUpScreenChangeListener = (OnSignUpScreenChangeListener) context;
         } catch (ClassCastException e) {
-            Log.e("SignUpContactFragment",
+            Log.e("SignUpContactFragment2",
                     "Sign Up Activity must implement onSignUpScreenChangeListener");
         }
         super.onAttach(context);
@@ -67,7 +67,7 @@ public class SignUpContactFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         bind = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_sign_up_contact, container, false);
+                inflater, R.layout.fragment_sign_up_contact_two, container, false);
         return bind.getRoot();
     }
 
@@ -79,58 +79,76 @@ public class SignUpContactFragment extends Fragment {
         // show menu
         onSignUpScreenChangeListener.setMenuVisible(true);
 
+        bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
+
+        //working with getting the phones number programmatically
+        String phone = getPhoneNum();
+        if (phone != null) {
+            bind.etPhone.setText(phone);
+        }
+
         // go to next sign up screen when user clicks on button
         bind.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 // get values user submitted
-                final String name = bind.etName.getText().toString();
-                final String organization = bind.etOrganization.getText().toString();
-                int color = NO_COLOR;
-                // change to remove profile image check if no more profile image
-                if (profileImage == null && !name.isEmpty()) {
-                    ColorGenerator generator = ColorGenerator.MATERIAL;
-                    color = generator.getRandomColor();
-                    TextDrawable drawable = TextDrawable.builder()
-                            .buildRound(Character.toString(name.toCharArray()[0]).toUpperCase(),
-                                    color);
-                    profileImage = drawableToBitmap(drawable);
-                }
+                final String email = bind.etEmail.getText().toString();
+                String phone = bind.etPhone.getText().toString();
+
                 // go to next sign up page if contact info is valid. shows error messages if needed
-                if (isValidContact(name)) {
+                if (isValidContact(phone, email)) {
                     User user = activity.user;
-                    user.setName(name);
-                    user.setOrganization(organization);
-                    user.setProfileImage(profileImage);
-                    user.setColor(color);
+                    user.setPhoneNumber(phone);
+                    user.setEmail(email);
                     activity.user = user;
-                    onSignUpScreenChangeListener.launchSignUpContactTwo();
+                    onSignUpScreenChangeListener.launchSignUpSocialMedia();
                 }
             }
         });
     }
 
     // checks if profile is valid before submitting. if not, shows error messages
-    public boolean isValidContact(String name) {
+    public boolean isValidContact(String phone, String email) {
         // hide previous errors
         hideErrors();
         // check fields and show appropriate error messages
         boolean valid = true;
-        if (name.isEmpty()) {
-            bind.tvNameError.setVisibility(View.VISIBLE);
-            bind.tvNameError.setText(getResources().getString(R.string.no_name_error));
+        if (!isValidEmail(email)) {
+            bind.tvEmailError.setVisibility(View.VISIBLE);
+            bind.tvEmailError.setText(getResources().getString(R.string.bad_email_error));
+            valid = false;
+        }
+        if (!isValidPhoneNumber(phone)) {
+            bind.tvPhoneError.setVisibility(View.VISIBLE);
+            bind.tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
             valid = false;
         }
         return valid;
     }
 
     void hideErrors() {
-        bind.tvNameError.setVisibility(View.GONE);
+        bind.tvPhoneError.setVisibility(View.GONE);
+        bind.tvEmailError.setVisibility(View.GONE);
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
         onSignUpScreenChangeListener = null;
+    }
+
+    //programmatically getting the phone number IGNORE REDDDD
+    public String getPhoneNum() {
+        TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(
+                    new String[]
+                            {Manifest.permission.READ_SMS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE},
+                    MY_PERMISSIONS_REQUEST_CONTACTS);
+            String mPhoneNum = tMgr.getLine1Number();
+            return mPhoneNum;
+        }
+        String mPhoneNum = tMgr.getLine1Number();
+        return mPhoneNum;
     }
 }
