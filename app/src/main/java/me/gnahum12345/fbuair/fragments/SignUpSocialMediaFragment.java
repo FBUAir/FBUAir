@@ -18,6 +18,7 @@ import me.gnahum12345.fbuair.activities.SignUpActivity;
 import me.gnahum12345.fbuair.adapters.SocialMediaAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentSignUpSocialMediaBinding;
 import me.gnahum12345.fbuair.databinding.ItemIconsFooterBinding;
+import me.gnahum12345.fbuair.databinding.ItemIconsHeaderBinding;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
@@ -36,6 +37,7 @@ public class SignUpSocialMediaFragment extends Fragment{
     // data bind to skip find view by id
     FragmentSignUpSocialMediaBinding bind;
     ItemIconsFooterBinding bindFooter;
+    ItemIconsHeaderBinding bindHeader;
 
     public SignUpSocialMediaFragment() {
         // Required empty public constructor
@@ -81,8 +83,12 @@ public class SignUpSocialMediaFragment extends Fragment{
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());
         bindFooter = DataBindingUtil.inflate(layoutInflater, R.layout.item_icons_footer, container,
                 false);
+        bindHeader = DataBindingUtil.inflate(layoutInflater, R.layout.item_icons_header, container,
+                false);
         View footerView = bindFooter.getRoot();
+        View headerView = bindHeader.getRoot();
         bind.gvSocialMedias.addFooterView(footerView);
+        bind.gvSocialMedias.addHeaderView(headerView);
 
         // attach adapter
         bind.gvSocialMedias.setAdapter(socialMediaAdapter);
@@ -92,13 +98,6 @@ public class SignUpSocialMediaFragment extends Fragment{
         // CLICK HANDLERS
         footerView.findViewById(R.id.btNext);
         bindFooter.btNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                onSignUpScreenChangeListener.launchMainActivity();
-            }
-        });
-
-        bindFooter.tvSkip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSignUpScreenChangeListener.launchMainActivity();

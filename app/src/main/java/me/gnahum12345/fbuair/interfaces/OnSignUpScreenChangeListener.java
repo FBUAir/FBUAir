@@ -11,6 +11,9 @@ public interface OnSignUpScreenChangeListener {
     /** goes to sign up contact fragment */
     void launchSignUpContact();
 
+    /** goes to sign up contact two fragment */
+    void launchSignUpContactTwo();
+
     /** goes to sign up social media fragment */
     void launchSignUpSocialMedia();
 
