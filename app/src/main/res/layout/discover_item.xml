@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:padding="@dimen/profile_card_padding">
+        android:padding="@dimen/profile_contact_card_padding">
 
         <ImageView
             android:id="@+id/ivProfileImage"

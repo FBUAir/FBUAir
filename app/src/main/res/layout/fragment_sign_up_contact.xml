@@ -37,7 +37,7 @@
                     android:id="@+id/ivProfileImage"
                     android:layout_width="@dimen/sign_up_profile_image_size"
                     android:layout_height="@dimen/sign_up_profile_image_size"
-                    android:src="@drawable/ic_add_img2"
+                    android:src="@drawable/ic_add_img"
                     android:layout_gravity="center_horizontal"/>
 
                 <EditText
