@@ -18,31 +18,20 @@
             android:id="@+id/ivProfileImage"
             android:layout_width="@dimen/history_profile_image_size"
             android:layout_height="@dimen/history_profile_image_size"
+            android:layout_gravity="center_vertical"
             android:layout_marginEnd="@dimen/profile_card_side_margin"/>
 
-        <LinearLayout
-            android:orientation="vertical"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center_vertical">
-
-            <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <TextView
-                    android:id="@+id/tvName"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginBottom="@dimen/card_subtitle_margin"
-                    android:textColor="@android:color/black"
-                    android:textSize="@dimen/profile_card_font_size"
-                    android:textStyle="bold"
-                    tools:text="Mark Zuck" />
-            </LinearLayout>
-        </LinearLayout>
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:layout_marginBottom="@dimen/card_subtitle_margin"
+            android:textColor="@android:color/black"
+            android:textSize="@dimen/profile_card_font_size"
+            android:textStyle="bold"
+            tools:text="Mark Zuck" />
     </LinearLayout>
 
     <View

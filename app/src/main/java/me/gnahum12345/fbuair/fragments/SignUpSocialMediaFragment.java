@@ -97,7 +97,7 @@ public class SignUpSocialMediaFragment extends Fragment{
 
         // CLICK HANDLERS
         footerView.findViewById(R.id.btNext);
-        bindFooter.btNext.setOnClickListener(new View.OnClickListener() {
+        bind.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 onSignUpScreenChangeListener.launchMainActivity();

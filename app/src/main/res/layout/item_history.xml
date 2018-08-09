@@ -18,7 +18,8 @@
             android:id="@+id/ivProfileImage"
             android:layout_width="@dimen/history_profile_image_size"
             android:layout_height="@dimen/history_profile_image_size"
-            android:layout_marginEnd="@dimen/profile_card_side_margin"/>
+            android:layout_marginEnd="@dimen/profile_card_side_margin"
+            android:transitionName="profileImage"/>
 
         <LinearLayout
             android:orientation="vertical"
@@ -40,7 +41,8 @@
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size"
                     android:textStyle="bold"
-                    tools:text="Mark Zuck" />
+                    tools:text="Mark Zuck"
+                    android:transitionName="name"/>
 
                 <TextView
                     android:id="@+id/tvTime"
@@ -52,11 +54,11 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/tvOrganization"
+                android:id="@+id/tvSummary"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/card_subtitle_font_size"
-                tools:text="Facebook" />
+                tools:text="Summary" />
 
         </LinearLayout>
     </LinearLayout>

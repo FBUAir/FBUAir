@@ -7,6 +7,8 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityOptionsCompat;
+import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -23,15 +25,18 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
+import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
+import static me.gnahum12345.fbuair.utils.SocialMediaUtils.getSummary;
 import static me.gnahum12345.fbuair.utils.Utils.getHistoryDate;
 
 
@@ -45,6 +50,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private OnFragmentChangeListener onFragmentChangeListener;
     private boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
+    final static int SUMMARY_LIMIT = 3;
 
     private void addContacts(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
@@ -107,11 +113,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
 
         viewHolder.tvName.setText(user.getName());
-        if (user.getOrganization().isEmpty()) {
-            viewHolder.tvOrganization.setVisibility(View.GONE);
-        } else {
-            viewHolder.tvOrganization.setText(user.getOrganization());
-        }
+        viewHolder.tvSummary.setText(getSummary(user, SUMMARY_LIMIT));
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
@@ -120,7 +122,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 if (multiSelectMode) {
                     selectItem(user, viewHolder);
                 } else {
-                    onFragmentChangeListener.launchDetails(user.getId());
+                    Pair<View, String> p1 = Pair.create(viewHolder.ivProfileImage, "profileImage");
+                    Pair<View, String> p2 = Pair.create(viewHolder.tvName, "name");
+                    onFragmentChangeListener.launchDetails(user.getId(), p1, p2);
                 }
             }
         });
@@ -241,14 +245,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView tvName;
         public TextView tvTime;
         public ImageView ivProfileImage;
-        public TextView tvOrganization;
+        public TextView tvSummary;
 
         ViewHolder(@NonNull View view) {
             super(view);
             tvName = view.findViewById(R.id.tvName);
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
-            tvOrganization = view.findViewById(R.id.tvOrganization);
+            tvSummary = view.findViewById(R.id.tvSummary);
         }
 
     }

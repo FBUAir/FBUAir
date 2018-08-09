@@ -4,74 +4,72 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:keepScreenOn="true"
+    android:background="@color/color_white"
     tools:context=".fragments.DiscoverFragment">
-
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvDevicesView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/rippleBackground"
-        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"
-        app:rb_color="#0099CC"
-        app:rb_duration="4000"
-        app:rb_radius="32dp"
-        app:rb_rippleAmount="4"
-        app:rb_scale="6">
-
-        <ImageView
-            android:id="@+id/centerImage"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_centerInParent="true"
-            android:src="@drawable/phone_searching" />
-    </com.skyfishjy.library.RippleBackground>
+        android:visibility="gone"/>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom|center"
-        android:layout_alignParentBottom="true"
-        android:layout_gravity="center_vertical"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rippleBackground"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:rb_color="#0099CC"
+            app:rb_duration="4000"
+            app:rb_radius="32dp"
+            app:rb_rippleAmount="4"
+            app:rb_scale="6">
+
+            <ImageView
+                android:id="@+id/centerImage"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/phone_searching" />
+        </com.skyfishjy.library.RippleBackground>
 
         <LinearLayout
+            android:id="@+id/llMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:layout_gravity="center_horizontal"
+            android:padding="20dp"
+            android:layout_marginBottom="@dimen/side_margin"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/tvRVEmptyView"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="bottom|center"
-                android:padding="10dp"
-                android:text="Air lets you share instantly with people nearby"
+                android:layout_gravity="center_horizontal"
+                android:text="Air lets you share instantly with people nearby."
                 android:textAlignment="center"
                 android:textColor="@color/color_black"
-                android:textSize="19sp"
-                android:visibility="gone" />
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/tvRVEmptyAddView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:text="@string/discover_add_friends"
+                android:textAlignment="center"
+                android:textColor="@color/gradient_blue"
+                android:textSize="16sp"/>
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/tvRVEmptyAddView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center"
-            android:padding="10dp"
-            android:text="@string/discover_add_friends"
-            android:textAlignment="center"
-            android:textColor="@color/gradient_blue"
-            android:textSize="16sp"
-            android:visibility="gone" />
-
     </LinearLayout>
-
 
 </RelativeLayout>

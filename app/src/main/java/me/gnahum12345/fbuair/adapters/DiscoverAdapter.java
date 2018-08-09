@@ -67,7 +67,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         LayoutInflater inflater = LayoutInflater.from(mContext);
 
         // create the view using the item_movie layout.
-        View deviceView = inflater.inflate(R.layout.discover_item, viewGroup, false);
+        View deviceView = inflater.inflate(R.layout.item_discover, viewGroup, false);
         // return a new viewHolder,
         return new ViewHolder(deviceView);
     }

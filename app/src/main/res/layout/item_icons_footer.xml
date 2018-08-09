@@ -26,20 +26,9 @@
                 android:text="Request it here."
                 android:textStyle="bold"
                 android:textAlignment="viewStart"
-                android:textSize="12sp" />
+                android:textSize="12sp"
+                android:layout_marginBottom="20dp"/>
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btNext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/llRequestPlatform"
-            android:layout_marginTop="@dimen/side_margin"
-            android:layout_marginBottom="@dimen/side_margin"
-            android:background="@drawable/pill_filled"
-            android:textAllCaps="false"
-            android:textColor="@color/color_white"
-            android:text="Create account" />
     </RelativeLayout>
 </layout>

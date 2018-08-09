@@ -25,8 +25,8 @@
         android:paddingTop="68dp"
         android:text="Welcome to Air"
         android:textColor="@color/color_white"
-        android:textSize="40sp"
-        android:textStyle="bold" />
+        android:textSize="40dp"
+        style="@style/MyActionBarTitleText" />
 
     <TextView
         android:id="@+id/tvWelcomeDescription"

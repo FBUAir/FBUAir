@@ -19,13 +19,19 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.ChangeTransform;
+import android.transition.Transition;
+import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
@@ -105,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     boolean contactPermissionGranted;
 
     // The adapter used to display information for our bottom navigation view.
-    private Adapter adapter;
+    private Adapter pagerAdapter;
 
     private boolean mBound = false;
     private boolean listened = false;
@@ -137,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         bind = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+        ActivityCompat.postponeEnterTransition(this);
 
         userManager = MyUserManager.getInstance();
         userManager.loadContacts();
@@ -181,10 +189,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
-        adapter = new Adapter(getSupportFragmentManager(), fragments);
+        pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
 
         // Attach our adapter to our view pager.
-        bind.viewPager.setAdapter(adapter);
+        bind.viewPager.setAdapter(pagerAdapter);
         bind.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled
@@ -390,9 +398,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     /* implementation for switching fragments (OnFragmentChangeListener) */
     @Override
     // opens details screen for passed in user
-    public void launchDetails(String uid) {
-        fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
+    public void launchDetails(String uid, Pair<View, String> p1, Pair<View, String> p2) {
+        // set transition(s)
+        detailsFragment = ProfileFragment.newInstance(uid);
+        // start fragment
+        fragments.set(DETAILS_FRAGMENT, detailsFragment);
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+        // hide menu and nav bar
         Objects.requireNonNull(getSupportActionBar()).hide();
         setBottomNavigationVisible(false);
     }
@@ -578,10 +590,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
 
-        if (item.getItemId() == R.id.miCompose) {
+        /*if (item.getItemId() == R.id.miCompose) {
             bind.bottomNavigationView.setCurrentItem(-1);
             bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
-        }
+        }*/
         return super.onOptionsItemSelected(item);
     }
 
