@@ -3,10 +3,12 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v4.util.Pair;
@@ -22,7 +24,6 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
@@ -138,7 +140,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             @Override
             public boolean onLongClick(View view) {
                 multiSelectMode = true;
-
+                notifyDataSetChanged();
                 ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
@@ -267,7 +269,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ImageView ivProfileImage;
         public TextView tvSummary;
         public ImageView ivCheck;
-        public ViewFlipper viewFlipper;
 
         ViewHolder(@NonNull View view) {
             super(view);
@@ -276,9 +277,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
             tvSummary = view.findViewById(R.id.tvSummary);
             ivCheck = view.findViewById(R.id.ivCheck);
-            viewFlipper = view.findViewById(R.id.viewFlipper);
-            viewFlipper.setInAnimation(context, R.anim.flip_forward);
-            viewFlipper.setOutAnimation(context, R.anim.flip_back);
         }
     }
 

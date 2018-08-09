@@ -14,33 +14,26 @@
         android:orientation="horizontal"
         android:padding="@dimen/profile_contact_card_padding">
 
-        <ViewFlipper
-            android:id="@+id/viewFlipper"
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/ivCheck"
+                android:layout_width="@dimen/history_profile_image_size"
+                android:layout_height="@dimen/history_profile_image_size"
+                android:layout_marginEnd="@dimen/profile_card_side_margin"
+                android:src="@drawable/ic_checked_button"
+                android:visibility="visible"/>
 
-                <ImageView
-                    android:id="@+id/ivCheck"
-                    android:layout_width="@dimen/history_profile_image_size"
-                    android:layout_height="@dimen/history_profile_image_size"
-                    android:layout_marginEnd="@dimen/profile_card_side_margin"
-                    android:src="@drawable/ic_checked_button"
-                    android:visibility="visible"/>
+            <ImageView
+                android:id="@+id/ivProfileImage"
+                android:layout_width="@dimen/history_profile_image_size"
+                android:layout_height="@dimen/history_profile_image_size"
+                android:layout_marginEnd="@dimen/profile_card_side_margin"
+                android:transitionName="profileImage"/>
 
-                <ImageView
-                    android:id="@+id/ivProfileImage"
-                    android:layout_width="@dimen/history_profile_image_size"
-                    android:layout_height="@dimen/history_profile_image_size"
-                    android:layout_marginEnd="@dimen/profile_card_side_margin"
-                    android:transitionName="profileImage"/>
-
-            </RelativeLayout>
-
-        </ViewFlipper>
+        </RelativeLayout>
 
         <LinearLayout
             android:orientation="vertical"
