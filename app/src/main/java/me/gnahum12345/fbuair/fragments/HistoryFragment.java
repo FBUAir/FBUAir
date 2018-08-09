@@ -129,7 +129,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         // Inflate the layout for this fragment
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
         Drawable d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
-        ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
+        ((MainActivity) getActivity()).getSupportActionBar().setIcon(d);
         ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
 
         return inflater.inflate(R.layout.fragment_history, container, false);

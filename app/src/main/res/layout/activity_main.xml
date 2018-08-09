@@ -15,9 +15,33 @@ xmlns:tools="http://schemas.android.com/tools">
         android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
+        app:titleTextAppearance="@style/MyActionBarTitleText"
         android:background="@color/color_white"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+        app:contentInsetLeft="0dp"
+        app:contentInsetRight="0dp"
         android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme" />
+        android:theme="@style/CustomActionBarTheme">
+
+        <ImageView
+            android:id="@+id/toolbar_image"
+            android:layout_width="@dimen/history_profile_image_size"
+            android:layout_height="@dimen/history_profile_image_size"
+            android:layout_marginEnd="@dimen/profile_card_side_margin"/>
+
+        <TextView
+            android:id="@+id/toolbar_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ActionBar"
+            android:layout_marginLeft="25dp"
+            android:textStyle="bold"
+            android:textColor="@color/color_black"
+            style="@style/MyActionBarTitleText" />
+
+
+    </android.support.v7.widget.Toolbar>
+
 
     <com.aurelhubert.ahbottomnavigation.AHBottomNavigationViewPager
         android:id="@+id/viewPager"
@@ -37,6 +61,7 @@ xmlns:tools="http://schemas.android.com/tools">
         android:background="@color/color_white"
         app:itemIconTint="@drawable/nav_colors"
         app:itemTextColor="@drawable/nav_colors" />
+
 
 </RelativeLayout>
 </layout>

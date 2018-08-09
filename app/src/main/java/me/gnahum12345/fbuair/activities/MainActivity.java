@@ -146,8 +146,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Discover");
+        getSupportActionBar().setTitle("");
+        bind.toolbarTitle.setText("Discover");
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -181,11 +181,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
                         discoverFragment.populateAdapter();
-                        getSupportActionBar().setTitle("Discover");
+                        bind.toolbarTitle.setText("Discover");
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
-                        getSupportActionBar().setTitle("Recent");
+                        bind.toolbarTitle.setText("Recents");
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);
@@ -194,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(3);
-                        getSupportActionBar().setTitle("Configure");
+                        bind.toolbarTitle.setText("Configure");
                         break;
                 }
             }
