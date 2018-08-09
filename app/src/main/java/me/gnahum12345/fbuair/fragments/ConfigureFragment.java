@@ -3,6 +3,7 @@ package me.gnahum12345.fbuair.fragments;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,7 @@ import me.gnahum12345.fbuair.adapters.ConfigureAdapter;
 import me.gnahum12345.fbuair.databinding.ConfigureFragmentsFooterBinding;
 import me.gnahum12345.fbuair.databinding.FragmentConfigureBinding;
 
-public class ConfigureFragment extends Fragment {
+public class ConfigureFragment extends DialogFragment {
 
     ConfigureAdapter adapter;
     ViewGroup container;

@@ -11,18 +11,28 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Response;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.FacebookSdk;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
 import com.linkedin.platform.listeners.ApiListener;
@@ -52,7 +62,6 @@ import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -78,6 +87,12 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
     GithubClient githubClient;
+
+    TextView tvTitle;
+    TextView errorOne;
+    EditText inputOne;
+    EditText inputTwo;
+    Button buttonNext;
 
     private CallbackManager mCallbackManager;
 
@@ -120,6 +135,15 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         signUpContactFragmentTwo = new SignUpContactFragmentTwo();
         signUpSocialMediaFragment = new SignUpSocialMediaFragment();
 
+        //shared elements transitions
+        Transition changeTransform = TransitionInflater.from(this).
+                inflateTransition(R.transition.change_image_transform);
+        signUpContactFragment.setSharedElementReturnTransition(changeTransform);
+        signUpContactFragmentTwo.setSharedElementReturnTransition(changeTransform);
+
+        //items for transition
+
+
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
         startFragment(welcomeFragment, "welcomeFragment");
@@ -130,6 +154,20 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // starts a given fragment
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if(fragment == signUpContactFragmentTwo){
+            tvTitle = signUpContactFragment.getView().findViewById(R.id.tvTitle);
+            inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
+            inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
+            errorOne = signUpContactFragment.getView().findViewById(R.id.tvNameError);
+            buttonNext = signUpContactFragment.getView().findViewById(R.id.btNext);
+            fragmentTransaction.addSharedElement(tvTitle, ViewCompat.getTransitionName(tvTitle));
+            fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
+            fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
+            fragmentTransaction.addSharedElement(errorOne, ViewCompat.getTransitionName(errorOne));
+            fragmentTransaction.addSharedElement(buttonNext, ViewCompat.getTransitionName(buttonNext));
+        }
+
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
     }
@@ -249,9 +287,36 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                         Profile curUser = Profile.getCurrentProfile();
                         socialMedia.setUsername(curUser.getName());
                         Uri uri = curUser.getLinkUri();
-                        String id = curUser.getId(); //704146566588131
+                        String id = curUser.getId(); //704146566588131 -> invalid content.
                         socialMedia.setProfileUrl("fb://profile/" + id);
-//                        socialMedia.setProfileUrl(uri.toString());
+
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                AccessToken.getCurrentAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        // Insert your code here
+                                        Log.d("onCompletedRequest", response.toString());
+                                        if (response.getError() != null) {
+                                            Toast.makeText(SignUpActivity.this, "rip... you need permissions", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        try {
+                                            JSONObject obj = response.getJSONObject();
+                                            String link = obj.getString("link");
+                                            socialMedia.setProfileUrl(link);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "link");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+                        //                        socialMedia.setProfileUrl(uri.toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -268,7 +333,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                         exception.printStackTrace();
                     }
                 });
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "user_link"));
 
     }
 

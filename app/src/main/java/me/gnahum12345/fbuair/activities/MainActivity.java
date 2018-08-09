@@ -22,18 +22,13 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.app.SharedElementCallback;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.ChangeTransform;
-import android.transition.Transition;
-import android.transition.TransitionSet;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
@@ -169,11 +164,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         Drawable d;
 
-        if( MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR){
+        if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
             Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
-            d = new BitmapDrawable(getResources(),getCircularBitmap(bitmapResized));
-        }else{
-            d = new BitmapDrawable(getResources(),getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
+            d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
+        } else {
+            d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
         }
         bind.toolbarImage.setImageDrawable(d);
 
@@ -216,19 +211,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
                         bind.toolbarTitle.setText("Recents");
-                        //bind.toolbarImage.setImageDrawable(d);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
                         bind.toolbar.setVisibility(View.GONE);
-                        //bind.toolbarImage.setImageDrawable(d);
                         getSupportActionBar().hide();
                         setActionModeVisible(false, null);
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
                         bind.toolbarTitle.setText("Configure");
-                        //bind.toolbarImage.setImageDrawable(d);
                         break;
                 }
             }
@@ -275,6 +267,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED;
+
+
+
     }
 
 
