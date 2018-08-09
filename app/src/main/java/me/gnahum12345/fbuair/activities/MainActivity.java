@@ -18,6 +18,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -106,6 +107,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
+    ActionMode actionMode;
     boolean debug = true;
     OnContactAddedCallback onContactAddedCallback;
     // whether user granted Contacts permissions
@@ -208,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.bottomNavigationView.setCurrentItem(DISCOVER_FRAGMENT);
                         discoverFragment.populateAdapter();
                         bind.toolbarTitle.setText("Discover");
+                        setActionModeVisible(false, null);
                         //bind.toolbarImage.setImageDrawable(d);
                         break;
                     case HISTORY_FRAGMENT:
@@ -220,6 +223,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.toolbar.setVisibility(View.GONE);
                         //bind.toolbarImage.setImageDrawable(d);
                         getSupportActionBar().hide();
+                        setActionModeVisible(false, null);
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
@@ -392,8 +396,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
     @Override
-    public void launchActionMode(ActionMode.Callback callback) {
-        startActionMode(callback);
+    public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
+        if (flag) {
+            actionMode = startActionMode(callback);
+        }
+        else if (actionMode != null) {
+            actionMode.finish();
+            actionMode = null;
+        }
     }
 
     /* implementation for switching fragments (OnFragmentChangeListener) */

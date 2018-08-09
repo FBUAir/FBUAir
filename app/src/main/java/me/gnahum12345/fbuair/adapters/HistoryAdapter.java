@@ -50,7 +50,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private HistoryFilter historyFilter;
     private Context context;
     private OnFragmentChangeListener onFragmentChangeListener;
-    private boolean multiSelectMode = false;
+    public boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
     final static int SUMMARY_LIMIT = 3;
 
@@ -186,7 +186,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                     }
                 };
 
-                onFragmentChangeListener.launchActionMode(actionModeCallBack);
+                onFragmentChangeListener.setActionModeVisible(true, actionModeCallBack);
                 return true;
             }
         });
@@ -319,5 +319,4 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             notifyDataSetChanged();
         }
     }
-
 }

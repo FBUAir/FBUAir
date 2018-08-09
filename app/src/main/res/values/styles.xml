@@ -6,6 +6,7 @@
         <!-- Customize your theme here. -->
         <item name="colorAccent">@color/gradient_blue</item>
         <item name="android:actionBarTheme">@style/CustomActionBarTheme </item>
+        <item name="android:actionModeBackground">@color/color_white</item>
         <item name="android:windowContentTransitions">true</item>
     </style>
 
@@ -23,6 +24,9 @@
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
 
+    <style name="ActionMode" parent="Widget.AppCompat.ActionMode">
+        <item name="background">@color/color_white</item>
+    </style>
     <!-- ActionBar title text -->
     <style name="MyActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/color_black</item>
