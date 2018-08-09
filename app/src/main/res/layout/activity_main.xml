@@ -34,7 +34,6 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="ActionBar"
-            android:layout_marginLeft="25dp"
             android:textStyle="bold"
             android:textColor="@color/color_black"
             style="@style/MyActionBarTitleText" />
