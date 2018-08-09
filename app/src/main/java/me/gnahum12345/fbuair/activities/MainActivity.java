@@ -186,24 +186,24 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 getSupportActionBar().show();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(0);
+                        bind.bottomNavigationView.setCurrentItem(DISCOVER_FRAGMENT);
                         discoverFragment.populateAdapter();
                         bind.toolbarTitle.setText("Discover");
                         bind.toolbarImage.setImageDrawable(d);
                         break;
                     case HISTORY_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(1);
+                        bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
                         bind.toolbarTitle.setText("Recents");
                         bind.toolbarImage.setImageDrawable(d);
                         break;
                     case PROFILE_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(2);
+                        bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
                         bind.toolbar.setVisibility(View.GONE);
                         bind.toolbarImage.setImageDrawable(d);
                         getSupportActionBar().hide();
                         break;
                     case CONFIGURE_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(3);
+                        bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
                         bind.toolbarTitle.setText("Configure");
                         bind.toolbarImage.setImageDrawable(d);
                         break;
@@ -312,14 +312,16 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         super.onResume();
         if (mBound) {
             startConnectionService();
-        } else {
-            // don't do anything...
         }
     }
 
 
     @Override
     public void onBackPressed() {
+        // go back to history if currently in details
+        if (bind.viewPager.getCurrentItem() == DETAILS_FRAGMENT) {
+            bind.viewPager.setCurrentItem(HISTORY_FRAGMENT);
+        }
         if (mBound) {
             if (debug) {
                 connectService.debug();
@@ -336,7 +338,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 return;
             }
         }
-
         super.onBackPressed();
     }
 
@@ -382,14 +383,19 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
-/*        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
-        fragmentTransaction.commit();*/
         Objects.requireNonNull(getSupportActionBar()).hide();
+        setBottomNavigationVisible(false);
     }
 
     @Override
     public void launchEditProfile() {
+    }
+
+
+    @Override
+    public void onDetailsBackPressed() {
+        bind.viewPager.setCurrentItem(HISTORY_FRAGMENT, false);
+        setBottomNavigationVisible(true);
     }
 
     @Override
@@ -418,9 +424,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             } else showConflictDialog(user, addContactResult);
         }
     }
-
-
-
 
     /* CONTACT/CONTACT PERMISSIONS STUFF */
 
@@ -579,6 +582,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             if (flag) supportActionBar.show();
             else supportActionBar.hide();
         }
+    }
+
+    @Override
+    public void setBottomNavigationVisible(boolean flag) {
+        if (flag) bind.bottomNavigationView.setVisibility(View.VISIBLE);
+        else bind.bottomNavigationView.setVisibility(View.GONE);
+
     }
 
     static class Adapter extends FragmentStatePagerAdapter {
