@@ -4,8 +4,6 @@ import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
 import android.databinding.adapters.SearchViewBindingAdapter;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -24,7 +22,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
@@ -32,8 +29,6 @@ import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
-
-import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 
 public class HistoryFragment extends Fragment implements UserListener,SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener{
@@ -127,11 +122,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        ((MainActivity) getActivity()).getSupportActionBar().setDisplayShowHomeEnabled(true);
-        Drawable d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
-        ((MainActivity) getActivity()).getSupportActionBar().setLogo(d);
-        ((MainActivity) getActivity()).getSupportActionBar().setDisplayUseLogoEnabled(true);
-
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 

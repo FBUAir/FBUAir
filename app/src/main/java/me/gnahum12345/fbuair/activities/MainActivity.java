@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -53,6 +55,8 @@ import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.Utils;
+
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 
 public class MainActivity extends AppCompatActivity implements DiscoverFragment.DiscoverFragmentListener, OnFragmentChangeListener,
@@ -146,8 +150,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        getSupportActionBar().setTitle("Discover");
+        getSupportActionBar().setTitle("");
+        bind.toolbarTitle.setText("Discover");
+        Drawable d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
+        bind.toolbarImage.setImageDrawable(d);
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -181,20 +187,24 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(0);
                         discoverFragment.populateAdapter();
-                        getSupportActionBar().setTitle("Discover");
+                        bind.toolbarTitle.setText("Discover");
+                        bind.toolbarImage.setImageDrawable(d);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(1);
-                        getSupportActionBar().setTitle("Recent");
+                        bind.toolbarTitle.setText("Recents");
+                        bind.toolbarImage.setImageDrawable(d);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(2);
                         bind.toolbar.setVisibility(View.GONE);
+                        bind.toolbarImage.setImageDrawable(d);
                         getSupportActionBar().hide();
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(3);
-                        getSupportActionBar().setTitle("Configure");
+                        bind.toolbarTitle.setText("Configure");
+                        bind.toolbarImage.setImageDrawable(d);
                         break;
                 }
             }
