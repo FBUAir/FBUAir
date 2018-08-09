@@ -40,7 +40,8 @@
                         android:layout_marginTop="60dp"
                         android:cropToPadding="false"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@color/color_black" />
+                        app:srcCompat="@color/color_black"
+                        android:transitionName="profileImage"/>
 
                     <TextView
                         android:id="@+id/tvName"
@@ -50,7 +51,8 @@
                         android:text="Name"
                         android:textColor="@color/color_white"
                         style="@style/MyActionBarTitleText"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        android:transitionName="name"/>
 
                     <TextView
                         android:id="@+id/tvOrganization"

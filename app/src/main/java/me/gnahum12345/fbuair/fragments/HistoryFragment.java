@@ -60,8 +60,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
         onAddContactClickedListener = (OnRequestAddContact) context;
-
-
     }
 
     @Override
@@ -97,8 +95,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         svSearch.setSubmitButtonEnabled(true);
         svSearch.setOnQueryTextListener(this);
 
-
-//        clearHistory();
         // add fake users to history
         FakeUsers fakeUsers = new FakeUsers();
         JSONObject[] fakeHistory;
@@ -140,12 +136,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         if (historyAdapter != null) {
             historyAdapter.notifyDataSetChanged();
         }
-    }
-
-    // clears history
-    void clearHistory() {
-        MyUserManager.getInstance().clearHistory();
-        historyAdapter.notifyDataSetChanged();
     }
 
     private void clearHistoryList() {

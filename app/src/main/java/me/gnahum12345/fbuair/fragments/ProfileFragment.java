@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
@@ -23,6 +24,9 @@ import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.utils.Utils;
+
+import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
 public class ProfileFragment extends Fragment {
 
@@ -35,6 +39,8 @@ public class ProfileFragment extends Fragment {
     User user;
     private ProfileFragmentListener mListener;
     OnFragmentChangeListener onFragmentChangeListener;
+
+    boolean isCurrentUserProfile;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -53,7 +59,6 @@ public class ProfileFragment extends Fragment {
         super.onCreate(savedInstanceState);
         activity = getActivity();
         String uid;
-        boolean isCurrentUserProfile;
         // if no arguments were passed in, assume current user profile
         if (getArguments() != null) {
             uid = getArguments().getString(ARG_UID);
@@ -91,6 +96,10 @@ public class ProfileFragment extends Fragment {
         // attach adapter and layout manager
         bind.rvRecyclerView.setAdapter(profileAdapter);
         bind.rvRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        hideSoftKeyboard(getActivity());
+
+        if (isCurrentUserProfile) ActivityCompat.startPostponedEnterTransition(getActivity());
     }
 
     @Override
