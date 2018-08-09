@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.ProfileAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentProfileBinding;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
@@ -30,10 +31,10 @@ public class ProfileFragment extends Fragment {
     Activity activity;
     ArrayList<SocialMedia> socialMedias;
     ProfileAdapter profileAdapter;
-    Contact contact;
     ViewGroup container;
     User user;
     private ProfileFragmentListener mListener;
+    OnFragmentChangeListener onFragmentChangeListener;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -101,9 +102,22 @@ public class ProfileFragment extends Fragment {
             throw new RuntimeException(context.toString() +
                     " must implement ProfileFragmentListener");
         }
+        if (context instanceof OnFragmentChangeListener) {
+            onFragmentChangeListener = (OnFragmentChangeListener) context;
+        } else {
+            throw new RuntimeException(context.toString() +
+                    " must implement ProfileFragmentListener");
+        }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        onFragmentChangeListener.setBottomNavigationVisible(true);
+        onFragmentChangeListener.setMenuVisible(true);
     }
 
     public interface ProfileFragmentListener {
-        public void sendBack(String uid);
+        void sendBack(String uid);
     }
 }

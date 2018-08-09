@@ -40,7 +40,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:text="Phone"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size" />
             </LinearLayout>
@@ -76,7 +76,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:text="Email"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size" />
             </LinearLayout>

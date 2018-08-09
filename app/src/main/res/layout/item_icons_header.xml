@@ -12,9 +12,7 @@
             android:layout_gravity="left"
             android:layout_marginBottom="@dimen/sign_up_instructions_margin_bottom"
             android:text="Create Account"
-            android:textColor="@color/color_black"
-            android:textSize="@dimen/title_font_size"
-            android:textStyle="bold" />
+            style="@style/MyActionBarTitleText" />
 
         <TextView
             android:id="@+id/tvInstructions"
