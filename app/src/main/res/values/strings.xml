@@ -9,7 +9,7 @@
     <!-- profile sign up error messages -->
     <string name="bad_email_error">Enter a valid email address.</string>
     <string name="bad_phone_error">Enter a valid phone number.</string>
-    <string name="no_name_error">Name is required.</string>
+    <string name="no_name_error">A name is required.</string>
     <string name="no_phone_error">Phone number is required.</string>
 
     <!-- used in details screen -->

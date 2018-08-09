@@ -131,6 +131,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             if (isCurrentUserProfile) {
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
+                vhHeader.bind.ivBack.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
                 if (contact.isAdded()) {
@@ -234,6 +235,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             vhSocialMedia.bind.tvUsername.setText(username);
             vhSocialMedia.bind.ivIcon.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
+            // hide horizontal line for last element
+            if (position == socialMedias.size() - 1 + difference) {
+                vhSocialMedia.bind.horizontalLine.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
@@ -276,6 +281,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         VHHeader(ItemProfileHeaderBinding bind) {
             super(bind.getRoot());
             this.bind = bind;
+            bind.ivBack.setOnClickListener(this);
             bind.btEditProfile.setOnClickListener(this);
             bind.btDeleteProfile.setOnClickListener(this);
             bind.btAddContact.setOnClickListener(this);
@@ -299,6 +305,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
                 case R.id.btDeleteProfile:
                     onFragmentChangeListener.deleteAccount();
+                    break;
+                case R.id.ivBack:
+                    onFragmentChangeListener.onDetailsBackPressed();
                     break;
             }
         }

@@ -48,15 +48,15 @@
         <Button
             android:id="@+id/btGetStarted"
             android:layout_height="wrap_content"
-            app:layout_widthPercent="60%"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp"
+            android:layout_marginBottom="@dimen/side_margin"
             android:background="@drawable/pill_hollow"
             android:text="Get Started"
             android:textAllCaps="false"
             android:textColor="@color/color_white"
             android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            app:layout_widthPercent="60%" />
 
     </android.support.percent.PercentRelativeLayout>
 

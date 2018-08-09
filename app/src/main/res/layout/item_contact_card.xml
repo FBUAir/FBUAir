@@ -6,10 +6,9 @@
         android:id="@+id/cvContactCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/profile_card_side_margin"
-        android:layout_marginEnd="@dimen/profile_card_side_margin"
-        app:cardElevation="5dp"
-        app:cardCornerRadius="3dp">
+        android:layout_marginBottom="15dp"
+        app:cardElevation="0dp"
+        app:cardCornerRadius="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -21,12 +20,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="@dimen/profile_card_padding">
+                android:paddingStart="@dimen/profile_card_start_padding"
+                android:paddingTop="@dimen/profile_contact_card_padding"
+                android:paddingBottom="@dimen/profile_contact_card_padding"
+                android:paddingEnd="@dimen/profile_card_start_padding">
 
                 <ImageView
                     android:id="@+id/ivPhoneIcon"
-                    android:layout_width="@dimen/profile_card_icon_size"
-                    android:layout_height="@dimen/profile_card_icon_size"
+                    android:layout_width="@dimen/profile_card_contact_icon_size"
+                    android:layout_height="@dimen/profile_card_contact_icon_size"
                     android:layout_marginEnd="20dp"
                     android:contentDescription="Icon"
                     app:srcCompat="@drawable/ic_phone" />
@@ -38,7 +40,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:text="Phone"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size" />
             </LinearLayout>
@@ -47,8 +49,6 @@
                 android:id="@+id/horizontalLine"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
                 android:background="@color/tw__light_gray" />
 
             <LinearLayout
@@ -56,12 +56,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:padding="@dimen/profile_card_padding">
+                android:paddingStart="@dimen/profile_card_start_padding"
+                android:paddingTop="@dimen/profile_contact_card_padding"
+                android:paddingBottom="@dimen/profile_contact_card_padding"
+                android:paddingEnd="@dimen/profile_card_start_padding">
 
                 <ImageView
                     android:id="@+id/ivEmailIcon"
-                    android:layout_width="@dimen/profile_card_icon_size"
-                    android:layout_height="@dimen/profile_card_icon_size"
+                    android:layout_width="@dimen/profile_card_contact_icon_size"
+                    android:layout_height="@dimen/profile_card_contact_icon_size"
                     android:layout_marginEnd="20dp"
                     android:contentDescription="Icon"
                     app:srcCompat="@drawable/ic_email" />
@@ -73,7 +76,7 @@
                     android:layout_gravity="center_vertical"
                     android:layout_weight="1"
                     android:text="Email"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size" />
             </LinearLayout>

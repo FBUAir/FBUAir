@@ -1,22 +1,19 @@
 package me.gnahum12345.fbuair.fragments;
 
-import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,6 +21,10 @@ import android.view.ViewGroup;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.SignUpActivity;
@@ -33,17 +34,14 @@ import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
-import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
-import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
+import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 public class SignUpContactFragment extends Fragment {
 
-    Bitmap profileImage;
+    Bitmap selectedProfileImage;
     Dialog dialog;
-
     final int REQUEST_IMAGE_SELECT = 1;
     final int REQUEST_IMAGE_CAPTURE = 2;
-    final static int MY_PERMISSIONS_REQUEST_CONTACTS = 4;
 
     // reference to Sign Up Activity
     SignUpActivity activity;
@@ -84,14 +82,6 @@ public class SignUpContactFragment extends Fragment {
         // show menu
         onSignUpScreenChangeListener.setMenuVisible(true);
 
-        bind.etPhone.addTextChangedListener(new PhoneNumberFormattingTextWatcher());
-
-        //working with getting the phones number programmatically
-        String phone = getPhoneNum();
-        if (phone != null) {
-            bind.etPhone.setText(phone);
-        }
-
         // go to next sign up screen when user clicks on button
         bind.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,44 +89,39 @@ public class SignUpContactFragment extends Fragment {
                 // get values user submitted
                 final String name = bind.etName.getText().toString();
                 final String organization = bind.etOrganization.getText().toString();
-                final String email = bind.etEmail.getText().toString();
-                String phone = bind.etPhone.getText().toString();
                 int color = NO_COLOR;
-                // change to remove profile image check if no more profile image
-                if (profileImage == null && !name.isEmpty()) {
-                    ColorGenerator generator = ColorGenerator.MATERIAL;
-                    color = generator.getRandomColor();
-                    TextDrawable drawable = TextDrawable.builder()
-                            .buildRound(Character.toString(name.toCharArray()[0]).toUpperCase(),
-                                    color);
-                    profileImage = drawableToBitmap(drawable);
-                }
+                Bitmap profileImage = selectedProfileImage;
                 // go to next sign up page if contact info is valid. shows error messages if needed
-                if (isValidContact(name, phone, email)) {
+                if (isValidContact(name)) {
+                    if (profileImage == null) {
+                        ColorGenerator generator = ColorGenerator.MATERIAL;
+                        color = generator.getRandomColor();
+                        TextDrawable drawable = TextDrawable.builder()
+                                .buildRound(Character.toString(name.toCharArray()[0]).toUpperCase(),
+                                        color);
+                        profileImage = drawableToBitmap(drawable);
+                    }
                     User user = activity.user;
                     user.setName(name);
                     user.setOrganization(organization);
-                    user.setPhoneNumber(phone);
-                    user.setEmail(email);
                     user.setProfileImage(profileImage);
                     user.setColor(color);
                     activity.user = user;
-                    onSignUpScreenChangeListener.launchSignUpSocialMedia();
+                    onSignUpScreenChangeListener.launchSignUpContactTwo();
                 }
             }
         });
 
-        /*bind.btnProfileImage.setOnClickListener(new View.OnClickListener() {
+        bind.ivProfileImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDialog();
             }
         });
-        super.onViewCreated(view, savedInstanceState);*/
     }
 
     // checks if profile is valid before submitting. if not, shows error messages
-    public boolean isValidContact(String name, String phone, String email) {
+    public boolean isValidContact(String name) {
         // hide previous errors
         hideErrors();
         // check fields and show appropriate error messages
@@ -146,27 +131,15 @@ public class SignUpContactFragment extends Fragment {
             bind.tvNameError.setText(getResources().getString(R.string.no_name_error));
             valid = false;
         }
-        if (!isValidEmail(email)) {
-            bind.tvEmailError.setVisibility(View.VISIBLE);
-            bind.tvEmailError.setText(getResources().getString(R.string.bad_email_error));
-            valid = false;
-        }
-        if (!isValidPhoneNumber(phone)) {
-            bind.tvPhoneError.setVisibility(View.VISIBLE);
-            bind.tvPhoneError.setText(getResources().getString(R.string.bad_phone_error));
-            valid = false;
-        }
         return valid;
     }
 
     void hideErrors() {
         bind.tvNameError.setVisibility(View.GONE);
-        bind.tvPhoneError.setVisibility(View.GONE);
-        bind.tvEmailError.setVisibility(View.GONE);
     }
 
     //following are profile image methods
-/*    @Override
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         Bitmap bitmap;
         try {
@@ -174,15 +147,15 @@ public class SignUpContactFragment extends Fragment {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 // set image icon to newly captured image
-                profileImage = bitmap;
-                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
+                selectedProfileImage = bitmap;
+                bind.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = activity.getContentResolver().openInputStream(
                         Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                profileImage = bitmap;
-                bind.btnProfileImage.setImageBitmap(getCircularBitmap(bitmap));
+                selectedProfileImage = bitmap;
+                bind.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
                 if (stream != null) {
                     stream.close();
                 }
@@ -190,7 +163,7 @@ public class SignUpContactFragment extends Fragment {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }*/
+    }
 
     public void showDialog() {
         CharSequence options[] = new CharSequence[]{"Select from pictures", "Capture picture"};
@@ -240,18 +213,4 @@ public class SignUpContactFragment extends Fragment {
         onSignUpScreenChangeListener = null;
     }
 
-    //programmatically getting the phone number IGNORE REDDDD
-    public String getPhoneNum() {
-        TelephonyManager tMgr = (TelephonyManager) getContext().getSystemService(Context.TELEPHONY_SERVICE);
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_SMS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_NUMBERS) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                    new String[]
-                            {Manifest.permission.READ_SMS, Manifest.permission.WRITE_CONTACTS, Manifest.permission.READ_PHONE_NUMBERS, Manifest.permission.READ_PHONE_STATE},
-                    MY_PERMISSIONS_REQUEST_CONTACTS);
-            String mPhoneNum = tMgr.getLine1Number();
-            return mPhoneNum;
-        }
-        String mPhoneNum = tMgr.getLine1Number();
-        return mPhoneNum;
-    }
 }

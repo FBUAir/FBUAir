@@ -11,7 +11,7 @@
     <item
         android:id="@+id/action_history"
         android:icon="@drawable/ic_clock"
-        android:title="Recent"
+        android:title="Recents"
         app:showAsAction="always"/>
 
     <item
@@ -19,6 +19,5 @@
         android:icon="@drawable/ic_user"
         android:title="Profile"
         app:showAsAction="always"/>
-
 
 </menu>

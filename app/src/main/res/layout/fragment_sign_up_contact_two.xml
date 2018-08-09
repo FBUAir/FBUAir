@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -16,8 +17,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
                 android:background="@color/color_white"
                 android:orientation="vertical"
                 tools:context=".fragments.SignUpContactFragment">
@@ -27,49 +26,50 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="left"
-                    android:layout_marginBottom="20dp"
+                    android:layout_marginBottom="@dimen/title_bottom_margin"
                     android:text="Create Account"
-                    style="@style/MyActionBarTitleText"/>
-
-                <ImageView
-                    android:id="@+id/ivProfileImage"
-                    android:layout_width="@dimen/sign_up_profile_image_size"
-                    android:layout_height="@dimen/sign_up_profile_image_size"
-                    android:src="@drawable/ic_add_img"
-                    android:layout_gravity="center_horizontal"/>
+                    style="@style/MyActionBarTitleText" />
 
                 <EditText
-                    android:id="@+id/etName"
+                    android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="20dp"
                     android:ems="10"
-                    android:focusedByDefault="true"
-                    android:hint="Name"
-                    android:inputType="textPersonName"
-                    android:textAlignment="viewStart"
+                    android:hint="Phone Number (optional)"
+                    android:inputType="phone"
                     android:textColor="@android:color/black" />
 
                 <TextView
-                    android:id="@+id/tvNameError"
+                    android:id="@+id/tvPhoneError"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/error_side_margin"
-                    android:text="name error"
                     android:textColor="@android:color/holo_red_dark"
+                    android:layout_marginStart="@dimen/error_side_margin"
                     android:textSize="12sp"
-                    android:visibility="gone" />
+                    android:visibility="gone"
+                    tools:text="phone error" />
 
                 <EditText
-                    android:id="@+id/etOrganization"
+                    android:id="@+id/etEmail"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/edit_text_top_margin"
                     android:ems="10"
-                    android:hint="Organization (optional)"
-                    android:inputType="textPersonName"
+                    android:hint="Email (optional)"
+                    android:inputType="textEmailAddress"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/black" />
+
+
+                <TextView
+                    android:id="@+id/tvEmailError"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="email error"
+                    android:layout_marginStart="@dimen/error_side_margin"
+                    android:textColor="@android:color/holo_red_dark"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
 
             </LinearLayout>
 

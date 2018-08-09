@@ -48,6 +48,7 @@
         <activity
             android:name=".activities.MainActivity"
             android:configChanges="orientation"
+            android:theme="@style/CustomActionBarTheme"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
@@ -58,7 +59,8 @@
 
         <activity
             android:name=".activities.SignUpActivity"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
