@@ -9,7 +9,7 @@
     <dimen name="profile_header_button_top_margin">-32dp</dimen>
     <dimen name="profile_card_side_margin">20dp</dimen>
     <dimen name="profile_card_top_margin">15dp</dimen>
-    <dimen name="profile_image_size">85dp</dimen>
+    <dimen name="profile_image_size">90dp</dimen>
     <dimen name="profile_header_button_size">65dp</dimen>
     <dimen name="profile_card_contact_icon_size">30dp</dimen>
     <dimen name="profile_card_SM_icon_size">35dp</dimen>

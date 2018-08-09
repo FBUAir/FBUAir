@@ -21,6 +21,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -380,9 +381,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // opens details screen for passed in user
     public void launchDetails(String uid) {
         fragments.set(DETAILS_FRAGMENT, ProfileFragment.newInstance(uid));
-        bind.bottomNavigationView.setCurrentItem(-1);
         bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
-
+/*        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
+        fragmentTransaction.commit();*/
         Objects.requireNonNull(getSupportActionBar()).hide();
     }
 

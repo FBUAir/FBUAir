@@ -25,6 +25,8 @@
     <style name="MyActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/color_black</item>
         <item name="android:textSize">35sp</item>
+        <item name="android:textStyle">bold</item>
+
     </style>
 
 
