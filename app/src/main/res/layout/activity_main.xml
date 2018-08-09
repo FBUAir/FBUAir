@@ -28,6 +28,7 @@ xmlns:tools="http://schemas.android.com/tools">
                 android:id="@+id/toolbar_image"
                 android:layout_width="45dp"
                 android:layout_height="45dp"
+                android:scaleType="centerCrop"
                 android:layout_marginEnd="@dimen/menu_item_side_margin" />
 
             <TextView

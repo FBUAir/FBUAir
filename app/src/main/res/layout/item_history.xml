@@ -19,6 +19,7 @@
             android:layout_width="@dimen/history_profile_image_size"
             android:layout_height="@dimen/history_profile_image_size"
             android:layout_marginEnd="@dimen/profile_card_side_margin"
+            android:scaleType="centerCrop"
             android:transitionName="profileImage"/>
 
         <LinearLayout

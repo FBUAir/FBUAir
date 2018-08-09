@@ -11,9 +11,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Response;
 import com.facebook.CallbackManager;
@@ -22,7 +28,6 @@ import com.facebook.FacebookException;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
-import com.facebook.FacebookSdk;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
 import com.linkedin.platform.listeners.ApiListener;
@@ -52,7 +57,6 @@ import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -78,6 +82,12 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
     GithubClient githubClient;
+
+    TextView tvTitle;
+    TextView errorOne;
+    EditText inputOne;
+    EditText inputTwo;
+    Button buttonNext;
 
     private CallbackManager mCallbackManager;
 
@@ -120,6 +130,15 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         signUpContactFragmentTwo = new SignUpContactFragmentTwo();
         signUpSocialMediaFragment = new SignUpSocialMediaFragment();
 
+        //shared elements transitions
+        Transition changeTransform = TransitionInflater.from(this).
+                inflateTransition(R.transition.change_image_transform);
+        signUpContactFragment.setSharedElementReturnTransition(changeTransform);
+        signUpContactFragmentTwo.setSharedElementReturnTransition(changeTransform);
+
+        //items for transition
+
+
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
         startFragment(welcomeFragment, "welcomeFragment");
@@ -130,6 +149,20 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     // starts a given fragment
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        if(fragment == signUpContactFragmentTwo){
+            tvTitle = signUpContactFragment.getView().findViewById(R.id.tvTitle);
+            inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
+            inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
+            errorOne = signUpContactFragment.getView().findViewById(R.id.tvNameError);
+            buttonNext = signUpContactFragment.getView().findViewById(R.id.btNext);
+            fragmentTransaction.addSharedElement(tvTitle, ViewCompat.getTransitionName(tvTitle));
+            fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
+            fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
+            fragmentTransaction.addSharedElement(errorOne, ViewCompat.getTransitionName(errorOne));
+            fragmentTransaction.addSharedElement(buttonNext, ViewCompat.getTransitionName(buttonNext));
+        }
+
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
     }
