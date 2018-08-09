@@ -1,12 +1,10 @@
 package me.gnahum12345.fbuair.fragments;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -14,11 +12,8 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
-import android.telephony.PhoneNumberFormattingTextWatcher;
-import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,12 +35,10 @@ import me.gnahum12345.fbuair.models.User;
 import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
-import static me.gnahum12345.fbuair.utils.Utils.isValidEmail;
-import static me.gnahum12345.fbuair.utils.Utils.isValidPhoneNumber;
 
 public class SignUpContactFragment extends Fragment {
 
-    Bitmap profileImage;
+    Bitmap selectedProfileImage;
     Dialog dialog;
     final int REQUEST_IMAGE_SELECT = 1;
     final int REQUEST_IMAGE_CAPTURE = 2;
@@ -97,6 +90,7 @@ public class SignUpContactFragment extends Fragment {
                 final String name = bind.etName.getText().toString();
                 final String organization = bind.etOrganization.getText().toString();
                 int color = NO_COLOR;
+                Bitmap profileImage = selectedProfileImage;
                 // go to next sign up page if contact info is valid. shows error messages if needed
                 if (isValidContact(name)) {
                     if (profileImage == null) {
@@ -107,7 +101,6 @@ public class SignUpContactFragment extends Fragment {
                                         color);
                         profileImage = drawableToBitmap(drawable);
                     }
-
                     User user = activity.user;
                     user.setName(name);
                     user.setOrganization(organization);
@@ -154,14 +147,14 @@ public class SignUpContactFragment extends Fragment {
             if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == Activity.RESULT_OK) {
                 bitmap = (Bitmap) Objects.requireNonNull(data.getExtras()).get("data");
                 // set image icon to newly captured image
-                profileImage = bitmap;
+                selectedProfileImage = bitmap;
                 bind.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
             } else if (requestCode == REQUEST_IMAGE_SELECT && resultCode == Activity.RESULT_OK) {
                 InputStream stream = activity.getContentResolver().openInputStream(
                         Objects.requireNonNull(data.getData()));
                 bitmap = BitmapFactory.decodeStream(stream);
                 // set image icon to newly selected image
-                profileImage = bitmap;
+                selectedProfileImage = bitmap;
                 bind.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
                 if (stream != null) {
                     stream.close();

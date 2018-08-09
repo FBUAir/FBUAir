@@ -234,6 +234,10 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             }
             vhSocialMedia.bind.tvUsername.setText(username);
             vhSocialMedia.bind.ivIcon.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
+            // hide horizontal line for last element
+            if (position == socialMedias.size() - 1 + difference) {
+                vhSocialMedia.bind.horizontalLine.setVisibility(View.INVISIBLE);
+            }
         }
     }
 
