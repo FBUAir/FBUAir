@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -50,8 +51,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private final static int SUMMARY_LIMIT = 3;
     private int firstSelectedPosition = -1;
 
-    AnimatorSet mSetRightOut;
-    AnimatorSet mSetLeftIn;
+    private AnimatorSet mSetRightOut;
+    private AnimatorSet mSetLeftIn;
 
     private void deleteFromHistory(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
@@ -99,17 +100,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // set profile image and bring it to front
         setProfileImage(user, viewHolder.ivProfileImage);
 
-        if (position == firstSelectedPosition) {
-            selectItem(user, viewHolder);
-        }
-
         // set seen/unseen tint. make white if in multiselect mode
-        if (multiSelectMode || !user.isSeen()) {
+        if ((multiSelectMode || !user.isSeen())) {
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
         } else {
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.gradient_extremely_light_blue));
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
+        }
+
+        if (position == firstSelectedPosition) {
+            selectItem(user, viewHolder);
         }
     }
 
@@ -131,21 +132,27 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     // performs flip animations
-    private void animateSelection(boolean isAnimationIn, ImageView ivProfileImage, ImageView ivCheck) {
-        /*View outTarget, inTarget;
-        outTarget = isAnimationIn ? ivProfileImage : ivCheck;
-        inTarget = isAnimationIn ? ivCheck : ivProfileImage;
-        if (isAnimationIn) {
-            ivProfileImage.bringToFront();
-        } else ivCheck.bringToFront();
-        mSetRightOut.setTarget(outTarget);
-        mSetLeftIn.setTarget(inTarget);
+    private void animateSelection(boolean isSelecting, ImageView ivProfileImage, ImageView ivCheck) {
+        // cancel previous animations if they're still running
+        cancelRunningAnimations();
+        // start flip animation
+        View leaving, entering;
+        leaving = isSelecting ? ivProfileImage : ivCheck;
+        entering = isSelecting ? ivCheck : ivProfileImage;
+        mSetRightOut.setTarget(leaving);
+        mSetLeftIn.setTarget(entering);
         mSetRightOut.start();
-        mSetLeftIn.start();*/
-        if (isAnimationIn) {
+        mSetLeftIn.start();
+/*        if (isAnimationIn) {
             ivCheck.bringToFront();
         }
-        else ivProfileImage.bringToFront();
+        else ivProfileImage.bringToFront();*/
+    }
+
+    // cancels animations (used for when animation gets paused mid-anim)
+    private void cancelRunningAnimations() {
+        mSetRightOut.end();
+        mSetLeftIn.end();
     }
 
     // sets ivProfileImage to user's profile image
@@ -215,7 +222,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         @Override
         public boolean onLongClick(View view) {
-            User user = filteredHistory.get(getAdapterPosition());
             multiSelectMode = true;
             firstSelectedPosition = getAdapterPosition();
             notifyDataSetChanged();
@@ -265,6 +271,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             public void onDestroyActionMode(ActionMode actionMode) {
                 multiSelectMode = false;
                 selectedUsers.clear();
+                cancelRunningAnimations();
                 firstSelectedPosition = -1;
                 notifyDataSetChanged();
                 onFragmentChangeListener.setMenuVisible(true);
