@@ -14,14 +14,18 @@
             app:cardElevation="0dp"
             app:cardCornerRadius="0dp">
 
-            <FrameLayout
+            <android.support.constraint.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:id="@+id/ivBackground"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     android:scaleType="centerCrop"
                     android:src="@color/grey" />
 
@@ -29,6 +33,10 @@
                     android:id="@+id/llHeader"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     android:orientation="vertical">
 
                     <ImageView
@@ -75,7 +83,7 @@
                         android:textColor="@color/color_white"
                         android:textSize="@dimen/profile_header_font_size" />
                 </LinearLayout>
-            </FrameLayout>
+            </android.support.constraint.ConstraintLayout>
         </android.support.v7.widget.CardView>
 
         <LinearLayout

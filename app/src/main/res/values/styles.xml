@@ -1,3 +1,4 @@
+
 <resources>
 
     <!-- Base application theme. -->
@@ -6,6 +7,7 @@
         <item name="colorAccent">@color/gradient_blue</item>
         <item name="android:actionBarTheme">@style/CustomActionBarTheme </item>
         <item name="android:windowContentTransitions">true</item>
+
     </style>
 
     <style name="SplashTheme" parent="AppTheme">

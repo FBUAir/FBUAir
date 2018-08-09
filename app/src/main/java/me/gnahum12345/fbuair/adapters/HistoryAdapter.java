@@ -1,13 +1,16 @@
 package me.gnahum12345.fbuair.adapters;
 
 
+import android.animation.AnimatorInflater;
+import android.animation.AnimatorSet;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
@@ -25,14 +28,13 @@ import android.widget.Toast;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
-import java.io.StringBufferInputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
@@ -51,6 +53,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
     final static int SUMMARY_LIMIT = 3;
+
+    private AnimatorSet mSetRightOut;
+    private AnimatorSet mSetLeftIn;
 
     private void addContacts(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
@@ -71,6 +76,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         this.history = history;
         this.filteredHistory = history;
         getFilter();
+        // load animations
+        mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.out_animation);
+        mSetLeftIn = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.in_animation);
         // try to get listener
         try {
             onFragmentChangeListener = ((OnFragmentChangeListener) context);
@@ -131,13 +139,14 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View view) {
+                multiSelectMode = true;
+                notifyDataSetChanged();
                 ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
                     @Override
                     public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                        multiSelectMode = true;
                         onFragmentChangeListener.setMenuVisible(false);
                         actionMode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
-                        notifyDataSetChanged();
+                        selectItem(user, viewHolder);
                         return true;
                     }
 
@@ -150,7 +159,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                     public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.add_menu_action:
-                                Toast.makeText(context, String.format("Added %d users to contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(context, String.format("Added %d users to phone contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
                                 addContacts(selectedUsers);
                                 actionMode.finish();
                                 return true;
@@ -178,23 +187,36 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 };
 
                 onFragmentChangeListener.launchActionMode(actionModeCallBack);
-                selectItem(user, viewHolder);
                 return true;
             }
         });
+        // change camera distance for profile image so full animation shows
+        changeCameraDistance(context, viewHolder.ivProfileImage);
     }
 
     private void selectItem(User user, ViewHolder viewHolder) {
-        if (multiSelectMode) {
-            if (selectedUsers.contains(user)) {
-                selectedUsers.remove(user);
-                viewHolder.itemView.setBackgroundColor(Color.WHITE);
-                setImage(user, viewHolder);
-            } else {
-                selectedUsers.add(user);
-                setImage(context.getDrawable(R.drawable.ic_checked_button), viewHolder);
-                viewHolder.itemView.setBackgroundColor(context.getColor(R.color.light_grey));
-            }
+        if (selectedUsers.contains(user)) {
+            // start animations
+            mSetRightOut.setTarget(viewHolder.ivCheck);
+            mSetLeftIn.setTarget(viewHolder.ivProfileImage);
+            mSetRightOut.start();
+            mSetLeftIn.start();
+            // change BG color to grey
+            viewHolder.itemView.setBackgroundColor(Color.WHITE);
+            // remove user from selected
+            selectedUsers.remove(user);
+            //setImage(user, viewHolder);
+        } else {
+            // start animations
+            mSetRightOut.setTarget(viewHolder.ivProfileImage);
+            mSetLeftIn.setTarget(viewHolder.ivCheck);
+            mSetRightOut.start();
+            mSetLeftIn.start();
+            // add user to selected
+            selectedUsers.add(user);
+            // change BG color to light grey
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.light_grey));
+            //setImage(context.getDrawable(R.drawable.ic_checked_button), viewHolder);
         }
     }
 
@@ -246,6 +268,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView tvTime;
         public ImageView ivProfileImage;
         public TextView tvSummary;
+        public ImageView ivCheck;
 
         ViewHolder(@NonNull View view) {
             super(view);
@@ -253,9 +276,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             tvTime = view.findViewById(R.id.tvTime);
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
             tvSummary = view.findViewById(R.id.tvSummary);
+            ivCheck = view.findViewById(R.id.ivCheck);
         }
-
     }
+
+    private void changeCameraDistance(Context context, View view) {
+        int distance = 8000;
+        float scale = context.getResources().getDisplayMetrics().density * distance;
+        view.setCameraDistance(scale);
+        view.setCameraDistance(scale);
+    }
+
 
     // filter history for searching
     private class HistoryFilter extends Filter {

@@ -16,7 +16,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -120,16 +119,11 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (header.getColor() == NO_COLOR) {
                     coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
                     coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
-                    coverPhotoBitmap.setHeight(300);
                     vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
-                    vhHeader.bind.ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
             }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
-                if (coverPhotoBitmap != null) {
-                    coverPhotoBitmap.setHeight(200);
-                }
             } else {
                 vhHeader.bind.tvOrganization.setText(header.getOrganization());
             }
