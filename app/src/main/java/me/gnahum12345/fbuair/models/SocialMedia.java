@@ -26,7 +26,7 @@ public class SocialMedia {
     }
 
     public String getProfileUrl() {
-        if (profileUrl != null) {
+        if (profileUrl != null && !profileUrl.isEmpty()) {
             return profileUrl;
         } else {
             return SocialMediaUtils.getProfileUrl(name, username);
@@ -61,6 +61,7 @@ public class SocialMedia {
         SocialMedia socialMedia = new SocialMedia();
         try {
             socialMedia.setName(json.getString("name"));
+
             socialMedia.setUsername(json.getString("username"));
             socialMedia.setProfileUrl(json.getString("profileUrl"));
         } catch (JSONException e) {

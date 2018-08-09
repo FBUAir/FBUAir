@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -21,6 +22,7 @@ import com.facebook.FacebookException;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
+import com.facebook.FacebookSdk;
 import com.linkedin.platform.errors.LIApiError;
 import com.linkedin.platform.errors.LIAuthError;
 import com.linkedin.platform.listeners.ApiListener;
@@ -49,6 +51,7 @@ import me.gnahum12345.fbuair.fragments.WelcomeFragment;
 import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
 import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
+import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
@@ -229,14 +232,18 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 **/
         mCallbackManager = CallbackManager.Factory.create();
 
+
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
                     public void onSuccess(LoginResult loginResult) {
                         Log.d("Success", "Login");
-                        socialMedia.setUsername(Profile.getCurrentProfile().getName());
-                        String id = Profile.getCurrentProfile().getId();
-                        socialMedia.setProfileUrl("fb://page/{"+id+"}");
+                        Profile curUser = Profile.getCurrentProfile();
+                        socialMedia.setUsername(curUser.getName());
+                        Uri uri = curUser.getLinkUri();
+                        String id = curUser.getId(); //704146566588131
+                        socialMedia.setProfileUrl("fb://profile/" + id);
+//                        socialMedia.setProfileUrl(uri.toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
