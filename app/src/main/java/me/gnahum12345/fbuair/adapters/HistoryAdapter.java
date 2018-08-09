@@ -47,23 +47,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private OnFragmentChangeListener onFragmentChangeListener;
     public boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
-    final static int SUMMARY_LIMIT = 3;
+    private final static int SUMMARY_LIMIT = 3;
+    private int firstSelectedPosition = -1;
 
-    private AnimatorSet mSetRightOut;
-    private AnimatorSet mSetLeftIn;
+    AnimatorSet mSetRightOut;
+    AnimatorSet mSetLeftIn;
 
-    private void addContacts(List<User> users) {
-        for (int i = 0; i < users.size(); i++) {
-//            ContactUtils.addContact(context, users.);
-        }
-    }
-
-    private void deleteContacts(List<User> users) {
+    private void deleteFromHistory(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
             MyUserManager.getInstance().removeUser(users.get(i));
             filteredHistory.remove(users.get(i));
         }
-        notifyDataSetChanged();
     }
 
 
@@ -105,22 +99,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         // set profile image and bring it to front
         setProfileImage(user, viewHolder.ivProfileImage);
 
-/*        if (multiSelectMode) {
-            // remove unseen tint when starting multiselect
+        if (position == firstSelectedPosition) {
+            selectItem(user, viewHolder);
+        }
+
+        // set seen/unseen tint. make white if in multiselect mode
+        if (multiSelectMode || !user.isSeen()) {
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
-        } else {*/
-            // set seen/unseen tint
-            if (!user.isSeen()) {
-                viewHolder.itemView.setBackgroundColor(context.getColor(R.color.gradient_extremely_light_blue));
-                viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
-            } else {
-                viewHolder.itemView.setBackgroundColor(Color.WHITE);
-                viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
-            }
-        //}
+        } else {
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.gradient_extremely_light_blue));
+            viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
+        }
     }
 
+    // shows img change animation and adds selected user to selected list
     private void selectItem(User user, ViewHolder viewHolder) {
         if (selectedUsers.contains(user)) {
             animateSelection(false, viewHolder.ivProfileImage, viewHolder.ivCheck);
@@ -138,17 +131,21 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
     // performs flip animations
-    void animateSelection(boolean isAnimationIn, View ivProfileImage, View ivCheck) {
-        View outTarget, inTarget;
+    private void animateSelection(boolean isAnimationIn, ImageView ivProfileImage, ImageView ivCheck) {
+        /*View outTarget, inTarget;
         outTarget = isAnimationIn ? ivProfileImage : ivCheck;
         inTarget = isAnimationIn ? ivCheck : ivProfileImage;
         if (isAnimationIn) {
-            ;
+            ivProfileImage.bringToFront();
         } else ivCheck.bringToFront();
         mSetRightOut.setTarget(outTarget);
         mSetLeftIn.setTarget(inTarget);
         mSetRightOut.start();
-        mSetLeftIn.start();
+        mSetLeftIn.start();*/
+        if (isAnimationIn) {
+            ivCheck.bringToFront();
+        }
+        else ivProfileImage.bringToFront();
     }
 
     // sets ivProfileImage to user's profile image
@@ -220,8 +217,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public boolean onLongClick(View view) {
             User user = filteredHistory.get(getAdapterPosition());
             multiSelectMode = true;
-            selectItem(user, this);
-            //notifyDataSetChanged();
+            firstSelectedPosition = getAdapterPosition();
+            notifyDataSetChanged();
             onFragmentChangeListener.setActionModeVisible(true,
                     getActionModeCallBack(onFragmentChangeListener));
             return true;
@@ -248,12 +245,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 switch (menuItem.getItemId()) {
                     case R.id.add_menu_action:
                         Toast.makeText(context, String.format("Added %d users to phone contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                        addContacts(selectedUsers);
                         actionMode.finish();
                         return true;
                     case R.id.delete_menu_action:
                         Toast.makeText(context, String.format("Deleted %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                        deleteContacts(selectedUsers);
+                        deleteFromHistory(selectedUsers);
                         actionMode.finish();
                         return true;
                     case R.id.star_menu_action:
@@ -269,6 +265,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             public void onDestroyActionMode(ActionMode actionMode) {
                 multiSelectMode = false;
                 selectedUsers.clear();
+                firstSelectedPosition = -1;
                 notifyDataSetChanged();
                 onFragmentChangeListener.setMenuVisible(true);
             }
