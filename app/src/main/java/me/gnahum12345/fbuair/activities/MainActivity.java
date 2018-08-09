@@ -409,7 +409,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     /* implementation for switching fragments (OnFragmentChangeListener) */
     @Override
     // opens details screen for passed in user
-    public void launchDetails(String uid, Pair<View, String> p1, Pair<View, String> p2) {
+    public void launchDetails(String uid) {
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
         // start fragment

@@ -75,6 +75,10 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (historyAdapter.multiSelectMode) {
+                    swipeContainer.setRefreshing(false);
+                    return;
+                }
                 history.clear();
                 historyAdapter.clear();
                 populateHistory();
