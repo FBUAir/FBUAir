@@ -6,16 +6,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.graphics.Bitmap;
 import android.support.v7.widget.RecyclerView;
 import android.telephony.PhoneNumberUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
@@ -29,17 +30,16 @@ import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
 import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
-import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
+import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
-import static me.gnahum12345.fbuair.models.User.NO_COLOR;
-import static me.gnahum12345.fbuair.utils.ImageUtils.getTintedColor;
 import static android.content.Context.CLIPBOARD_SERVICE;
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 
@@ -56,6 +56,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private ArrayList<SocialMedia> socialMedias;
     private boolean isCurrentUserProfile;
     private int difference;
+    Bitmap coverPhotoBitmap;
 
     private OnFragmentChangeListener onFragmentChangeListener;
     private OnRequestAddContact onAddContactClickedListener;
@@ -117,13 +118,18 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.ivProfileImage.setImageBitmap(getCircularBitmap(profileImage));
                 // set cover photo/background for non-default profile pics
                 if (header.getColor() == NO_COLOR) {
-                    Bitmap coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
+                    coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
                     coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
+                    coverPhotoBitmap.setHeight(300);
                     vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
+                    vhHeader.bind.ivBackground.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 }
             }
             if (header.getOrganization().isEmpty()) {
                 vhHeader.bind.tvOrganization.setVisibility(View.GONE);
+                if (coverPhotoBitmap != null) {
+                    coverPhotoBitmap.setHeight(200);
+                }
             } else {
                 vhHeader.bind.tvOrganization.setText(header.getOrganization());
             }
