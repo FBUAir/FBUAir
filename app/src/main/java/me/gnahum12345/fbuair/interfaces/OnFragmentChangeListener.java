@@ -6,7 +6,7 @@ import android.view.ActionMode;
 import android.view.View;
 
 public interface OnFragmentChangeListener {
-    void launchDetails(String uid);
+    void launchDetails(String uid, View view);
     void launchEditProfile();
     void launchUrlView(String url);
     void onDetailsBackPressed();

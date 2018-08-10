@@ -5,6 +5,10 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:paddingTop="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:background="@drawable/dialog_rounded_big"
         tools:context=".fragments.ConfigureFragment">
 
         <in.srain.cube.views.GridViewWithHeaderAndFooter
@@ -12,11 +16,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_centerHorizontal="true"
-            android:horizontalSpacing="10dp"
+            android:horizontalSpacing="20dp"
             android:numColumns="3"
             android:stretchMode="columnWidth"
             android:verticalSpacing="10dp" />
-
 
     </FrameLayout>
 </layout>

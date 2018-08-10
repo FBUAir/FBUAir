@@ -30,8 +30,7 @@
                 android:id="@+id/ivProfileImage"
                 android:layout_width="@dimen/history_profile_image_size"
                 android:layout_height="@dimen/history_profile_image_size"
-                android:layout_marginEnd="@dimen/profile_card_side_margin"
-                android:transitionName="profileImage"/>
+                android:layout_marginEnd="@dimen/profile_card_side_margin" />
 
         </RelativeLayout>
 
@@ -55,8 +54,7 @@
                     android:textColor="@android:color/black"
                     android:textSize="@dimen/profile_card_font_size"
                     android:textStyle="bold"
-                    tools:text="Mark Zuck"
-                    android:transitionName="name"/>
+                    tools:text="Mark Zuck" />
 
                 <TextView
                     android:id="@+id/tvTime"

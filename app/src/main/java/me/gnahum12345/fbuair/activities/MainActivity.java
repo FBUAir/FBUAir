@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -25,8 +24,8 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -35,14 +34,15 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
@@ -76,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int PROFILE_FRAGMENT = 2;
     private final static int CONFIGURE_FRAGMENT = 3;
     private final static int DETAILS_FRAGMENT = 4;
+
+    ImageView profileImage;
+    TextView name;
+    public static int currentPosition;
+    private static final String KEY_CURRENT_POSITION = "com.google.samples.gridtopager.key.currentPosition";
 
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
@@ -159,6 +164,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (connectService == null) {
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
+            // Return here to prevent adding additional GridFragments when changing orientation.
+            return;
+        }
+
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
         getSupportActionBar().setTitle("");
@@ -182,18 +194,19 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
-        detailsFragment = new ProfileFragment();
-        configureFragment = new ConfigureFragment();
+//        detailsFragment = new ProfileFragment();
+//        configureFragment = new ConfigureFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
-        fragments.add(configureFragment);
-        fragments.add(detailsFragment);
+//        fragments.add(configureFragment);
+//        fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
         pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
+
 
         // Attach our adapter to our view pager.
         bind.viewPager.setAdapter(pagerAdapter);
@@ -222,10 +235,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.toolbar.setVisibility(View.GONE);
                         setActionModeVisible(false, null);
                         getSupportActionBar().hide();
-                        break;
-                    case CONFIGURE_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
-                        bind.toolbarTitle.setText("Configure");
                         break;
                 }
             }
@@ -341,6 +350,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // go back to history if currently in details
         if (bind.viewPager.getCurrentItem() == DETAILS_FRAGMENT) {
             bind.viewPager.setCurrentItem(HISTORY_FRAGMENT);
+            fragments.remove(2);
+            pagerAdapter.notifyDataSetChanged();
         }
         if (mBound) {
             if (debug) {
@@ -406,16 +417,25 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     /* implementation for switching fragments (OnFragmentChangeListener) */
     @Override
     // opens details screen for passed in user
-    public void launchDetails(String uid) {
+    public void launchDetails(String uid, View view) {
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
-        // start fragment
-        fragments.set(DETAILS_FRAGMENT, detailsFragment);
-        bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
-        // hide menu and nav bar
-        Objects.requireNonNull(getSupportActionBar()).hide();
+
+         FragmentManager fragmentManager = getSupportFragmentManager();
+         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+         profileImage = view.findViewById(R.id.ivProfileImage);
+         name = view.findViewById(R.id.tvName);
+        fragmentTransaction.setReorderingAllowed(true);
+
+        fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
+        fragmentTransaction.add(R.id.relative_view, detailsFragment, "detailsFragment").addToBackStack(null);
+        fragmentTransaction.commit();
+
         setBottomNavigationVisible(false);
+
+
     }
+
 
     @Override
     public void launchEditProfile() {
@@ -425,6 +445,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void onDetailsBackPressed() {
         bind.viewPager.setCurrentItem(HISTORY_FRAGMENT, false);
+        getSupportFragmentManager().popBackStack();
         setBottomNavigationVisible(true);
     }
 

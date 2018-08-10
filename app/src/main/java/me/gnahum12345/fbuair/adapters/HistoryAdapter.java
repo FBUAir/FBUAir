@@ -216,7 +216,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             if (multiSelectMode) {
                 selectItem(user, this);
             } else {
-                onFragmentChangeListener.launchDetails(user.getId());
+                onFragmentChangeListener.launchDetails(user.getId(),view);
             }
         }
 
