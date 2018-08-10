@@ -100,7 +100,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
 
         SearchManager searchManager = (SearchManager) this.activity.getSystemService(Context.SEARCH_SERVICE);
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
-        svSearch.setSubmitButtonEnabled(true);
         svSearch.setOnQueryTextListener(this);
 
         // add fake users to history
