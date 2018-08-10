@@ -89,7 +89,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
-        // get user at current pos
+        // get user at current position
         final User user = filteredHistory.get(position);
 
         // set user info
@@ -101,7 +101,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         setProfileImage(user, viewHolder.ivProfileImage);
 
         // set seen/unseen tint. make white if in multiselect mode
-        if ((multiSelectMode || !user.isSeen())) {
+        if ((multiSelectMode || user.isSeen())) {
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
         } else {
@@ -109,24 +109,37 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
         }
 
-        if (position == firstSelectedPosition) {
+//position == firstSelectedPosition
+        if (multiSelectMode) {
             selectItem(user, viewHolder);
         }
+    }
+
+    // sets ivProfileImage to user's profile image
+    private void setProfileImage(User user, ImageView iv) {
+        Bitmap bitmap = user.getProfileImage();
+        // generate fake profile images (real users should never have null)
+        if (bitmap == null) {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
+                            generator.getRandomColor());
+            iv.setImageDrawable(drawable);
+        } else {
+            iv.setImageBitmap(getCircularBitmap(bitmap));
+        }
+        iv.bringToFront();
     }
 
     // shows img change animation and adds selected user to selected list
     private void selectItem(User user, ViewHolder viewHolder) {
         if (selectedUsers.contains(user)) {
             animateSelection(false, viewHolder.ivProfileImage, viewHolder.ivCheck);
-            // change BG color to grey
             viewHolder.itemView.setBackgroundColor(Color.WHITE);
-            // remove user from selected
             selectedUsers.remove(user);
         } else {
             animateSelection(true, viewHolder.ivProfileImage, viewHolder.ivCheck);
-            // change BG color to light grey
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.light_grey));
-            // add user to selected
             selectedUsers.add(user);
         }
     }
@@ -153,22 +166,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private void cancelRunningAnimations() {
         mSetRightOut.end();
         mSetLeftIn.end();
-    }
-
-    // sets ivProfileImage to user's profile image
-    private void setProfileImage(User user, ImageView iv) {
-        Bitmap bitmap = user.getProfileImage();
-        // generate fake profile images (real users should never have null)
-        if (bitmap == null) {
-            ColorGenerator generator = ColorGenerator.MATERIAL;
-            TextDrawable drawable = TextDrawable.builder()
-                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
-                            generator.getRandomColor());
-            iv.setImageDrawable(drawable);
-        } else {
-            iv.setImageBitmap(getCircularBitmap(bitmap));
-        }
-        iv.bringToFront();
     }
 
     public void clear() {
@@ -215,6 +212,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             User user = filteredHistory.get(getAdapterPosition());
             if (multiSelectMode) {
                 selectItem(user, this);
+                if (selectedUsers.isEmpty()) onFragmentChangeListener.setActionModeVisible(false, null);
             } else {
                 onFragmentChangeListener.launchDetails(user.getId());
             }
@@ -224,7 +222,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public boolean onLongClick(View view) {
             multiSelectMode = true;
             firstSelectedPosition = getAdapterPosition();
-            notifyDataSetChanged();
+//            notifyDataSetChanged();
+            selectItem(filteredHistory.get(firstSelectedPosition), this);
             onFragmentChangeListener.setActionModeVisible(true,
                     getActionModeCallBack(onFragmentChangeListener));
             return true;
@@ -269,9 +268,9 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
             @Override
             public void onDestroyActionMode(ActionMode actionMode) {
+                cancelRunningAnimations();
                 multiSelectMode = false;
                 selectedUsers.clear();
-                cancelRunningAnimations();
                 firstSelectedPosition = -1;
                 notifyDataSetChanged();
                 onFragmentChangeListener.setMenuVisible(true);
