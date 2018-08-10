@@ -215,7 +215,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             User user = filteredHistory.get(getAdapterPosition());
             if (multiSelectMode) {
                 selectItem(user, this);
-                if (selectedUsers.isEmpty()) onFragmentChangeListener.setActionModeVisible(false, null);
             } else {
                 onFragmentChangeListener.launchDetails(user.getId());
             }
