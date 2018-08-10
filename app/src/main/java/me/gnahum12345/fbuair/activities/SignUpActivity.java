@@ -204,7 +204,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
     @Override
     // saves user profile and starts main activity when sign up is finished
-    public void launchMainActivity() {
+    public void createAccount() {
         MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
         userManager.addUser(user);

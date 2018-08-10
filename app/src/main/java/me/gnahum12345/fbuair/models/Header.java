@@ -6,12 +6,15 @@ import me.gnahum12345.fbuair.managers.MyUserManager;
 
 // header class containing main user info
 public class Header {
-    String uid;
-    Bitmap profileImage;
-    String name;
-    String organization;
-    int connections;
-    int color;
+    private String uid;
+    private Bitmap profileImage;
+    private String name;
+    private String organization;
+    private int connections;
+    private int color;
+    private String phone;
+    private String email;
+    private boolean isAdded;
 
     public Header(String uid) {
         User user = MyUserManager.getInstance().getUser(uid);
@@ -21,6 +24,8 @@ public class Header {
         this.organization = user.getOrganization();
         this.connections = user.getNumConnections();
         this.color = user.getColor();
+        this.phone = user.getPhoneNumber();
+        this.email = user.getEmail();
     }
 
     public Bitmap getProfileImage() {
@@ -49,5 +54,21 @@ public class Header {
 
     public void setColor(int color) {
         this.color = color;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public boolean isAdded() {
+        return isAdded;
+    }
+
+    public void setAdded(boolean added) {
+        isAdded = added;
     }
 }

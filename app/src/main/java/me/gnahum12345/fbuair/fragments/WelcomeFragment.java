@@ -83,7 +83,7 @@ public class WelcomeFragment extends Fragment {
                     public void run() {
                         onSignUpScreenChangeListener.launchSignUpContact();
                     }
-                }, 1000);
+                }, 1300);
             }
         });
     }
