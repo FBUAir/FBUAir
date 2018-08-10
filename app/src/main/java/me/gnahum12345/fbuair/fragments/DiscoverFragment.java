@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,7 +49,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private TextView tvRVEmpty;
     private TextView tvRVEmptyAdd;
     private RippleBackground rippleBackground;
-    private FloatingActionButton configureFAB;
+    private ImageView configureFAB;
 
     public DiscoverFragment() {
         // Required empty public constructor

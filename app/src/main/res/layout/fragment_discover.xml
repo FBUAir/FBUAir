@@ -11,13 +11,44 @@
         android:id="@+id/rvDevicesView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/llMessage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="20dp">
+
+            <TextView
+                android:id="@+id/tvRVEmptyView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="Air lets you share instantly with people nearby."
+                android:textAlignment="center"
+                android:textColor="@color/color_black"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/tvRVEmptyAddView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:text="@string/discover_add_friends"
+                android:textAlignment="center"
+                android:textColor="@color/gradient_blue"
+                android:textSize="16sp" />
+
+        </LinearLayout>
 
         <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
             xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -39,45 +70,16 @@
                 android:src="@drawable/phone_searching" />
         </com.skyfishjy.library.RippleBackground>
 
-        <LinearLayout
-            android:id="@+id/llMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:padding="20dp"
-            android:layout_marginBottom="@dimen/side_margin"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tvRVEmptyView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:text="Air lets you share instantly with people nearby."
-                android:textAlignment="center"
-                android:textColor="@color/color_black"
-                android:textSize="18sp"/>
-
-            <TextView
-                android:id="@+id/tvRVEmptyAddView"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:text="@string/discover_add_friends"
-                android:textAlignment="center"
-                android:textColor="@color/gradient_blue"
-                android:textSize="16sp"/>
-
-        </LinearLayout>
     </LinearLayout>
 
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <ImageView
         android:id="@+id/configureFAB"
+        android:layout_width="@dimen/profile_header_button_size"
+        android:layout_height="@dimen/profile_header_button_size"
+        android:layout_marginEnd="@dimen/side_margin"
+        android:layout_marginBottom="@dimen/side_margin"
         android:layout_gravity="right|bottom"
-        android:src="@drawable/ic_profile_picker_btn"/>
+        android:src="@drawable/ic_profile_picker_btn" />
 
 </FrameLayout>
