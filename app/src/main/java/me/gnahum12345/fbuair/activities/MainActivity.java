@@ -272,9 +272,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED;
-
-
-
     }
 
 
