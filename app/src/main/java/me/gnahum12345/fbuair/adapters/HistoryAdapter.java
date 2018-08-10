@@ -99,6 +99,8 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         // set profile image and bring it to front
         setProfileImage(user, viewHolder.ivProfileImage);
+        resetAfterAnimation(viewHolder.ivProfileImage);
+        resetAfterAnimation(viewHolder.ivCheck);
 
         // set seen/unseen tint. make white if in multiselect mode
         if ((multiSelectMode || user.isSeen())) {
@@ -109,13 +111,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
         }
 
-//position == firstSelectedPosition
-        if (multiSelectMode) {
+        // select first long-clicked item
+        if (multiSelectMode && position == firstSelectedPosition) {
             selectItem(user, viewHolder);
         }
     }
 
-    // sets ivProfileImage to user's profile image
+    // sets ivProfileImage to user's profile image and make it visible
     private void setProfileImage(User user, ImageView iv) {
         Bitmap bitmap = user.getProfileImage();
         // generate fake profile images (real users should never have null)
@@ -129,6 +131,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             iv.setImageBitmap(getCircularBitmap(bitmap));
         }
         iv.bringToFront();
+    }
+
+    void resetAfterAnimation(View view) {
+        view.setAlpha(1.0f);
+        view.setRotationY(0.0f);
     }
 
     // shows img change animation and adds selected user to selected list
@@ -156,10 +163,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         mSetLeftIn.setTarget(entering);
         mSetRightOut.start();
         mSetLeftIn.start();
-/*        if (isAnimationIn) {
-            ivCheck.bringToFront();
-        }
-        else ivProfileImage.bringToFront();*/
     }
 
     // cancels animations (used for when animation gets paused mid-anim)
@@ -222,8 +225,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public boolean onLongClick(View view) {
             multiSelectMode = true;
             firstSelectedPosition = getAdapterPosition();
-//            notifyDataSetChanged();
-            selectItem(filteredHistory.get(firstSelectedPosition), this);
+            notifyDataSetChanged();
             onFragmentChangeListener.setActionModeVisible(true,
                     getActionModeCallBack(onFragmentChangeListener));
             return true;
