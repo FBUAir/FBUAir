@@ -70,5 +70,6 @@
             android:background="@color/color_white"
             app:itemIconTint="@drawable/nav_colors"
             app:itemTextColor="@drawable/nav_colors" />
+
     </RelativeLayout>
 </layout>

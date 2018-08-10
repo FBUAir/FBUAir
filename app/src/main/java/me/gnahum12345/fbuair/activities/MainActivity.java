@@ -28,8 +28,6 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
-import android.transition.Transition;
-import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
@@ -45,7 +43,6 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
@@ -191,23 +188,19 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
-        detailsFragment = new ProfileFragment();
-        configureFragment = new ConfigureFragment();
+//        detailsFragment = new ProfileFragment();
+//        configureFragment = new ConfigureFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
-        fragments.add(configureFragment);
-        fragments.add(detailsFragment);
+//        fragments.add(configureFragment);
+//        fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
         pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
 
-        Transition changeTransform = TransitionInflater.from(this).
-                inflateTransition(R.transition.change_image_transform);
-        historyFragment.setSharedElementReturnTransition(changeTransform);
-        detailsFragment.setSharedElementReturnTransition(changeTransform);
 
         // Attach our adapter to our view pager.
         bind.viewPager.setAdapter(pagerAdapter);
@@ -237,10 +230,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.toolbar.setVisibility(View.GONE);
                         getSupportActionBar().hide();
                         setActionModeVisible(false, null);
-                        break;
-                    case CONFIGURE_FRAGMENT:
-                        bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
-                        bind.toolbarTitle.setText("Configure");
                         break;
                 }
             }
@@ -357,6 +346,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // go back to history if currently in details
         if (bind.viewPager.getCurrentItem() == DETAILS_FRAGMENT) {
             bind.viewPager.setCurrentItem(HISTORY_FRAGMENT);
+            fragments.remove(2);
+            pagerAdapter.notifyDataSetChanged();
         }
         if (mBound) {
             if (debug) {
@@ -425,27 +416,20 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public void launchDetails(String uid, View view) {
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
-        // start fragment
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        profileImage = view.findViewById(R.id.ivProfileImage);
-        name = view.findViewById(R.id.tvName);
-
-
+         FragmentManager fragmentManager = getSupportFragmentManager();
+         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+         profileImage = view.findViewById(R.id.ivProfileImage);
+         name = view.findViewById(R.id.tvName);
         fragmentTransaction.setReorderingAllowed(true);
-        //fragmentTransaction.addSharedElement(profileImage, "profileImage");
-        //fragmentTransaction.addSharedElement(name, "name");
-        fragmentTransaction.add(R.id.frame, detailsFragment, "detailsFragment").addToBackStack(null);
 
+        fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
+        fragmentTransaction.add(R.id.relative_view, detailsFragment, "detailsFragment").addToBackStack(null);
         fragmentTransaction.commit();
 
-
-        //fragments.set(DETAILS_FRAGMENT, detailsFragment);
-        //bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
-        // hide menu and nav bar
-        Objects.requireNonNull(getSupportActionBar()).hide();
         setBottomNavigationVisible(false);
+
+
     }
 
 
