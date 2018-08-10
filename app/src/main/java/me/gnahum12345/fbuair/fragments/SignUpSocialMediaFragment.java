@@ -93,8 +93,6 @@ public class SignUpSocialMediaFragment extends Fragment{
         // attach adapter
         bind.gvSocialMedias.setAdapter(socialMediaAdapter);
 
-        // bindFooter.btNext.setEnabled(!activity.user.getSocialMedias().isEmpty());
-
         // CLICK HANDLERS
         footerView.findViewById(R.id.btNext);
         bind.btNext.setOnClickListener(new View.OnClickListener() {

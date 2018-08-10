@@ -2,29 +2,30 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
     <LinearLayout
         android:layout_width="match_parent"
-        android:paddingBottom="1dp"
-        android:paddingTop="10dp"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/configure_top_margin"
+        android:gravity="end"
+        android:orientation="horizontal"
+        android:clickable="false">
 
         <TextView
-            android:id="@+id/tvRequestPlatform"
+            android:id="@+id/btCancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="Select the Social Profiles that you wish to send."
-            android:textAlignment="center"
-            android:textSize="18sp" />
+            android:text="CANCEL"
+            android:textAppearance="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:textSize="@dimen/action_text_size"/>
 
-        <Button
-            android:id="@+id/btNext"
-            android:layout_below="@+id/tvRequestPlatform"
+        <TextView
+            android:id="@+id/btSubmit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentEnd="true"
-            android:layout_gravity="right"
-            android:background="@drawable/pill_filled"
-            android:textColor="@android:color/white" />
+            android:layout_marginStart="@dimen/action_side_margin"
+            android:text="SUBMIT"
+            android:textAppearance="@style/Widget.MaterialComponents.Button.TextButton.Dialog"
+            android:textColor="@color/gradient_blue"
+            android:textSize="@dimen/action_text_size"
+            android:textStyle="bold" />
+
     </LinearLayout>
 </layout>

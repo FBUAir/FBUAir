@@ -9,6 +9,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
@@ -31,7 +32,7 @@ public class ConfigureAdapter extends BaseAdapter {
     public ConfigureAdapter(Context context) {
         this.context = context;
         this.user = MyUserManager.getInstance().getCurrentUser();
-        this.socialMedias = user.getSocialMedias();
+        this.socialMedias = new ArrayList<>(user.getSocialMedias());
 
         if (!user.getPhoneNumber().isEmpty()) {
             SocialMedia phone = new SocialMedia();

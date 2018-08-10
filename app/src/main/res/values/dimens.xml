@@ -32,4 +32,11 @@
     <dimen name="error_side_margin">5dp</dimen>
     <dimen name="social_media_size">90dp</dimen>
     <dimen name="sign_up_instructions_margin_bottom">10dp</dimen>
+    <!-- CONFIGURE RESOURCES -->
+    <dimen name="action_text_size">16sp</dimen>
+    <dimen name="action_side_margin">30dp</dimen>
+    <dimen name="configure_side_margin">20dp</dimen>
+    <dimen name="configure_top_margin">20dp</dimen>
+    <dimen name="grid_side_margin">17.5dp</dimen>
+    <dimen name="configure_title_font_size">18sp</dimen>
 </resources>
