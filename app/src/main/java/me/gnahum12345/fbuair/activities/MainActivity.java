@@ -46,7 +46,6 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
-import me.gnahum12345.fbuair.fragments.ConfigureFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
@@ -598,11 +597,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
-
-        /*if (item.getItemId() == R.id.miCompose) {
-            bind.bottomNavigationView.setCurrentItem(-1);
-            bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
-        }*/
         return super.onOptionsItemSelected(item);
     }
 

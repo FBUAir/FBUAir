@@ -55,7 +55,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         // Required empty public constructor
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,8 +150,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
     }
 
-
-
     @Override
     public void updateEndpoint(ConnectionService.Endpoint endpoint, Object userData, boolean isProfile) {
         if (isProfile) {
@@ -174,7 +171,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         MyUserManager manager = MyUserManager.getInstance();
         manager.addUser(user, endpoint);
     }
-
 
     @Override
     public void addEndpoint(ConnectionService.Endpoint endpoint) {
@@ -205,8 +201,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     }
 
     public interface DiscoverFragmentListener {
-        public List<ConnectionService.Endpoint> getCurrEndpoints();
-        public void addToListener(ConnectionListener listener);
+        List<ConnectionService.Endpoint> getCurrEndpoints();
+        void addToListener(ConnectionListener listener);
     }
 
     private void permissionsNotGranted() {

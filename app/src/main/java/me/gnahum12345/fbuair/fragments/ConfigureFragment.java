@@ -66,14 +66,7 @@ public class ConfigureFragment extends DialogFragment {
         // Set transparent background and no title
         Dialog dialog = getDialog();
         if (dialog != null && dialog.getWindow() != null) {
-            WindowManager.LayoutParams lp = new WindowManager.LayoutParams();
-            lp.copyFrom(dialog.getWindow().getAttributes());
-            lp.width = WindowManager.LayoutParams.MATCH_PARENT;
-            lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
-            lp.gravity = Gravity.CENTER;
-
-            dialog.getWindow().setAttributes(lp);
-
+            dialog.getWindow().getAttributes().windowAnimations = R.style.PauseDialogAnimation;
             dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
             dialog.getWindow().requestFeature(Window.FEATURE_NO_TITLE);
         }
