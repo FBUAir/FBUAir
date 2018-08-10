@@ -109,7 +109,9 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
                 configureFragment.show(getFragmentManager(), "");
             }
         });
-
+        ConnectionService.Endpoint e = new ConnectionService.Endpoint("Some id", "my name");
+        rvAdapter.put(e, new ProfileUser(getContext()));
+        rvAdapter.notifyDataSetChanged();
         mListener.addToListener(this);
         return view;
     }
@@ -139,6 +141,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             }
         }
         rvAdapter.notifyDataSetChanged();
+
 
         if (!rvAdapter.isEmpty()) {
             tvRVEmpty.setVisibility(View.GONE);

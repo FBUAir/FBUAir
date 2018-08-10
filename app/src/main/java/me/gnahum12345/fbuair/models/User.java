@@ -53,7 +53,7 @@ public class User implements Comparable {
         return seen;
     }
 
-    public void hasSeen(boolean seen) {
+    public void isSeen(boolean seen) {
         this.seen = seen;
     }
 

@@ -23,7 +23,6 @@ import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
-import me.gnahum12345.fbuair.utils.Utils;
 
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
@@ -140,8 +139,9 @@ public class MyUserManager {
 
     private void seenAllUsers() {
         for (User u : currentUsers.values()) {
-            u.hasSeen(true);
+            u.isSeen(true);
         }
+        commit();
     }
 
     public void notifyListeners(User user, boolean added) {

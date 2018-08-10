@@ -43,6 +43,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                 return parseName(endpoint.getName()).compareTo(parseName(t1.getName()));
             }
         });
+
     }
 
 
