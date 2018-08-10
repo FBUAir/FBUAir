@@ -100,7 +100,7 @@ public class SignUpSocialMediaFragment extends Fragment{
         bind.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onSignUpScreenChangeListener.launchMainActivity();
+                onSignUpScreenChangeListener.createAccount();
             }
         });
     }

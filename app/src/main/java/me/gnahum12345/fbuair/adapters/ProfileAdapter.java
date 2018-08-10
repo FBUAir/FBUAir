@@ -24,7 +24,6 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.databinding.ItemContactCardBinding;
 import me.gnahum12345.fbuair.databinding.ItemProfileHeaderBinding;
 import me.gnahum12345.fbuair.databinding.ItemSocialMediaCardBinding;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
@@ -32,7 +31,6 @@ import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
@@ -45,29 +43,24 @@ import static me.gnahum12345.fbuair.utils.ImageUtils.getDarkenedBitmap;
 public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 0;
-    private static final int TYPE_CONTACT = 1;
-    private static final int TYPE_SOCIAL_MEDIA = 2;
+    private static final int TYPE_SOCIAL_MEDIA = 1;
 
     private Context context;
     private ProfileFragment.ProfileFragmentListener mListener;
     private Header header;
-    private Contact contact;
     private ArrayList<SocialMedia> socialMedias;
     private boolean isCurrentUserProfile;
-    private int difference;
-    Bitmap coverPhotoBitmap;
+    private Bitmap coverPhotoBitmap;
 
     private OnFragmentChangeListener onFragmentChangeListener;
     private OnRequestAddContact onAddContactClickedListener;
 
-    public ProfileAdapter(Context context, Contact contact, Header header,
+    public ProfileAdapter(Context context, Header header,
                           ArrayList<SocialMedia> socialMedias, boolean isCurrentUserProfile) {
         this.header = header;
-        this.contact = contact;
         this.socialMedias = socialMedias;
         this.context = context;
         this.isCurrentUserProfile = isCurrentUserProfile;
-        difference = contact.isEmpty() ? 1 : 2;
 
         onFragmentChangeListener = (OnFragmentChangeListener) context;
         this.onAddContactClickedListener = (OnRequestAddContact) context;
@@ -75,7 +68,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @NonNull
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater =
                 LayoutInflater.from(parent.getContext());
         if (viewType == TYPE_HEADER) {
@@ -83,11 +76,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     DataBindingUtil.inflate(layoutInflater, R.layout.item_profile_header, parent,
                             false);
             return new VHHeader(headerBinding);
-        } else if (viewType == TYPE_CONTACT) {
-            ItemContactCardBinding contactBinding =
-                    DataBindingUtil.inflate(layoutInflater, R.layout.item_contact_card, parent,
-                            false);
-            return new VHContact(contactBinding);
         } else if (viewType == TYPE_SOCIAL_MEDIA) {
             ItemSocialMediaCardBinding socialMediaBinding =
                     DataBindingUtil.inflate(layoutInflater, R.layout.item_social_media_card, parent,
@@ -99,13 +87,21 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        // populate views in each item
+        // populate views in header
         if (holder instanceof VHHeader) {
+            // set name, org, connections, and profile image
             VHHeader vhHeader = (VHHeader) holder;
             vhHeader.bind.ivProfileImage.setImageBitmap(header.getProfileImage());
             vhHeader.bind.tvName.setText(header.getName());
-            Bitmap profileImage = header.getProfileImage();
+            if (header.getOrganization().isEmpty()) {
+                vhHeader.bind.tvOrganization.setVisibility(View.GONE);
+            } else {
+                vhHeader.bind.tvOrganization.setText(header.getOrganization());
+            }
+            vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
+
             // set profile image for fake users (real ones should never be null)
+            Bitmap profileImage = header.getProfileImage();
             if (profileImage == null) {
                 ColorGenerator generator = ColorGenerator.MATERIAL;
                 TextDrawable drawable = TextDrawable.builder()
@@ -122,54 +118,22 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
                 }
             }
-            if (header.getOrganization().isEmpty()) {
-                vhHeader.bind.tvOrganization.setVisibility(View.GONE);
-            } else {
-                vhHeader.bind.tvOrganization.setText(header.getOrganization());
-            }
-            vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
 
-            if (isCurrentUserProfile) {
-                vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
-                vhHeader.bind.ivBack.setVisibility(View.GONE);
+            // hide phone number card if there's no phone number, otehrwise set it to the phone #
+            if (header.getPhone().isEmpty()) {
+                vhHeader.bind.llPhone.setVisibility(View.GONE);
+                vhHeader.bind.horizontalLine.setVisibility(View.GONE);
             } else {
-                vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                if (contact.isAdded()) {
-                    vhHeader.bind.btAddContact.setEnabled(false);
-                    vhHeader.bind.btAddContact.setImageDrawable
-                            (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
-                                    null));
-                }
-            }
-            if (!isAvaliable(header.getUid()) || !isListener()) {
-                vhHeader.bind.btSendBack.setEnabled(false);
-                vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
-                        .getDrawable(R.drawable.ic_share_button_disabled, null));
-                return;
-            }
-            vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
-            vhHeader.bind.btSendBack.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mListener.sendBack(header.getUid());
-                }
-            });
-
-        } else if (holder instanceof VHContact) {
-            VHContact vhContact = (VHContact) holder;
-            if (contact.getPhone().isEmpty()) {
-                vhContact.bind.llPhone.setVisibility(View.GONE);
-                vhContact.bind.horizontalLine.setVisibility(View.GONE);
-            } else {
-                vhContact.bind.llPhone.setVisibility(View.VISIBLE);
-                vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
-                vhContact.bind.tvPhone.setText(contact.getPhone());
-                vhContact.bind.tvPhone.setOnClickListener(new View.OnClickListener() {
+                vhHeader.bind.llPhone.setVisibility(View.VISIBLE);
+                vhHeader.bind.horizontalLine.setVisibility(View.VISIBLE);
+                vhHeader.bind.tvPhone.setText(header.getPhone());
+                // go to phone when phone number is clicked
+                vhHeader.bind.tvPhone.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
 
                         Intent intent = new Intent(Intent.ACTION_CALL);
-                        intent.setData(Uri.parse("tel:" + contact.getPhone()));
+                        intent.setData(Uri.parse("tel:" + header.getPhone()));
 
                         if (ActivityCompat.checkSelfPermission(context, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
                             // TODO: Consider calling
@@ -180,7 +144,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                             // to handle the case where the user grants the permission. See the documentation
                             // for ActivityCompat#requestPermissions for more details.
                             Toast.makeText(context, "calling unsuccessful, will copy instead.", Toast.LENGTH_SHORT).show();
-                            copy(context, contact.getPhone());
+                            copy(context, header.getPhone());
                             return;
                         }
                         Toast.makeText(context, "Calling...", Toast.LENGTH_SHORT).show();
@@ -188,26 +152,29 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         context.startActivity(intent);
                     }
                 });
-                vhContact.bind.tvPhone.setOnLongClickListener(new View.OnLongClickListener() {
+                vhHeader.bind.tvPhone.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        return copy(context, contact.getPhone());
+                        return copy(context, header.getPhone());
                     }
                 });
-                String formattedNumber = PhoneNumberUtils.formatNumber(contact.getPhone(), "US");
-                vhContact.bind.tvPhone.setText(formattedNumber);
+                String formattedNumber = PhoneNumberUtils.formatNumber(header.getPhone(), "US");
+                vhHeader.bind.tvPhone.setText(formattedNumber);
             }
-            if (contact.getEmail().isEmpty()) {
-                vhContact.bind.llEmail.setVisibility(View.GONE);
-                vhContact.bind.horizontalLine.setVisibility(View.GONE);
+
+            // hide email card if there's no email, otehrwise set it to the email
+            if (header.getEmail().isEmpty()) {
+                vhHeader.bind.llEmail.setVisibility(View.GONE);
+                vhHeader.bind.horizontalLine.setVisibility(View.GONE);
             } else {
-                vhContact.bind.llEmail.setVisibility(View.VISIBLE);
-                vhContact.bind.horizontalLine.setVisibility(View.VISIBLE);
-                vhContact.bind.tvEmail.setText(contact.getEmail());
-                vhContact.bind.tvEmail.setOnClickListener(new View.OnClickListener() {
+                vhHeader.bind.llEmail.setVisibility(View.VISIBLE);
+                vhHeader.bind.horizontalLine.setVisibility(View.VISIBLE);
+                vhHeader.bind.tvEmail.setText(header.getEmail());
+                // go to mail when email is clicked
+                vhHeader.bind.tvEmail.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        Uri uri = Uri.parse("mailto:" + contact.getEmail())
+                        Uri uri = Uri.parse("mailto:" + header.getEmail())
                                 .buildUpon()
                                 .appendQueryParameter("subject", "AIR Subject: ")
                                 .build();
@@ -218,16 +185,44 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     }
                 });
 
-                vhContact.bind.tvEmail.setOnLongClickListener(new View.OnLongClickListener() {
+                vhHeader.bind.tvEmail.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View view) {
-                        return copy(context, contact.getEmail());
+                        return copy(context, header.getEmail());
+                    }
+                });
+
+                // set buttons visibility and click listeners
+                if (isCurrentUserProfile) {
+                    vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
+                    vhHeader.bind.ivBack.setVisibility(View.GONE);
+                } else {
+                    vhHeader.bind.btEditProfile.setVisibility(View.GONE);
+                    if (header.isAdded()) {
+                        vhHeader.bind.btAddContact.setEnabled(false);
+                        vhHeader.bind.btAddContact.setImageDrawable
+                                (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
+                                        null));
+                    }
+                }
+                if (!isAvaliable(header.getUid()) || !isListener()) {
+                    vhHeader.bind.btSendBack.setEnabled(false);
+                    vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
+                            .getDrawable(R.drawable.ic_share_button_disabled, null));
+                    return;
+                }
+                vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
+                vhHeader.bind.btSendBack.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        mListener.sendBack(header.getUid());
                     }
                 });
             }
 
+            // populate social media cards
         } else if (holder instanceof VHSocialMedia) {
-            SocialMedia socialMedia = socialMedias.get(position - difference);
+            SocialMedia socialMedia = socialMedias.get(position - 1);
             VHSocialMedia vhSocialMedia = (VHSocialMedia) holder;
             String username = socialMedia.getUsername();
             if (socialMedia.getName().equals("Twitter") || socialMedia.getName().equals("Instagram")) {
@@ -236,7 +231,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             vhSocialMedia.bind.tvUsername.setText(username);
             vhSocialMedia.bind.ivIcon.setImageDrawable(SocialMediaUtils.getIconDrawable(context, socialMedia));
             // hide horizontal line for last element
-            if (position == socialMedias.size() - 1 + difference) {
+            if (position == socialMedias.size()) {
                 vhSocialMedia.bind.horizontalLine.setVisibility(View.INVISIBLE);
             }
         }
@@ -256,9 +251,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         switch (position) {
             case 0:
                 return TYPE_HEADER;
-            case 1:
-                if (contact.isEmpty()) return TYPE_SOCIAL_MEDIA;
-                else return TYPE_CONTACT;
             default:
                 return TYPE_SOCIAL_MEDIA;
         }
@@ -267,7 +259,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     // increasing itemCount by difference to account for header and contact
     @Override
     public int getItemCount() {
-        return socialMedias.size() + difference;
+        return socialMedias.size() + 1;
     }
 
     public void setListener(ProfileFragment.ProfileFragmentListener listener) {
@@ -295,7 +287,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     onAddContactClickedListener.requestAddContact(header.getUid(), new OnContactAddedCallback() {
                         @Override
                         public void onSuccess() {
-                            contact.setAdded(true);
+                            header.setAdded(true);
                             notifyItemChanged(0);
                         }
                     });
@@ -320,15 +312,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         return true;
     }
 
-    class VHContact extends RecyclerView.ViewHolder {
-        ItemContactCardBinding bind;
-
-        VHContact(ItemContactCardBinding bind) {
-            super(bind.getRoot());
-            this.bind = bind;
-        }
-    }
-
     class VHSocialMedia extends RecyclerView.ViewHolder implements View.OnClickListener {
         ItemSocialMediaCardBinding bind;
 
@@ -340,7 +323,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         @Override
         public void onClick(View view) {
-            int position = getAdapterPosition() - difference;
+            int position = getAdapterPosition() - 1;
             String url = socialMedias.get(position).getProfileUrl();
             Log.d("PROFILEADAPTER", "clicked link: " + url);
             onFragmentChangeListener.launchUrlView(url);

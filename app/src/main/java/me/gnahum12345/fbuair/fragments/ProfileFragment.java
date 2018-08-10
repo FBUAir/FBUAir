@@ -20,11 +20,9 @@ import me.gnahum12345.fbuair.adapters.ProfileAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentProfileBinding;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utils.Utils;
 
 import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
@@ -70,10 +68,8 @@ public class ProfileFragment extends Fragment {
             isCurrentUserProfile = true;
         }
         socialMedias = user.getSocialMedias();
-
-        Contact contact = new Contact(uid);
         Header header = new Header(uid);
-        profileAdapter = new ProfileAdapter(getContext(), contact, header,
+        profileAdapter = new ProfileAdapter(getContext(), header,
                 socialMedias, isCurrentUserProfile);
         if (mListener != null) {
             profileAdapter.setListener(mListener);

@@ -28,5 +28,5 @@ public interface OnSignUpScreenChangeListener {
     void finishValidateProfile(boolean success);
 
     /** starts intent to go to main activity */
-    void launchMainActivity();
+    void createAccount();
 }

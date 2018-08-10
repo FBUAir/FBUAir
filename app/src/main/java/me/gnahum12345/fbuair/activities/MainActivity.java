@@ -147,8 +147,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         userManager = MyUserManager.getInstance();
         userManager.loadContacts();
         userManager.setNotificationAbility(true, this);
-        // set up ConnectionService
 
+        //deleteAccount();
+
+        // set up ConnectionService
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
 
         if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
@@ -167,10 +169,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
             Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
             d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
+            bind.toolbarImage.setImageDrawable(d);
         } else {
-            d = new BitmapDrawable(getResources(), getCircularBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage()));
+            Bitmap profileImage = userManager.getCurrentUser().getProfileImage();
+            if (profileImage != null) {
+                d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
+                bind.toolbarImage.setImageDrawable(d);
+            }
         }
-        bind.toolbarImage.setImageDrawable(d);
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
@@ -206,7 +212,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         discoverFragment.populateAdapter();
                         bind.toolbarTitle.setText("Discover");
                         setActionModeVisible(false, null);
-                        //bind.toolbarImage.setImageDrawable(d);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
@@ -215,8 +220,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
                         bind.toolbar.setVisibility(View.GONE);
-                        getSupportActionBar().hide();
                         setActionModeVisible(false, null);
+                        getSupportActionBar().hide();
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
