@@ -78,7 +78,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/configureFAB"
         android:layout_gravity="right|bottom"
-        android:src="@drawable/call"
-        android:background="@color/colorAccent"/>
+        android:src="@drawable/ic_profile_picker_btn"/>
 
 </FrameLayout>

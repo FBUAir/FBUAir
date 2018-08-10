@@ -40,6 +40,8 @@ public class User implements Comparable {
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
     ArrayList<SocialMedia> sendingSocialMedias = new ArrayList<>();
     boolean seen = false;
+    private boolean sendingPhone = false;
+    private boolean sendingEmail = false;
 
     public static int NO_COLOR = Integer.MIN_VALUE;
 
@@ -50,9 +52,11 @@ public class User implements Comparable {
     public boolean isSeen() {
         return seen;
     }
+
     public void hasSeen(boolean seen) {
         this.seen = seen;
     }
+
     public Integer getNumConnections() {return numConnections; }
 
     public void setNumConnections(Integer numConnections) { this.numConnections = numConnections; }
@@ -117,10 +121,34 @@ public class User implements Comparable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+        this.sendingPhone = true;
+    }
+
+    public boolean isSendingPhone() {
+        return sendingPhone;
+    }
+    public boolean isSendingEmail() {
+        return sendingEmail;
+    }
+    public void togglePhone() {
+        if (sendingPhone) {
+            sendingPhone = false;
+        } else {
+            sendingPhone = true;
+        }
+    }
+
+    public void toggleEmail() {
+        if (sendingEmail) {
+            sendingEmail = false;
+        } else {
+            sendingEmail = true;
+        }
     }
 
     public void setEmail(String email) {
         this.email = email;
+        this.sendingEmail = true;
     }
 
     public void setProfileImage(Bitmap profileImage) {
@@ -231,6 +259,12 @@ public class User implements Comparable {
         try {
             JSONObject object = User.toJson(this);
             object.put("socialMedias", User.arrayListToJsonArray(getSendingSocialMedias()));
+            if (!isSendingEmail()) {
+                object.put("email", "");
+            }
+            if (!isSendingPhone()) {
+                object.put("phone", "");
+            }
             return object.toString();
         } catch (JSONException e) {
             e.printStackTrace();
@@ -263,6 +297,8 @@ public class User implements Comparable {
             user.socialMedias = User.jsonArrayToArrayList(json.optJSONArray("socialMedias"));
             user.color = json.optInt("color");
             user.sendingSocialMedias = User.jsonArrayToArrayList(json.optJSONArray("sendingSocialMedia"));
+            user.sendingEmail = json.optBoolean("sendingEmail", false);
+            user.sendingPhone = json.optBoolean("sendingPhone", false);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -299,6 +335,8 @@ public class User implements Comparable {
         json.put("sendingSocialMedia", sendingSM);
         json.put("numConnections",numConnections);
         json.put("color", user.getColor());
+        json.put("sendingEmail", user.isSendingEmail());
+        json.put("sendingPhone", user.isSendingPhone());
         return json;
 
     }

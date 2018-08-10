@@ -32,6 +32,21 @@ public class ConfigureAdapter extends BaseAdapter {
         this.context = context;
         this.user = MyUserManager.getInstance().getCurrentUser();
         this.socialMedias = user.getSocialMedias();
+
+        if (!user.getPhoneNumber().isEmpty()) {
+            SocialMedia phone = new SocialMedia();
+            phone.setName("Phone");
+            phone.setProfileUrl(user.getPhoneNumber());
+            phone.setUsername("phoneUserName");
+            socialMedias.add(phone);
+        }
+        if (!user.getEmail().isEmpty()) {
+            SocialMedia email = new SocialMedia();
+            email.setName("Email");
+            email.setProfileUrl(user.getEmail());
+            email.setUsername("EmailUser");
+            socialMedias.add(email);
+        }
     }
 
     @Override
@@ -65,6 +80,16 @@ public class ConfigureAdapter extends BaseAdapter {
         viewHolder.tvName.setText(socialMedia.getName());
         boolean added = user.isSendingSocialMedia(socialMedia);
         viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
+
+        if (socialMedia.getName().contains("Phone")) {
+            added = user.isSendingPhone();
+
+            viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
+        }
+        if (socialMedia.getName().contains("Email")) {
+            added = user.isSendingEmail();
+            viewHolder.ivCheck.setVisibility(added ? View.VISIBLE : View.GONE);
+        }
         return view;
     }
 
@@ -90,16 +115,27 @@ public class ConfigureAdapter extends BaseAdapter {
             int position = (int) view.getTag(R.id.POSITION_KEY);
             // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
             SocialMedia socialMedia = socialMedias.get(position);
+            boolean changed = false;
+            if (socialMedia.getName().contains("Phone")) {
+                user.togglePhone();
+                changed = true;
+            }
+            if (socialMedia.getName().contains("Email")) {
+                user.toggleEmail();
+                changed = true;
+            }
+            if (changed) {
+                MyUserManager.getInstance().commitCurrentUser(user);
+                notifyDataSetChanged();
+                return;
+            }
             if (user.isSendingSocialMedia(socialMedia)) {
                 user.removeSendingSocialMedia(socialMedia);
-                MyUserManager.getInstance().commitCurrentUser(user);
-                notifyDataSetChanged();
             } else {
                 user.addSendingSocialMedia(socialMedia);
-                MyUserManager.getInstance().commitCurrentUser(user);
-                notifyDataSetChanged();
             }
-
+            MyUserManager.getInstance().commitCurrentUser(user);
+            notifyDataSetChanged();
         }
     }
 }

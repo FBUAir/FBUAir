@@ -25,6 +25,7 @@ public class SocialMediaUtils {
 
     // gets corresponding resource drawable for given social media
     public static Drawable getIconDrawable(Context context, SocialMedia socialMedia) {
+
         String drawableName = "ic_" + socialMedia.getName().toLowerCase();
         int resId = context.getResources().getIdentifier
                 (drawableName, "drawable", context.getPackageName());
