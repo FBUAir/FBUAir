@@ -2,12 +2,15 @@ package me.gnahum12345.fbuair.fragments;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.Toast;
 
 
@@ -42,24 +45,32 @@ public class ConfigureFragment extends DialogFragment {
         bind = DataBindingUtil.inflate(
                 inflater, R.layout.fragment_configure, container, false);
         this.container = container;
+
+
         bindFooter = DataBindingUtil.inflate(inflater, R.layout.configure_fragments_footer, container, false);
         View footerView = bindFooter.getRoot();
 
+        // Set transparent background and no title
+        if (getDialog() != null && getDialog().getWindow() != null) {
+            getDialog().getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+            getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+        }
         bind.gvSocialMedias.addFooterView(footerView);
         bind.gvSocialMedias.setAdapter(adapter);
 
+        bindFooter.btNext.setText("Done");
         bindFooter.btNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO: handle this..
-                Toast.makeText(getContext(), "I will handle this eventually", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Configured!", Toast.LENGTH_SHORT).show();
+                dismiss();
             }
         });
 
         return bind.getRoot();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
 
     @Override
     public void onAttach(Context context) {

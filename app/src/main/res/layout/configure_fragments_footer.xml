@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
+        android:paddingBottom="1dp"
+        android:paddingTop="10dp"
+        android:orientation="vertical"
         android:layout_height="match_parent">
+
         <TextView
             android:id="@+id/tvRequestPlatform"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:text="@string/missing_something"
-            android:textAlignment="viewStart"
-            android:textSize="12sp" />
+            android:text="Select the Social Profiles that you wish to send."
+            android:textAlignment="center"
+            android:textSize="18sp" />
 
         <Button
             android:id="@+id/btNext"
+            android:layout_below="@+id/tvRequestPlatform"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
             android:layout_alignParentEnd="true"
-            android:layout_below="@id/tvRequestPlatform"
-            android:layout_marginTop="20dp"
-            android:text="@string/add_social_media" />
-    </RelativeLayout>
+            android:layout_gravity="right"
+            android:background="@drawable/pill_filled"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
 </layout>
