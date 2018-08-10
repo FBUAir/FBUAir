@@ -191,37 +191,38 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                         return copy(context, header.getEmail());
                     }
                 });
-
-                // set buttons visibility and click listeners
-                if (isCurrentUserProfile) {
-                    vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
-                    vhHeader.bind.ivBack.setVisibility(View.GONE);
-                } else {
-                    vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                    if (header.isAdded()) {
-                        vhHeader.bind.btAddContact.setEnabled(false);
-                        vhHeader.bind.btAddContact.setImageDrawable
-                                (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
-                                        null));
-                    }
-                }
-                if (!isAvaliable(header.getUid()) || !isListener()) {
-                    vhHeader.bind.btSendBack.setEnabled(false);
-                    vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
-                            .getDrawable(R.drawable.ic_share_button_disabled, null));
-                    return;
-                }
-                vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
-                vhHeader.bind.btSendBack.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        mListener.sendBack(header.getUid());
-                    }
-                });
             }
 
-            // populate social media cards
-        } else if (holder instanceof VHSocialMedia) {
+            // set buttons visibility and click listeners
+            if (isCurrentUserProfile) {
+                vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
+                vhHeader.bind.ivBack.setVisibility(View.GONE);
+            } else {
+                vhHeader.bind.btEditProfile.setVisibility(View.GONE);
+                if (header.isAdded()) {
+                    vhHeader.bind.btAddContact.setEnabled(false);
+                    vhHeader.bind.btAddContact.setImageDrawable
+                            (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
+                                    null));
+                }
+            }
+            if (!isAvaliable(header.getUid()) || !isListener()) {
+                vhHeader.bind.btSendBack.setEnabled(false);
+                vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.ic_share_button_disabled, null));
+                return;
+            }
+            vhHeader.bind.btSendBack.setVisibility(View.VISIBLE);
+            vhHeader.bind.btSendBack.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    mListener.sendBack(header.getUid());
+                }
+            });
+
+        }
+        // populate social media cards
+        else if (holder instanceof VHSocialMedia) {
             SocialMedia socialMedia = socialMedias.get(position - 1);
             VHSocialMedia vhSocialMedia = (VHSocialMedia) holder;
             String username = socialMedia.getUsername();

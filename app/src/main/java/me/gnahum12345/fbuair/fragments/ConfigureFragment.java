@@ -63,7 +63,6 @@ public class ConfigureFragment extends DialogFragment {
             @Override
             public void onClick(View view) {
                 //TODO: handle this..
-                Toast.makeText(getContext(), "Configured!", Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         });

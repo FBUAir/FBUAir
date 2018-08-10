@@ -68,13 +68,12 @@ public class ProfileFragment extends Fragment {
             isCurrentUserProfile = (user.equals(MyUserManager.getInstance().getCurrentUser()));
         } else {
             user = MyUserManager.getInstance().getCurrentUser();
-            uid = user.getId();
             isCurrentUserProfile = true;
         }
         socialMedias = user.getSocialMedias();
-        Header header = new Header(uid);
-        profileAdapter = new ProfileAdapter(getContext(), header,
-                socialMedias, isCurrentUserProfile);
+        Header header = new Header(user.getId());
+        profileAdapter = new ProfileAdapter(getContext(), header, socialMedias,
+                isCurrentUserProfile);
         if (mListener != null) {
             profileAdapter.setListener(mListener);
         }

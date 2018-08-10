@@ -13,11 +13,29 @@
         android:layout_height="match_parent"
         android:visibility="visible"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:visibility="visible">
+        android:layout_height="match_parent">
+
+        <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/rippleBackground"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="10dp"
+            app:rb_color="#0099CC"
+            app:rb_duration="4000"
+            app:rb_radius="32dp"
+            app:rb_rippleAmount="4"
+            app:rb_scale="6">
+
+            <ImageView
+                android:id="@+id/centerImage"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_centerInParent="true"
+                android:src="@drawable/phone_searching" />
+        </com.skyfishjy.library.RippleBackground>
 
         <LinearLayout
             android:id="@+id/llMessage"
@@ -25,6 +43,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="vertical"
+            android:layout_centerHorizontal="true"
+            android:layout_alignParentTop="true"
             android:padding="20dp">
 
             <TextView
@@ -50,36 +70,16 @@
 
         </LinearLayout>
 
-        <com.skyfishjy.library.RippleBackground xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app="http://schemas.android.com/apk/res-auto"
-            android:id="@+id/rippleBackground"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            app:rb_color="#0099CC"
-            app:rb_duration="4000"
-            app:rb_radius="32dp"
-            app:rb_rippleAmount="4"
-            app:rb_scale="6">
+        <ImageView
+            android:id="@+id/configureFAB"
+            android:layout_width="@dimen/profile_header_button_size"
+            android:layout_height="@dimen/profile_header_button_size"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginBottom="@dimen/side_margin"
+            android:layout_marginEnd="@dimen/side_margin"
+            android:src="@drawable/ic_profile_picker_btn"/>
 
-            <ImageView
-                android:id="@+id/centerImage"
-                android:layout_width="64dp"
-                android:layout_height="64dp"
-                android:layout_centerInParent="true"
-                android:src="@drawable/phone_searching" />
-        </com.skyfishjy.library.RippleBackground>
-
-    </LinearLayout>
-
-
-    <ImageView
-        android:id="@+id/configureFAB"
-        android:layout_width="@dimen/profile_header_button_size"
-        android:layout_height="@dimen/profile_header_button_size"
-        android:layout_marginEnd="@dimen/side_margin"
-        android:layout_marginBottom="@dimen/side_margin"
-        android:layout_gravity="right|bottom"
-        android:src="@drawable/ic_profile_picker_btn" />
+    </RelativeLayout>
 
 </FrameLayout>

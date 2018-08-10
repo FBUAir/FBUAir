@@ -107,7 +107,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         configureFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, "Button clicked!", Toast.LENGTH_SHORT).show();
                 ConfigureFragment configureFragment = new ConfigureFragment();
                 configureFragment.show(getFragmentManager(), "");
             }
