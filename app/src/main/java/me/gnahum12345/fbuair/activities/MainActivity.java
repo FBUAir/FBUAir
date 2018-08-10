@@ -74,7 +74,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int DISCOVER_FRAGMENT = 0;
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
-    private final static int CONFIGURE_FRAGMENT = 3;
     private final static int DETAILS_FRAGMENT = 4;
 
     ImageView profileImage;
