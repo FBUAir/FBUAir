@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
+import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,6 @@ import me.gnahum12345.fbuair.models.Contact;
 import me.gnahum12345.fbuair.models.Header;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utils.Utils;
 
 import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
@@ -57,6 +57,9 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
+
         activity = getActivity();
         String uid;
         // if no arguments were passed in, assume current user profile
@@ -78,6 +81,8 @@ public class ProfileFragment extends Fragment {
         if (mListener != null) {
             profileAdapter.setListener(mListener);
         }
+
+
     }
 
 

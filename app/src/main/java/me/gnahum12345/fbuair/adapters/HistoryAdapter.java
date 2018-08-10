@@ -3,15 +3,12 @@ package me.gnahum12345.fbuair.adapters;
 
 import android.animation.AnimatorInflater;
 import android.animation.AnimatorSet;
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
-import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
@@ -32,7 +29,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
@@ -130,9 +126,11 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
                 if (multiSelectMode) {
                     selectItem(user, viewHolder);
                 } else {
-                    Pair<View, String> p1 = Pair.create(viewHolder.ivProfileImage, "profileImage");
-                    Pair<View, String> p2 = Pair.create(viewHolder.tvName, "name");
-                    onFragmentChangeListener.launchDetails(user.getId(), p1, p2);
+                    view.findViewById(R.id.tvName).setTransitionName("name");
+                    view.findViewById(R.id.ivProfileImage).setTransitionName("profileImage");
+                    onFragmentChangeListener.launchDetails(user.getId(),view);
+                    //view.findViewById(R.id.tvName).setTransitionName("");
+                    //view.findViewById(R.id.ivProfileImage).setTransitionName("");
                 }
             }
         });

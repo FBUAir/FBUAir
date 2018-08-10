@@ -150,7 +150,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        if(fragment == signUpContactFragmentTwo){
+        if (fragment == signUpContactFragmentTwo) {
             tvTitle = signUpContactFragment.getView().findViewById(R.id.tvTitle);
             inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
             inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
@@ -268,9 +268,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     public void facebookLogin(SocialMedia socialMedia) {
         /**if (mCallbackManager!=null){
-            LoginManager.getInstance().unregisterCallback(mCallbackManager);
-        }
-**/
+         LoginManager.getInstance().unregisterCallback(mCallbackManager);
+         }
+         **/
         mCallbackManager = CallbackManager.Factory.create();
 
 
@@ -327,6 +327,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                             Log.e("getDisplayName", e.getLocalizedMessage());
                         }
                     }
+
                     @Override
                     public void onApiError(LIApiError LIApiError) {
                         Log.e("getDisplayName", LIApiError.getLocalizedMessage());
@@ -345,18 +346,18 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public void githubLogin(SocialMedia socialMedia) {
         githubClient.authorizeAndGetUsername(SignUpActivity.this, this,
                 new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
-                    JSONObject resp = new JSONObject(response);
-                    socialMedia.setUsername(resp.getString("login"));
-                    user.addSocialMedia(socialMedia);
-                    signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject resp = new JSONObject(response);
+                            socialMedia.setUsername(resp.getString("login"));
+                            user.addSocialMedia(socialMedia);
+                            signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
     }
 
     // shows dialog asking if user wants to remove added social media and removes if confirmed
@@ -367,7 +368,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                 + " " + socialMedia.getName() + "?")
                 .setTitle("Remove " + socialMedia.getName())
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    @Override public void onClick(DialogInterface dialogInterface, int i) {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
                         // if user selects yes, remove scoial media from users profile
                         // & revoke api authorization
                         user.removeSocialMedia(socialMedia);
