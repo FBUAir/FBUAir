@@ -134,7 +134,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
-                ((MainActivity) mContext).connectService.sendToEndpoint(device);
+                ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
             }
         });
     }

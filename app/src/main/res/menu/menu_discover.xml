@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-<!--    <item
-        android:id="@+id/miCompose"
+    <item
+        android:id="@+id/btnSendAll"
         app:showAsAction="always"
-        android:icon="@drawable/settings"
-        android:title="Configure" />-->
+        android:icon="@drawable/app_launcher"
+        android:title="Send All" />
 
 </menu>

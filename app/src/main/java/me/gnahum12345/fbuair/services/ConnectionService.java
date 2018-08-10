@@ -693,7 +693,9 @@ public class ConnectionService extends Service {
      * @param payload The data you want to send.
      */
     protected void send(Payload payload) {
-        send(payload, mEstablishedConnections.keySet());
+        if (!mEstablishedConnections.isEmpty()) {
+            send(payload, mEstablishedConnections.keySet());
+        }
     }
 
     //TODO: this is how we send data backwards.

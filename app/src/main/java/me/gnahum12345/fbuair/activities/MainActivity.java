@@ -27,16 +27,16 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.ActionMode;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -46,7 +46,6 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
-import me.gnahum12345.fbuair.fragments.ConfigureFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
@@ -55,7 +54,6 @@ import me.gnahum12345.fbuair.interfaces.OnContactAddedCallback;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.managers.MyUserManager;
-import me.gnahum12345.fbuair.models.GestureDetector;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.utils.ContactUtils;
@@ -74,50 +72,38 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int DISCOVER_FRAGMENT = 0;
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
-    private final static int CONFIGURE_FRAGMENT = 3;
     private final static int DETAILS_FRAGMENT = 4;
 
     ImageView profileImage;
     TextView name;
-    public static int currentPosition;
-    private static final String KEY_CURRENT_POSITION = "com.google.samples.gridtopager.key.currentPosition";
 
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     public ActivityMainBinding bind;
     //Connection Service.
-    public ConnectionService connectService;
-    /**
-     * Listens to holding/releasing the volume rocker.
-     */
-    public final GestureDetector mGestureDetector =
-            new GestureDetector(KeyEvent.KEYCODE_VOLUME_DOWN, KeyEvent.KEYCODE_VOLUME_UP) {
-                @Override
-                protected void onHold() {
-                    connectService.sendToAll();
-                }
-            };
+    public ConnectionService mConnectService;
+
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
     ProfileFragment detailsFragment;
-    ConfigureFragment configureFragment;
-    MyUserManager userManager;
+
+    MyUserManager mUserManager;
     // menus
-    RelativeLayout historyMenu;
-    ActionMode actionMode;
-    boolean debug = true;
-    OnContactAddedCallback onContactAddedCallback;
+    ActionMode mActionMode;
+    OnContactAddedCallback mOnContactAddedCallback;
     // whether user granted Contacts permissions
-    boolean contactPermissionGranted;
+    boolean mContactPermissionGranted;
 
     // The adapter used to display information for our bottom navigation view.
-    private Adapter pagerAdapter;
+    private Adapter mPagerAdapter;
 
     private boolean mBound = false;
-    private boolean listened = false;
+    private boolean mListened = false;
+    private Menu mMenu;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         // Called when the connection with the service is established
         public void onServiceConnected(ComponentName className, IBinder service) {
@@ -125,11 +111,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             // service that is running in our own process, we can
             // cast its IBinder to a concrete class and directly access it.
             ConnectionService.LocalBinder binder = (ConnectionService.LocalBinder) service;
-            connectService = binder.getService();
+            mConnectService = binder.getService();
             mBound = true;
             if (discoverFragment != null) {
-                connectService.addListener(discoverFragment);
-                listened = true;
+                mConnectService.addListener(discoverFragment);
+                mListened = true;
             }
             startConnectionService();
         }
@@ -138,8 +124,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         public void onServiceDisconnected(ComponentName className) {
             Log.e(TAG, "onServiceDisconnected");
             mBound = false;
-            listened = false;
-            connectService = null;
+            mListened = false;
+            mConnectService = null;
         }
     };
 
@@ -150,67 +136,72 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         ActivityCompat.postponeEnterTransition(this);
 
-        userManager = MyUserManager.getInstance();
-        userManager.loadContacts();
-        userManager.setNotificationAbility(true, this);
-
-        //deleteAccount();
+        // set up ConnectionService
+        setUpUserManager();
 
         // set up ConnectionService
-        Intent intent = new Intent(MainActivity.this, ConnectionService.class);
-
-        if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
-            startService(intent);
-        }
-        if (connectService == null) {
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        }
-
-        if (savedInstanceState != null) {
-            currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
-            // Return here to prevent adding additional GridFragments when changing orientation.
-            return;
-        }
+        setUpConnectionService();
 
         // set actionbar to be toolbar
-        setSupportActionBar(bind.toolbar);
-        getSupportActionBar().setTitle("");
-        bind.toolbarTitle.setText("Discover");
-
-        Drawable d;
-
-        if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
-            d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
-            bind.toolbarImage.setImageDrawable(d);
-        } else {
-            Bitmap profileImage = userManager.getCurrentUser().getProfileImage();
-            if (profileImage != null) {
-                d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
-                bind.toolbarImage.setImageDrawable(d);
-            }
-        }
+        setUpActionBar();
 
         // instantiate fragments
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
-//        detailsFragment = new ProfileFragment();
-//        configureFragment = new ConfigureFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
-//        fragments.add(configureFragment);
-//        fragments.add(detailsFragment);
-
         // Instantiate our Adapter which we will use in our ViewPager
-        pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
+        mPagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
 
+        setUpViewPager();
+        setUpBottomNavigation();
+        addListener();
+        // check whether user granted contacts permissions
+        mContactPermissionGranted = checkPermissions();
+    }
 
+    private void setUpUserManager() {
+        mUserManager = MyUserManager.getInstance();
+        mUserManager.loadContacts();
+        mUserManager.setNotificationAbility(true, this);
+    }
+
+    private void setUpActionBar() {
+        setSupportActionBar(bind.toolbar);
+        getSupportActionBar().setTitle("");
+        bind.toolbarTitle.setText("Discover");
+
+        Drawable d;
+        if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
+            Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
+            d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
+            bind.toolbarImage.setImageDrawable(d);
+        } else {
+            Bitmap profileImage = mUserManager.getCurrentUser().getProfileImage();
+            if (profileImage != null) {
+                d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
+                bind.toolbarImage.setImageDrawable(d);
+            }
+        }
+    }
+
+    private void setUpConnectionService() {
+        Intent intent = new Intent(MainActivity.this, ConnectionService.class);
+        if (!Utils.isMyServiceRunning(ConnectionService.class, this)) {
+            startService(intent);
+        }
+        if (mConnectService == null) {
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        }
+    }
+
+    private void setUpViewPager() {
         // Attach our adapter to our view pager.
-        bind.viewPager.setAdapter(pagerAdapter);
+        bind.viewPager.setAdapter(mPagerAdapter);
         bind.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled
@@ -244,7 +235,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             public void onPageScrollStateChanged(int state) {
             }
         });
-
+    }
+    private void setUpBottomNavigation() {
         int[] tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
         AHBottomNavigationAdapter navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu);
         navigationAdapter.setupWithBottomNavigation(bind.bottomNavigationView, tabColors);
@@ -262,22 +254,29 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 bind.viewPager.setCurrentItem(position, true);
                 if (position == 0) {
                     discoverFragment.populateAdapter();
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.btnSendAll).setVisible(true);
+                    }
+                } else {
+                    if (mMenu != null) {
+                        mMenu.findItem(R.id.btnSendAll).setVisible(false);
+                    }
                 }
                 if (position == 1) {
-                    MyUserManager.getInstance().clearNotification();
+                    mUserManager.clearNotification();
                 }
                 return true;
             }
         });
-
+    }
+    private void addListener() {
         MyUserManager.getInstance().addListener(historyFragment);
-        if (mBound && !listened) {
-            connectService.addListener(discoverFragment);
+        if (mBound && !mListened) {
+            mConnectService.addListener(discoverFragment);
         }
-
-
-        // check whether user granted contacts permissions
-        contactPermissionGranted = ContextCompat.checkSelfPermission(this,
+    }
+    private boolean checkPermissions() {
+        return ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_CONTACTS)
@@ -285,54 +284,49 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
 
+
     private int fetchColor(@ColorRes int color) {
         return ContextCompat.getColor(this, color);
     }
 
     private void startConnectionService() {
-        connectService.startDiscovering();
-        connectService.startAdvertising();
-        connectService.startMedia(this);
+        mConnectService.startDiscovering();
+        mConnectService.startAdvertising();
+        mConnectService.startMedia(this);
     }
 
     private void stopConnectionService() {
-        if (connectService == null) {
+        if (mConnectService == null) {
             return;
         }
-        connectService.stopAdvertising();
-        connectService.stopDiscovering();
-        connectService.stopMedia(this);
+        mConnectService.stopAdvertising();
+        mConnectService.stopDiscovering();
+        mConnectService.stopMedia(this);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        if (mBound) {
-            connectService.startMedia(this);
-        }
-        if (connectService != null) {
-            connectService.startDiscovering();
+        if (mConnectService != null) {
+            mConnectService.startDiscovering();
         }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-//        stopConnectionService();
-        if (connectService != null) {
-            connectService.stopDiscovering();
+        if (mConnectService != null) {
+            mConnectService.stopDiscovering();
         }
-        //TODO: put notification or widget for advertising... and stop discovering..
-        //TODO: stop discovering, but possibly keep advertising.
-        userManager.commit();
-        userManager.removeListener(historyFragment);
+        mUserManager.commit();
+        mUserManager.removeListener(historyFragment);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (mBound) {
-            connectService.removeListener(discoverFragment);
+            mConnectService.removeListener(discoverFragment);
             stopConnectionService();
             unbindService(mConnection);
         }
@@ -342,7 +336,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     protected void onResume() {
         super.onResume();
         if (mBound) {
-            startConnectionService();
+            if (!mConnectService.isAdvertising()) {
+                mConnectService.startAdvertising();
+            }
+            if (!mConnectService.isDiscovering()) {
+                mConnectService.startDiscovering();
+            }
         }
     }
 
@@ -353,54 +352,35 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (bind.viewPager.getCurrentItem() == DETAILS_FRAGMENT) {
             bind.viewPager.setCurrentItem(HISTORY_FRAGMENT);
             fragments.remove(2);
-            pagerAdapter.notifyDataSetChanged();
+            mPagerAdapter.notifyDataSetChanged();
         }
         if (mBound) {
-            if (debug) {
-                connectService.debug();
-            }
-            if (discoverFragment.rvAdapter == null) {
-                return;
-            }
-            if (!discoverFragment.rvAdapter.isEmpty()) {
-                connectService.onBackPressed();
-                return;
-            }
-
-            if (debug) {
-                return;
+            if (discoverFragment.rvAdapter != null) {
+                if (!discoverFragment.rvAdapter.isEmpty()) {
+                    mConnectService.onBackPressed();
+                    return;
+                }
             }
         }
         super.onBackPressed();
     }
 
-    // Feature to send eveything at once.
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        if (discoverFragment != null && discoverFragment.rvAdapter != null) {
-            if (!discoverFragment.rvAdapter.isEmpty() &&
-                    mGestureDetector.onKeyEvent(event)) {
-                return true;
-            }
-        }
-        return super.dispatchKeyEvent(event);
-    }
 
 
     @Override
     public List<ConnectionService.Endpoint> getCurrEndpoints() {
         List<ConnectionService.Endpoint> currEndpoints = new ArrayList<>();
-        if (connectService == null) {
+        if (mConnectService == null) {
             return currEndpoints;
         }
-        return connectService.getCurrentConnections();
+        return mConnectService.getCurrentConnections();
     }
 
     @Override
     public void addToListener(ConnectionListener listener) {
         if (mBound) {
-            if (!connectService.contains(listener)) {
-                connectService.addListener(listener);
+            if (!mConnectService.contains(listener)) {
+                mConnectService.addListener(listener);
             }
         }
     }
@@ -408,11 +388,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
         if (flag) {
-            actionMode = startActionMode(callback);
+            mActionMode = startActionMode(callback);
         }
-        else if (actionMode != null) {
-            actionMode.finish();
-            actionMode = null;
+        else if (mActionMode != null) {
+            mActionMode.finish();
+            mActionMode = null;
         }
     }
 
@@ -425,7 +405,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        profileImage = view.findViewById(R.id.ivProfileImage);name = view.findViewById(R.id.tvName);
+        profileImage = view.findViewById(R.id.ivProfileImage);
+        name = view.findViewById(R.id.tvName);
         fragmentTransaction.setReorderingAllowed(true);
 
         fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
@@ -457,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void deleteAccount() {
-        userManager.deleteCurrentUser();
+        mUserManager.deleteCurrentUser();
         startActivity(new Intent(this, SignUpActivity.class));
         finish();
     }
@@ -465,7 +446,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // check for permissions and conflicts before adding contact
     @Override
     public void requestAddContact(String uid, OnContactAddedCallback onContactAddedCallback) {
-        this.onContactAddedCallback = onContactAddedCallback;
+        this.mOnContactAddedCallback = onContactAddedCallback;
         User user = MyUserManager.getInstance().getUser(uid);
         if (requestPermissionsIfNeeded()) {
             ContactUtils.AddContactResult addContactResult = ContactUtils.findConflict(this, user);
@@ -480,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // adds contact to phone and shows snackbar
     void addContact(User user) {
         String contactId = ContactUtils.addContact(this, user)[0];
-        onContactAddedCallback.onSuccess();
+        mOnContactAddedCallback.onSuccess();
         showContactAddedDialog(contactId);
     }
 
@@ -521,7 +502,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     // requests permissions if needed and returns true if permission is granted
     boolean requestPermissionsIfNeeded() {
-        if (!contactPermissionGranted) {
+        if (!mContactPermissionGranted) {
             requestPermissions(
                     new String[]
                             {Manifest.permission.READ_CONTACTS, Manifest.permission.WRITE_CONTACTS},
@@ -560,9 +541,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         // set permissionsGranted variable to true if user granted all requested permissions. false otherwise.
-        contactPermissionGranted = (requestCode == MY_PERMISSIONS_REQUEST_CONTACTS
+        mContactPermissionGranted = (requestCode == MY_PERMISSIONS_REQUEST_CONTACTS
                 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED);
-        if (!contactPermissionGranted) {
+        if (!mContactPermissionGranted) {
             boolean showRationale = shouldShowRequestPermissionRationale(Manifest.permission.WRITE_CONTACTS) ||
                     shouldShowRequestPermissionRationale(Manifest.permission.READ_CONTACTS);
             // user checked "never ask again", show them message to go to Settings to change
@@ -578,12 +559,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void sendBack(String uid) {
-        if (connectService == null) {
+        if (mConnectService == null) {
             return;
         }
         ConnectionService.Endpoint e = MyUserManager.getInstance().avaliableEndpoint(uid);
         if (e != null) {
-            connectService.sendToEndpoint(e);
+            mConnectService.sendToEndpoint(e);
         }
     }
 
@@ -610,6 +591,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        mMenu = menu;
         getMenuInflater().inflate(R.menu.menu_discover, menu);
         return super.onCreateOptionsMenu(menu);
     }
@@ -618,10 +600,28 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
 
-        /*if (item.getItemId() == R.id.miCompose) {
-            bind.bottomNavigationView.setCurrentItem(-1);
-            bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
-        }*/
+        if (item.getItemId() == R.id.btnSendAll) {
+            String msg = String.format("Are you sure you want to send everyone the following configuration? \n( %s )", mUserManager.getCurrentUser().getConfiguration());
+            AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                                .setTitle("Send All Confirmation!")
+                                .setMessage(msg)
+                                .setIcon(R.drawable.app_launcher)
+                                .setPositiveButton("Send!", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        if (mConnectService != null) {
+                                            mConnectService.sendToAll();
+                                        }
+                                    }
+                                })
+                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialogInterface, int i) {
+                                        Toast.makeText(MainActivity.this, "Sending Failed", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+            builder.create().show();
+        }
         return super.onOptionsItemSelected(item);
     }
 

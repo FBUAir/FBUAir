@@ -1,6 +1,2 @@
 <?xml version="1.0" encoding="utf-8"?>
-<<<<<<< HEAD
 <merger version="3"><dataSet config="main"><source path="/Users/gnahum12345/AndroidStudioProjects/FBUAir/linkedin-sdk/src/main/jniLibs"/></dataSet><dataSet config="debug"><source path="/Users/gnahum12345/AndroidStudioProjects/FBUAir/linkedin-sdk/src/debug/jniLibs"/></dataSet></merger>
-=======
-<merger version="3"><dataSet config="main"><source path="/Users/mariamdiallo/AndroidStudioProjects/FBUAir/linkedin-sdk/src/main/jniLibs"/></dataSet><dataSet config="debug"><source path="/Users/mariamdiallo/AndroidStudioProjects/FBUAir/linkedin-sdk/src/debug/jniLibs"/></dataSet></merger>
->>>>>>> 1735bd186c6948dfb0ca90a2cbdb8446f863fdbd

@@ -146,6 +146,28 @@ public class User implements Comparable {
         }
     }
 
+    public String getConfiguration() {
+        ArrayList<SocialMedia> socialMedia = getSendingSocialMedias();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < socialMedia.size(); i++) {
+            stringBuilder.append(socialMedia.get(i).getName());
+            stringBuilder.append(", ");
+        }
+        if (isSendingEmail() || isSendingPhone()) {
+            if (isSendingPhone()) {
+                stringBuilder.append(getPhoneNumber());
+                if (isSendingEmail() && !getEmail().isEmpty()) {
+                    stringBuilder.append(", ");
+                    stringBuilder.append(getEmail());
+                }
+            } else if (isSendingEmail()) {
+                stringBuilder.append(getEmail());
+            }
+            return stringBuilder.toString();
+        } else {
+            return stringBuilder.substring(0, stringBuilder.length() - 2);
+        }
+    }
     public void setEmail(String email) {
         this.email = email;
         this.sendingEmail = true;

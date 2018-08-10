@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -210,8 +209,8 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private void permissionsNotGranted() {
         final String[] permissions = ConnectionService.getRequiredPermissions();
-        if (((MainActivity) mContext).connectService == null) {return; }
-        if (!((MainActivity) mContext).connectService.isDiscovering()) {
+        if (((MainActivity) mContext).mConnectService == null) {return; }
+        if (!((MainActivity) mContext).mConnectService.isDiscovering()) {
             //TODO: put dialog to agree to permissions in order to discover.
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
                                     .setTitle(R.string.permissions_explanation_title)
