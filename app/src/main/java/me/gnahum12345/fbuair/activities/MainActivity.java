@@ -421,10 +421,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
 
-         FragmentManager fragmentManager = getSupportFragmentManager();
-         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-         profileImage = view.findViewById(R.id.ivProfileImage);
-         name = view.findViewById(R.id.tvName);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        profileImage = view.findViewById(R.id.ivProfileImage);name = view.findViewById(R.id.tvName);
         fragmentTransaction.setReorderingAllowed(true);
 
         fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
@@ -432,8 +431,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         fragmentTransaction.commit();
 
         setBottomNavigationVisible(false);
-
-
     }
 
 
