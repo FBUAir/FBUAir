@@ -10,7 +10,6 @@ import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
@@ -18,23 +17,28 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.content.ContextCompat;
-import android.support.v4.util.Pair;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.transition.Transition;
+import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.ActionMode;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -76,6 +80,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int CONFIGURE_FRAGMENT = 3;
     private final static int DETAILS_FRAGMENT = 4;
 
+    ImageView profileImage;
+    TextView name;
+    public static int currentPosition;
+    private static final String KEY_CURRENT_POSITION = "com.google.samples.gridtopager.key.currentPosition";
+
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
@@ -101,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
+    ActionMode actionMode;
     boolean debug = true;
     OnContactAddedCallback onContactAddedCallback;
     // whether user granted Contacts permissions
@@ -155,6 +165,13 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (connectService == null) {
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
         }
+
+        if (savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt(KEY_CURRENT_POSITION, 0);
+            // Return here to prevent adding additional GridFragments when changing orientation.
+            return;
+        }
+
         // set actionbar to be toolbar
         setSupportActionBar(bind.toolbar);
         getSupportActionBar().setTitle("");
@@ -187,6 +204,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // Instantiate our Adapter which we will use in our ViewPager
         pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
 
+        Transition changeTransform = TransitionInflater.from(this).
+                inflateTransition(R.transition.change_image_transform);
+        historyFragment.setSharedElementReturnTransition(changeTransform);
+        detailsFragment.setSharedElementReturnTransition(changeTransform);
+
         // Attach our adapter to our view pager.
         bind.viewPager.setAdapter(pagerAdapter);
         bind.viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -203,6 +225,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.bottomNavigationView.setCurrentItem(DISCOVER_FRAGMENT);
                         discoverFragment.populateAdapter();
                         bind.toolbarTitle.setText("Discover");
+                        setActionModeVisible(false, null);
+                        //bind.toolbarImage.setImageDrawable(d);
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
@@ -212,6 +236,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
                         bind.toolbar.setVisibility(View.GONE);
                         getSupportActionBar().hide();
+                        setActionModeVisible(false, null);
                         break;
                     case CONFIGURE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(CONFIGURE_FRAGMENT);
@@ -262,8 +287,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(this,
                 Manifest.permission.WRITE_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED;
-
-
 
     }
 
@@ -386,23 +409,45 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
     @Override
-    public void launchActionMode(ActionMode.Callback callback) {
-        startActionMode(callback);
+    public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
+        if (flag) {
+            actionMode = startActionMode(callback);
+        }
+        else if (actionMode != null) {
+            actionMode.finish();
+            actionMode = null;
+        }
     }
 
     /* implementation for switching fragments (OnFragmentChangeListener) */
     @Override
     // opens details screen for passed in user
-    public void launchDetails(String uid, Pair<View, String> p1, Pair<View, String> p2) {
+    public void launchDetails(String uid, View view) {
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
         // start fragment
-        fragments.set(DETAILS_FRAGMENT, detailsFragment);
-        bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        profileImage = view.findViewById(R.id.ivProfileImage);
+        name = view.findViewById(R.id.tvName);
+
+
+        fragmentTransaction.setReorderingAllowed(true);
+        //fragmentTransaction.addSharedElement(profileImage, "profileImage");
+        //fragmentTransaction.addSharedElement(name, "name");
+        fragmentTransaction.add(R.id.frame, detailsFragment, "detailsFragment").addToBackStack(null);
+
+        fragmentTransaction.commit();
+
+
+        //fragments.set(DETAILS_FRAGMENT, detailsFragment);
+        //bind.viewPager.setCurrentItem(DETAILS_FRAGMENT, false);
         // hide menu and nav bar
         Objects.requireNonNull(getSupportActionBar()).hide();
         setBottomNavigationVisible(false);
     }
+
 
     @Override
     public void launchEditProfile() {
@@ -412,6 +457,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void onDetailsBackPressed() {
         bind.viewPager.setCurrentItem(HISTORY_FRAGMENT, false);
+        getSupportFragmentManager().popBackStack();
         setBottomNavigationVisible(true);
     }
 
