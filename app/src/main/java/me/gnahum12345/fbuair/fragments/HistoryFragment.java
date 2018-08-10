@@ -24,6 +24,7 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.HistoryAdapter;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
@@ -46,6 +47,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
     ContactUtils.AddContactResult addContactResult;
 
     OnRequestAddContact onAddContactClickedListener;
+    OnFragmentChangeListener onFragmentChangeListener;
 
 
     public HistoryFragment() {
@@ -61,6 +63,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         historyAdapter = new HistoryAdapter(activity, history);
         linearLayoutManager = new LinearLayoutManager(activity);
         onAddContactClickedListener = (OnRequestAddContact) context;
+        onFragmentChangeListener = (OnFragmentChangeListener) context;
     }
 
     @Override
@@ -73,6 +76,10 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                if (historyAdapter.multiSelectMode) {
+                    swipeContainer.setRefreshing(false);
+                    return;
+                }
                 history.clear();
                 historyAdapter.clear();
                 populateHistory();

@@ -20,11 +20,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Response;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
 import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
@@ -282,9 +286,36 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                         Profile curUser = Profile.getCurrentProfile();
                         socialMedia.setUsername(curUser.getName());
                         Uri uri = curUser.getLinkUri();
-                        String id = curUser.getId(); //704146566588131
+                        String id = curUser.getId(); //704146566588131 -> invalid content.
                         socialMedia.setProfileUrl("fb://profile/" + id);
-//                        socialMedia.setProfileUrl(uri.toString());
+
+                        GraphRequest request = GraphRequest.newMeRequest(
+                                AccessToken.getCurrentAccessToken(),
+                                new GraphRequest.GraphJSONObjectCallback() {
+                                    @Override
+                                    public void onCompleted(JSONObject object, GraphResponse response) {
+                                        // Insert your code here
+                                        Log.d("onCompletedRequest", response.toString());
+                                        if (response.getError() != null) {
+                                            Toast.makeText(SignUpActivity.this, "rip... you need permissions", Toast.LENGTH_SHORT).show();
+                                            return;
+                                        }
+                                        try {
+                                            JSONObject obj = response.getJSONObject();
+                                            String link = obj.getString("link");
+                                            socialMedia.setProfileUrl(link);
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+
+                                    }
+                                });
+
+                        Bundle parameters = new Bundle();
+                        parameters.putString("fields", "link");
+                        request.setParameters(parameters);
+                        request.executeAsync();
+                        //                        socialMedia.setProfileUrl(uri.toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
 
@@ -301,7 +332,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                         exception.printStackTrace();
                     }
                 });
-        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends"));
+        LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "user_link"));
 
     }
 

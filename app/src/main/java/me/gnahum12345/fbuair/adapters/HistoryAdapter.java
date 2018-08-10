@@ -7,9 +7,9 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -46,25 +46,19 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private HistoryFilter historyFilter;
     private Context context;
     private OnFragmentChangeListener onFragmentChangeListener;
-    private boolean multiSelectMode = false;
+    public boolean multiSelectMode = false;
     private ArrayList<User> selectedUsers = new ArrayList<>();
-    final static int SUMMARY_LIMIT = 3;
+    private final static int SUMMARY_LIMIT = 3;
+    private int firstSelectedPosition = -1;
 
     private AnimatorSet mSetRightOut;
     private AnimatorSet mSetLeftIn;
 
-    private void addContacts(List<User> users) {
-        for (int i = 0; i < users.size(); i++) {
-//            ContactUtils.addContact(context, users.);
-        }
-    }
-
-    private void deleteContacts(List<User> users) {
+    private void deleteFromHistory(List<User> users) {
         for (int i = 0; i < users.size(); i++) {
             MyUserManager.getInstance().removeUser(users.get(i));
-            history.remove(users.get(i));
+            filteredHistory.remove(users.get(i));
         }
-        notifyDataSetChanged();
     }
 
 
@@ -95,150 +89,86 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int position) {
+        // get user at current position
         final User user = filteredHistory.get(position);
-        setImage(user, viewHolder);
-        if (selectedUsers.contains(user)) {
-            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.light_grey));
-            Drawable drawable = context.getDrawable(R.drawable.ic_checked_button);
-            viewHolder.ivProfileImage.setImageDrawable(drawable);
-        } else {
-            if (multiSelectMode) {
-                viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
-                viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
-            } else {
-                if (!user.isSeen()) {
-                    viewHolder.itemView.setBackgroundColor(context.getColor(R.color.gradient_extremely_light_blue));
-                    viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
-                } else {
-                    viewHolder.itemView.setBackgroundColor(Color.WHITE);
-                    viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
-                }
-            }
-        }
 
+        // set user info
         viewHolder.tvName.setText(user.getName());
         viewHolder.tvSummary.setText(getSummary(user, SUMMARY_LIMIT));
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (multiSelectMode) {
-                    selectItem(user, viewHolder);
-                } else {
-                    view.findViewById(R.id.tvName).setTransitionName("name");
-                    view.findViewById(R.id.ivProfileImage).setTransitionName("profileImage");
-                    onFragmentChangeListener.launchDetails(user.getId(),view);
-                    //view.findViewById(R.id.tvName).setTransitionName("");
-                    //view.findViewById(R.id.ivProfileImage).setTransitionName("");
-                }
-            }
-        });
-        viewHolder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                multiSelectMode = true;
-                notifyDataSetChanged();
-                ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
-                    @Override
-                    public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
-                        onFragmentChangeListener.setMenuVisible(false);
-                        actionMode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
-                        selectItem(user, viewHolder);
-                        return true;
-                    }
+        // set profile image and bring it to front
+        setProfileImage(user, viewHolder.ivProfileImage);
+        resetAfterAnimation(viewHolder.ivProfileImage);
+        resetAfterAnimation(viewHolder.ivCheck);
 
-                    @Override
-                    public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
-                        return false;
-                    }
+        // set seen/unseen tint. make white if in multiselect mode
+        if ((multiSelectMode || user.isSeen())) {
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
+            viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
+        } else {
+            viewHolder.itemView.setBackgroundColor(context.getColor(R.color.gradient_extremely_light_blue));
+            viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.OVERLAY);
+        }
 
-                    @Override
-                    public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                        switch (menuItem.getItemId()) {
-                            case R.id.add_menu_action:
-                                Toast.makeText(context, String.format("Added %d users to phone contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                                addContacts(selectedUsers);
-                                actionMode.finish();
-                                return true;
-                            case R.id.delete_menu_action:
-                                Toast.makeText(context, String.format("Deleted %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                                deleteContacts(selectedUsers);
-                                actionMode.finish();
-                                return true;
-                            case R.id.star_menu_action:
-                                Toast.makeText(context, String.format("Starred %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
-                                actionMode.finish();
-                                return true;
-                            default:
-                                return false;
-                        }
-                    }
-
-                    @Override
-                    public void onDestroyActionMode(ActionMode actionMode) {
-                        multiSelectMode = false;
-                        selectedUsers.clear();
-                        notifyDataSetChanged();
-                        onFragmentChangeListener.setMenuVisible(true);
-                    }
-                };
-
-                onFragmentChangeListener.launchActionMode(actionModeCallBack);
-                return true;
-            }
-        });
-        // change camera distance for profile image so full animation shows
-        changeCameraDistance(context, viewHolder.ivProfileImage);
+        // select first long-clicked item
+        if (multiSelectMode && position == firstSelectedPosition) {
+            selectItem(user, viewHolder);
+        }
     }
 
+    // sets ivProfileImage to user's profile image and make it visible
+    private void setProfileImage(User user, ImageView iv) {
+        Bitmap bitmap = user.getProfileImage();
+        // generate fake profile images (real users should never have null)
+        if (bitmap == null) {
+            ColorGenerator generator = ColorGenerator.MATERIAL;
+            TextDrawable drawable = TextDrawable.builder()
+                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
+                            generator.getRandomColor());
+            iv.setImageDrawable(drawable);
+        } else {
+            iv.setImageBitmap(getCircularBitmap(bitmap));
+        }
+        iv.bringToFront();
+    }
+
+    void resetAfterAnimation(View view) {
+        view.setAlpha(1.0f);
+        view.setRotationY(0.0f);
+    }
+
+    // shows img change animation and adds selected user to selected list
     private void selectItem(User user, ViewHolder viewHolder) {
         if (selectedUsers.contains(user)) {
-            // start animations
-            mSetRightOut.setTarget(viewHolder.ivCheck);
-            mSetLeftIn.setTarget(viewHolder.ivProfileImage);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-            // change BG color to grey
+            animateSelection(false, viewHolder.ivProfileImage, viewHolder.ivCheck);
             viewHolder.itemView.setBackgroundColor(Color.WHITE);
-            // remove user from selected
             selectedUsers.remove(user);
-            //setImage(user, viewHolder);
         } else {
-            // start animations
-            mSetRightOut.setTarget(viewHolder.ivProfileImage);
-            mSetLeftIn.setTarget(viewHolder.ivCheck);
-            mSetRightOut.start();
-            mSetLeftIn.start();
-            // add user to selected
-            selectedUsers.add(user);
-            // change BG color to light grey
+            animateSelection(true, viewHolder.ivProfileImage, viewHolder.ivCheck);
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.light_grey));
-            //setImage(context.getDrawable(R.drawable.ic_checked_button), viewHolder);
+            selectedUsers.add(user);
         }
     }
 
-    private void setImage(Object img, ViewHolder viewHolder) {
-        if (img instanceof User) {
-            User user = (User) img;
-            Bitmap bitmap = user.getProfileImage();
-            // generate fake profile images (real users should never have null)
-            if (bitmap == null) {
-                ColorGenerator generator = ColorGenerator.MATERIAL;
-                TextDrawable drawable = TextDrawable.builder()
-                        .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
-                                generator.getRandomColor());
-                viewHolder.ivProfileImage.setImageDrawable(drawable);
-            } else {
-                viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(bitmap));
-            }
-        } else {
-            if (img instanceof Drawable) {
-                Drawable drawable = (Drawable) img;
-                viewHolder.ivProfileImage.setImageDrawable(drawable);
-            }
-        }
+    // performs flip animations
+    private void animateSelection(boolean isSelecting, ImageView ivProfileImage, ImageView ivCheck) {
+        // cancel previous animations if they're still running
+        cancelRunningAnimations();
+        // start flip animation
+        View leaving, entering;
+        leaving = isSelecting ? ivProfileImage : ivCheck;
+        entering = isSelecting ? ivCheck : ivProfileImage;
+        mSetRightOut.setTarget(leaving);
+        mSetLeftIn.setTarget(entering);
+        mSetRightOut.start();
+        mSetLeftIn.start();
+    }
 
+    // cancels animations (used for when animation gets paused mid-anim)
+    private void cancelRunningAnimations() {
+        mSetRightOut.end();
+        mSetLeftIn.end();
     }
 
     public void clear() {
@@ -260,7 +190,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return historyFilter;
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public TextView tvName;
         public TextView tvTime;
@@ -275,16 +205,80 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
             tvSummary = view.findViewById(R.id.tvSummary);
             ivCheck = view.findViewById(R.id.ivCheck);
+            itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
+        }
+
+        // CLICK HANDLERS
+        @Override
+        public void onClick(View view) {
+            User user = filteredHistory.get(getAdapterPosition());
+            if (multiSelectMode) {
+                selectItem(user, this);
+            } else {
+                onFragmentChangeListener.launchDetails(user.getId(),view);
+            }
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            multiSelectMode = true;
+            firstSelectedPosition = getAdapterPosition();
+            notifyDataSetChanged();
+            onFragmentChangeListener.setActionModeVisible(true,
+                    getActionModeCallBack(onFragmentChangeListener));
+            return true;
         }
     }
 
-    private void changeCameraDistance(Context context, View view) {
-        int distance = 8000;
-        float scale = context.getResources().getDisplayMetrics().density * distance;
-        view.setCameraDistance(scale);
-        view.setCameraDistance(scale);
-    }
+    // gets action mode callback
+    public ActionMode.Callback getActionModeCallBack(OnFragmentChangeListener onFragmentChangeListener) {
+        ActionMode.Callback actionModeCallBack = new ActionMode.Callback() {
+            @Override
+            public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+                onFragmentChangeListener.setMenuVisible(false);
+                actionMode.getMenuInflater().inflate(R.menu.menu_action_mode, menu);
+                return true;
+            }
 
+            @Override
+            public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+                return true;
+            }
+
+            @Override
+            public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case R.id.add_menu_action:
+                        Toast.makeText(context, String.format("Added %d users to phone contacts", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                        actionMode.finish();
+                        return true;
+                    case R.id.delete_menu_action:
+                        Toast.makeText(context, String.format("Deleted %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                        deleteFromHistory(selectedUsers);
+                        actionMode.finish();
+                        return true;
+                    case R.id.star_menu_action:
+                        Toast.makeText(context, String.format("Starred %d users", selectedUsers.size()), Toast.LENGTH_SHORT).show();
+                        actionMode.finish();
+                        return true;
+                    default:
+                        return false;
+                }
+            }
+
+            @Override
+            public void onDestroyActionMode(ActionMode actionMode) {
+                cancelRunningAnimations();
+                multiSelectMode = false;
+                selectedUsers.clear();
+                firstSelectedPosition = -1;
+                notifyDataSetChanged();
+                onFragmentChangeListener.setMenuVisible(true);
+            }
+        };
+        return actionModeCallBack;
+    }
 
     // filter history for searching
     private class HistoryFilter extends Filter {
@@ -317,5 +311,4 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             notifyDataSetChanged();
         }
     }
-
 }

@@ -3,10 +3,12 @@ package me.gnahum12345.fbuair.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -45,6 +47,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
     private TextView tvRVEmpty;
     private TextView tvRVEmptyAdd;
     private RippleBackground rippleBackground;
+    private FloatingActionButton configureFAB;
 
     public DiscoverFragment() {
         // Required empty public constructor
@@ -86,6 +89,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         tvRVEmptyAdd = view.findViewById(R.id.tvRVEmptyAddView);
         rvDevicesView = view.findViewById(R.id.rvDevicesView);
         rippleBackground = view.findViewById(R.id.rippleBackground);
+        configureFAB = view.findViewById(R.id.configureFAB);
 
         tvRVEmpty.setVisibility(View.VISIBLE);
         tvRVEmptyAdd.setVisibility(View.VISIBLE);
@@ -97,6 +101,16 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
         rvDevicesView.setLayoutManager(layoutManager);
         rvDevicesView.setAdapter(rvAdapter);
+
+        configureFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(mContext, "Button clicked!", Toast.LENGTH_SHORT).show();
+                ConfigureFragment configureFragment = new ConfigureFragment();
+                configureFragment.show(getFragmentManager(), "");
+            }
+        });
+
         mListener.addToListener(this);
         return view;
     }
