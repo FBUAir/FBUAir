@@ -421,10 +421,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
 
+
+
     @Override
     public void onDetailsBackPressed() {
         mUserManager.clearNotification();
-        mUserManager.seenAllUsers();
         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
         getSupportFragmentManager().popBackStack();
         setBottomNavigationVisible(true);

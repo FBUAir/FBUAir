@@ -79,6 +79,7 @@ public class ProfileFragment extends Fragment {
             profileAdapter.setListener(mListener);
         }
 
+        MyUserManager.getInstance().seenUser(uid);
 
     }
 

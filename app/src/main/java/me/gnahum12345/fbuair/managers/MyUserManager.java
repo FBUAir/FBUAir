@@ -125,17 +125,31 @@ public class MyUserManager {
                 if (notificationsEnabled) {
                     count = 0;
                     ((MainActivity) activity).bind.bottomNavigationView.setNotification("", 1);
-                    seenAllUsers();
+//                    seenAllUsers();
                 }
             }
         }, 1000);
     }
 
-    public void seenAllUsers() {
+    //possibly delete
+    private void seenAllUsers() {
         for (User u : currentUsers.values()) {
             u.isSeen(true);
         }
         commit();
+    }
+
+
+    public void seenUser(String uid) {
+        User u = getUser(uid);
+        u.isSeen(true);
+        updateUser(u);
+    }
+
+    private void updateUser(User u) {
+       if (currentUsers.containsKey(u.getId())) {
+           currentUsers.put(u.getId(), u);
+       }
     }
 
     public void notifyListeners(User user, boolean added) {
