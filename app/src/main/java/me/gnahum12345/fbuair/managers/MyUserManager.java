@@ -7,13 +7,13 @@ import android.content.SharedPreferences;
 import android.os.Handler;
 import android.util.Log;
 
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -23,7 +23,6 @@ import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
-
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
@@ -41,6 +40,7 @@ public class MyUserManager {
     private Handler handler = new Handler();
     private boolean notificationsEnabled = false;
     private Activity activity;
+
     private MyUserManager() {
         currentUsers = new TreeMap<>();
         userListeners = new ArrayList<UserListener>();
@@ -74,13 +74,7 @@ public class MyUserManager {
 
     public boolean addUser(User user) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
-        String title;
-        if (!currentUsers.containsKey(user.getId())) {
-            runBadgeNotification();
-            title = "New User has been added!";
-        } else {
-            title = "User has been updated!";
-        }
+        runBadgeNotification();
         currentUsers.put(user.getId(), user);
         if (commit()) {
             notifyListeners(user, true);
@@ -94,11 +88,11 @@ public class MyUserManager {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         String title;
         if (!currentUsers.containsKey(user.getId())) {
-            runBadgeNotification();
             title = "New User has been added!";
         } else {
             title = "User has been updated!";
         }
+        runBadgeNotification();
         if (isInBackground()) {
             AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user, endpoint);
         }
@@ -137,7 +131,7 @@ public class MyUserManager {
         }, 1000);
     }
 
-    private void seenAllUsers() {
+    public void seenAllUsers() {
         for (User u : currentUsers.values()) {
             u.isSeen(true);
         }
@@ -240,9 +234,15 @@ public class MyUserManager {
     }
 
 
-
     public List<User> getCurrHistory() {
-        return new ArrayList(currentUsers.values());
+        ArrayList<User> users = new ArrayList<>(currentUsers.values());
+        users.sort(new Comparator<User>() {
+            @Override
+            public int compare(User user, User t1) {
+                return user.getTimeAddedToHistory().compareTo(t1.getTimeAddedToHistory());
+            }
+        });
+        return users;
     }
 
     public User getCurrentUser() {
@@ -267,7 +267,7 @@ public class MyUserManager {
         if (currEndpoints == null) {
             return null;
         }
-        for (ConnectionService.Endpoint e :  currEndpoints) {
+        for (ConnectionService.Endpoint e : currEndpoints) {
             if (e.getName().contains(user.getName())) {
                 return e;
             }

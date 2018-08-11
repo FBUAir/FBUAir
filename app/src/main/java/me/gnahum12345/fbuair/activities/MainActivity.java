@@ -358,7 +358,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             if (discoverFragment.rvAdapter != null) {
                 if (!discoverFragment.rvAdapter.isEmpty()) {
                     mConnectService.onBackPressed();
-                    return;
                 }
             }
         }
@@ -424,9 +423,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void onDetailsBackPressed() {
-        bind.viewPager.setCurrentItem(HISTORY_FRAGMENT, false);
+        mUserManager.clearNotification();
+        mUserManager.seenAllUsers();
+        bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
         getSupportFragmentManager().popBackStack();
         setBottomNavigationVisible(true);
+        historyFragment.populateHistory();
     }
 
     @Override

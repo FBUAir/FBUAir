@@ -207,7 +207,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public void createAccount() {
         MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
-        userManager.addUser(user);
+//        userManager.addUser(user);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);

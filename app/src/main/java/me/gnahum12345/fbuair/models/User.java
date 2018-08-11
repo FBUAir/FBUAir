@@ -121,7 +121,9 @@ public class User implements Comparable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        this.sendingPhone = true;
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            this.sendingPhone = true;
+        }
     }
 
     public boolean isSendingPhone() {
@@ -170,7 +172,9 @@ public class User implements Comparable {
     }
     public void setEmail(String email) {
         this.email = email;
-        this.sendingEmail = true;
+        if (email != null && !email.isEmpty()) {
+            this.sendingEmail = true;
+        }
     }
 
     public void setProfileImage(Bitmap profileImage) {
