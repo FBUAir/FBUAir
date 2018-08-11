@@ -68,6 +68,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         super.onViewCreated(view, savedInstanceState);
 
         svSearch = view.findViewById(R.id.svSearch);
+
         // configure swipe container
         swipeContainer = view.findViewById(R.id.swipeContainer);
         swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -111,17 +112,10 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         return inflater.inflate(R.layout.fragment_history, container, false);
     }
 
-
-    // gets history from shared preferences. return empty json array if no history has been added
-    List<User> getHistory() {
-        return MyUserManager.getInstance().getCurrHistory();
-    }
-
-
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
-        List<User> users = getHistory();
+        List<User> users = MyUserManager.getInstance().getCurrHistory();
         history.addAll(users);
         if (historyAdapter != null) {
             historyAdapter.notifyDataSetChanged();

@@ -42,7 +42,6 @@
                 android:textColor="@color/color_black"
                 android:textStyle="bold" />
 
-
         </android.support.v7.widget.Toolbar>
 
         <FrameLayout
@@ -67,9 +66,7 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentStart="true"
             android:layout_gravity="bottom"
-            android:background="@color/color_white"
-            app:itemIconTint="@drawable/nav_colors"
-            app:itemTextColor="@drawable/nav_colors" />
+            android:background="@color/color_white"/>
 
     </RelativeLayout>
 </layout>

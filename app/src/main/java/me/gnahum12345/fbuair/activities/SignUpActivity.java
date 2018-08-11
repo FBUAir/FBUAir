@@ -11,15 +11,11 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -144,13 +140,9 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         signUpContactFragment.setSharedElementReturnTransition(changeTransform);
         signUpContactFragmentTwo.setSharedElementReturnTransition(changeTransform);
 
-        //items for transition
-
-
         // show welcome screen first
         fragmentManager = getSupportFragmentManager();
         startFragment(welcomeFragment, "welcomeFragment");
-
     }
 
 
@@ -158,26 +150,26 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        if (fragment == signUpContactFragmentTwo) {
+/*        if (fragment == signUpContactFragmentTwo) {
             //TODO: alpha out the button and then do the following...
-            fadeOutAnimation(fragment, tag, signUpContactFragment.getView().findViewById(R.id.ivProfileImage), 500, fragmentTransaction);
+            //fadeOutAnimation(fragment, tag, signUpContactFragment.getView().findViewById(R.id.ivProfileImage), 500, fragmentTransaction);
 //            transition(fragmentTransaction);
             return;
-        }
+        }*/
 
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
     }
 
-    private void transition(FragmentTransaction fragmentTransaction, Fragment fragment, String tag) {
+/*    private void transition(FragmentTransaction fragmentTransaction, Fragment fragment, String tag) {
         inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
         inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
         fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
         fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
-        fragmentTransaction.commit();
-    }
-    private void fadeOutAnimation(Fragment fragment, String tag, final View view, long animationDuration, FragmentTransaction fragmentTransaction) {
+        fragmentTransaction.commitHistory();
+    }*/
+    /*private void fadeOutAnimation(Fragment fragment, String tag, final View view, long animationDuration, FragmentTransaction fragmentTransaction) {
         Animation fadeOut = new AlphaAnimation(1, 0);
         fadeOut.setInterpolator(new AccelerateInterpolator());
         fadeOut.setStartOffset(animationDuration);
@@ -197,7 +189,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         });
 
         view.startAnimation(fadeOut);
-    }
+    }*/
+
     // sets large sign-up menu's visibility
     @Override
     public void setMenuVisible(boolean flag) {
@@ -232,13 +225,16 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     // saves user profile and starts main activity when sign up is finished
     public void createAccount() {
+        // show progress bar
+        bind.pbProgress.setVisibility(View.VISIBLE);
+
         // create account
         MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
 
         // set fake history
         FakeUsers fakeUsers = new FakeUsers(this);
-        fakeUsers.setFakeHistory();
+        userManager.commitFakeUsers(fakeUsers.getFakeUsersList());
 
         // launch main activity
         Intent intent = new Intent(this, MainActivity.class);

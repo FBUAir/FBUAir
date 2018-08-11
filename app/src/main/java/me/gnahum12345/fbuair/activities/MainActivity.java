@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.activities;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -138,7 +139,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set up ConnectionService
         setUpUserManager();
-        //deleteAccount();
 
         // set up ConnectionService
         setUpConnectionService();
@@ -236,10 +236,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         int[] tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
         AHBottomNavigationAdapter navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu);
         navigationAdapter.setupWithBottomNavigation(bind.bottomNavigationView, tabColors);
-
         bind.bottomNavigationView.setTitleState(AHBottomNavigation.TitleState.ALWAYS_SHOW);
         bind.bottomNavigationView.setNotificationBackgroundColor(fetchColor(R.color.notification));
-        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.gradient_blue), fetchColor(R.color.color_black));
+        bind.bottomNavigationView.setColoredModeColors(fetchColor(R.color.gradient_blue), fetchColor(R.color.grey));
         bind.bottomNavigationView.setTranslucentNavigationEnabled(true);
         bind.bottomNavigationView.setColored(true);
         bind.bottomNavigationView.setDefaultBackgroundColor(getResources().getColor(R.color.light_grey));
@@ -315,7 +314,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (mConnectService != null) {
             mConnectService.stopDiscovering();
         }
-        mUserManager.commit();
+        mUserManager.commitHistory();
         mUserManager.removeListener(historyFragment);
     }
 
@@ -508,7 +507,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         ContactUtils.viewContact(getBaseContext(), addContactResult.getContactId());
                     }
                 });
-        builder.show();
+        Dialog dialog = builder.show();
+        dialog.getWindow().setBackgroundDrawable(getResources()
+                .getDrawable(R.drawable.dialog_rounded_big, null));
     }
 
     // requests permissions if needed and returns true if permission is granted
@@ -597,7 +598,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                         return;
                     }
                 });
-        builder.show();
+        Dialog dialog = builder.show();
     }
 
     @Override

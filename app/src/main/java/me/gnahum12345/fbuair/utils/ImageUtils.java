@@ -19,6 +19,8 @@ import android.support.v4.graphics.drawable.DrawableCompat;
 
 import org.apache.commons.codec.binary.Hex;
 
+import static java.lang.Math.min;
+
 public class ImageUtils {
 
     public static Bitmap getBitmapFromVectorDrawable(Context context, int drawableId) {
@@ -50,20 +52,19 @@ public class ImageUtils {
 
     // returns bitmap cropped into a circle
     public static Bitmap getCircularBitmap(Bitmap bitmap) {
-        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(),
-                bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+        int size = min(bitmap.getWidth(), bitmap.getHeight());
+        Bitmap output = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888);
         Canvas canvas = new Canvas(output);
 
         final int color = 0xff424242;
         final Paint paint = new Paint();
-        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        final Rect rect = new Rect(0, 0, size, size);
 
         paint.setAntiAlias(true);
         canvas.drawARGB(0, 0, 0, 0);
         paint.setColor(color);
-        // canvas.drawRoundRect(rectF, roundPx, roundPx, paint);
-        canvas.drawCircle(bitmap.getWidth() / 2, bitmap.getHeight() / 2,
-                bitmap.getWidth() / 2, paint);
+        canvas.drawCircle(size / 2, size / 2,
+                size / 2, paint);
         paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
         canvas.drawBitmap(bitmap, rect, rect, paint);
         return output;
@@ -92,9 +93,9 @@ public class ImageUtils {
         int g = Math.round(Color.green(color) * factor);
         int b = Math.round(Color.blue(color) * factor);
         return Color.argb(a,
-                Math.min(r,255),
-                Math.min(g,255),
-                Math.min(b,255));
+                min(r,255),
+                min(g,255),
+                min(b,255));
     }
 
 }

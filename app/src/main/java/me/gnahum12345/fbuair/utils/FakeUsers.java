@@ -47,10 +47,8 @@ public class FakeUsers {
         setUserInfo();
     }
 
-    public void setFakeHistory() {
-        for (User user : fakeUsersList) {
-            MyUserManager.getInstance().addFakeUser(user);
-        }
+    public List<User> getFakeUsersList() {
+        return fakeUsersList;
     }
 
     private void setUserInfo() {

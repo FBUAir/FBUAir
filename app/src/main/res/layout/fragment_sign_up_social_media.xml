@@ -30,5 +30,6 @@
             android:text="Create account"
             android:textAllCaps="false"
             android:textColor="@color/color_white" />
+
     </RelativeLayout>
 </layout>

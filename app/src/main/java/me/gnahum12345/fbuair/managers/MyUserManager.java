@@ -14,7 +14,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -77,7 +76,7 @@ public class MyUserManager {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         runBadgeNotification();
         currentUsers.put(user.getId(), user);
-        if (commit()) {
+        if (commitHistory()) {
             notifyListeners(user, true);
             return true;
         } else {
@@ -86,21 +85,19 @@ public class MyUserManager {
     }
 
     // add user without changing date (for fake users)
-    public boolean addFakeUser(User user) {
-        String title;
-        if (!currentUsers.containsKey(user.getId())) {
-            runBadgeNotification();
-            title = "New User has been added!";
-        } else {
-            title = "User has been updated!";
+    public void commitFakeUsers(List<User> fakeUsers) {
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        JSONArray history = new JSONArray();
+        for (User user : fakeUsers) {
+            try {
+                history.put(User.toJson(user));
+            } catch (JSONException e) {
+                Log.e("USERMANAGER", "commitFakeUsers JSON exception");
+            }
         }
-        currentUsers.put(user.getId(), user);
-        if (commit()) {
-            notifyListeners(user, true);
-            return true;
-        } else {
-            return false;
-        }
+        editor.putString(HISTORY_KEY, history.toString());
+        editor.commit();
     }
 
     public boolean addUser(User user, ConnectionService.Endpoint endpoint) {
@@ -116,7 +113,7 @@ public class MyUserManager {
             AirNotificationManager.getInstance().createNotification(title, String.format("%s has sent you their information!\nWould you want to send them your information?", user.getName()), user, endpoint);
         }
         currentUsers.put(user.getId(), user);
-        if (commit()) {
+        if (commitHistory()) {
             notifyListeners(user, true);
             return true;
         } else {
@@ -160,6 +157,7 @@ public class MyUserManager {
        if (currentUsers.containsKey(u.getId())) {
            currentUsers.put(u.getId(), u);
        }
+       commitHistory();
     }
 
     public void notifyListeners(User user, boolean added) {
@@ -184,7 +182,7 @@ public class MyUserManager {
             User u = currentUsers.get(key);
             if (u.equals(user)) {
                 currentUsers.remove(key);
-                commit();
+                commitHistory();
                 return;
             }
         }
@@ -192,10 +190,10 @@ public class MyUserManager {
 
     public void clearHistory() {
         currentUsers.clear();
-        commit();
+        commitHistory();
     }
 
-    public boolean commit() {
+    public boolean commitHistory() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         JSONArray newHistoryArray = getJSONArray();
@@ -236,9 +234,7 @@ public class MyUserManager {
     public void loadContacts() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         String historyArrayString = sharedPreferences.getString(HISTORY_KEY, null);
-        if (historyArrayString == null) {
-            return;
-        } else {
+        if (historyArrayString != null) {
             JSONArray jsonArr = new JSONArray();
             try {
                 jsonArr = new JSONArray(historyArrayString);

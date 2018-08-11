@@ -45,4 +45,7 @@
         <item name="android:windowExitAnimation">@android:anim/slide_out_right</item>
     </style>
 
+    <style name="WhiteAccent" parent="ThemeOverlay.AppCompat.Light">
+        <item name="colorAccent">#ffff</item>
+    </style>
 </resources>
