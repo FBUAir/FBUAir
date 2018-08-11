@@ -3,7 +3,6 @@ package me.gnahum12345.fbuair.fragments;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -108,6 +107,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
                 Toast.makeText(mContext, "Button clicked!", Toast.LENGTH_SHORT).show();
                 ConfigureFragment configureFragment = new ConfigureFragment();
                 configureFragment.show(getFragmentManager(), "");
+                populateAdapter();
             }
         });
 

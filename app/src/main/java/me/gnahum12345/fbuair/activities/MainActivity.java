@@ -423,7 +423,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        profileImage = view.findViewById(R.id.ivProfileImage);name = view.findViewById(R.id.tvName);
         fragmentTransaction.setReorderingAllowed(true);
 
         fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
