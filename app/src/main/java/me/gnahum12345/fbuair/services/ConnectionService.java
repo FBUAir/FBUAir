@@ -1,17 +1,13 @@
 package me.gnahum12345.fbuair.services;
 
 import android.Manifest;
-import android.app.RemoteInput;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.BitmapFactory;
 import android.media.AudioManager;
 import android.os.Binder;
-import android.os.Bundle;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.support.annotation.NonNull;
@@ -41,8 +37,8 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import org.json.JSONException;
 
-import java.io.FileNotFoundException;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -362,7 +358,7 @@ public class ConnectionService extends Service {
     }
 
 
-    private static CharSequence toColor(String msg, int color) {
+    public static CharSequence toColor(String msg, int color) {
         SpannableString spannable = new SpannableString(msg);
         spannable.setSpan(new ForegroundColorSpan(color), 0, msg.length(), 0);
         return spannable;

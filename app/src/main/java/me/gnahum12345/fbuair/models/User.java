@@ -40,8 +40,8 @@ public class User implements Comparable {
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
     ArrayList<SocialMedia> sendingSocialMedias = new ArrayList<>();
     boolean seen = false;
-    private boolean sendingPhone = false;
-    private boolean sendingEmail = false;
+    boolean sendingPhone = false;
+    boolean sendingEmail = false;
 
     public static int NO_COLOR = Integer.MIN_VALUE;
 

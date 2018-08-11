@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -34,6 +35,7 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -88,7 +90,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
-    ProfileFragment detailsFragment;
 
     MyUserManager mUserManager;
     // menus
@@ -211,23 +212,23 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
             @Override
             public void onPageSelected(int position) {
-                getSupportActionBar().show();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(DISCOVER_FRAGMENT);
-                        discoverFragment.populateAdapter();
-                        bind.toolbarTitle.setText("Discover");
                         setActionModeVisible(false, null);
+                        bind.toolbarTitle.setText("Discover");
+                        setMenuVisible(true);
+                        discoverFragment.populateAdapter();
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
                         bind.toolbarTitle.setText("Recents");
+                        setMenuVisible(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
-                        bind.toolbar.setVisibility(View.GONE);
                         setActionModeVisible(false, null);
-                        getSupportActionBar().hide();
+                        setMenuVisible(false);
                         break;
                 }
             }
@@ -237,6 +238,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             }
         });
     }
+
     private void setUpBottomNavigation() {
         int[] tabColors = getApplicationContext().getResources().getIntArray(R.array.tab_colors);
         AHBottomNavigationAdapter navigationAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navigation_menu);
@@ -270,12 +272,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             }
         });
     }
+
     private void addListener() {
         MyUserManager.getInstance().addListener(historyFragment);
         if (mBound && !mListened) {
             mConnectService.addListener(discoverFragment);
         }
     }
+
     private boolean checkPermissions() {
         return ContextCompat.checkSelfPermission(this,
                 Manifest.permission.READ_CONTACTS)
@@ -283,7 +287,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 Manifest.permission.WRITE_CONTACTS)
                 == PackageManager.PERMISSION_GRANTED;
     }
-
 
 
     private int fetchColor(@ColorRes int color) {
@@ -358,6 +361,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (isDetailFragment) {
             backDetailsPressed();
         }
+
         if (mBound) {
             if (discoverFragment.rvAdapter != null) {
                 if (!discoverFragment.rvAdapter.isEmpty()) {
@@ -405,17 +409,20 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // opens details screen for passed in user
     public void launchDetails(String uid, View view) {
         // set transition(s)
-        detailsFragment = ProfileFragment.newInstance(uid);
+        ProfileFragment detailsFragment = ProfileFragment.newInstance(uid);
 
         isDetailFragment = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         profileImage = view.findViewById(R.id.ivProfileImage);
         name = view.findViewById(R.id.tvName);
+
         fragmentTransaction.setReorderingAllowed(true);
 
-        fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
-        fragmentTransaction.add(R.id.relative_view, detailsFragment, "detailsFragment").addToBackStack(null);
+        fragmentTransaction
+                .setCustomAnimations(R.animator.enter_right, R.animator.exit_left)
+                .add(R.id.relative_view, detailsFragment, "detailsFragment")
+                .addToBackStack("detailsFragment");
         fragmentTransaction.commit();
 
         setBottomNavigationVisible(false);
@@ -631,7 +638,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                                 .setNegativeButton("No", new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialogInterface, int i) {
-                                        Toast.makeText(MainActivity.this, "Sending Failed", Toast.LENGTH_SHORT).show();
+                                        String msg = "Sending Failed " + ("\ud83d\ude22");
+                                        Toast.makeText(MainActivity.this, ConnectionService.toColor(msg, getResources().getColor(R.color.log_error)), Toast.LENGTH_SHORT).show();
+
                                     }
                                 });
             builder.create().show();

@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation 'br.com.simplepass:loading-button-android:1.14.0'
     implementation "com.andkulikov:transitionseverywhere:1.8.0"
     implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     implementation 'com.android.volley:volley:1.1.1'

@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,49 +8,46 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.interfaces.OnRequestOAuthListener;
-import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.SocialMediaUtils;
 
 public class ConfigureAdapter extends BaseAdapter {
-    // list of socialMedias and context
-    private List<SocialMedia> socialMedias;
+    // list of profiles and context
+    private List<SocialMedia> profiles;
     private Context context;
     private User user;
 
-
-
-    // pass the socialMedias list in the constructor
+    // pass the profiles list in the constructor
     public ConfigureAdapter(Context context) {
         this.context = context;
         this.user = MyUserManager.getInstance().getCurrentUser();
-        this.socialMedias = user.getSocialMedias();
+        this.profiles = new ArrayList<>(user.getSocialMedias());
 
         if (!user.getPhoneNumber().isEmpty()) {
             SocialMedia phone = new SocialMedia();
             phone.setName("Phone");
             phone.setProfileUrl(user.getPhoneNumber());
             phone.setUsername("phoneUserName");
-            socialMedias.add(phone);
+            profiles.add(phone);
         }
         if (!user.getEmail().isEmpty()) {
             SocialMedia email = new SocialMedia();
             email.setName("Email");
             email.setProfileUrl(user.getEmail());
             email.setUsername("EmailUser");
-            socialMedias.add(email);
+            profiles.add(email);
         }
     }
 
     @Override
     public int getCount() {
-        return socialMedias.size();
+        return profiles.size();
     }
 
     @Override
@@ -66,7 +62,7 @@ public class ConfigureAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View view, ViewGroup parent) {
-        final SocialMedia socialMedia = socialMedias.get(position);
+        final SocialMedia socialMedia = profiles.get(position);
         if (view == null) {
             final LayoutInflater layoutInflater = LayoutInflater.from(context);
             view = layoutInflater.inflate(R.layout.item_social_media, null);
@@ -113,8 +109,8 @@ public class ConfigureAdapter extends BaseAdapter {
         public void onClick(View view) {
             // get item position
             int position = (int) view.getTag(R.id.POSITION_KEY);
-            // get the socialMedia at the position from socialMedias array and go to its url fragment to add/edit
-            SocialMedia socialMedia = socialMedias.get(position);
+            // get the socialMedia at the position from profiles array and go to its url fragment to add/edit
+            SocialMedia socialMedia = profiles.get(position);
             boolean changed = false;
             if (socialMedia.getName().contains("Phone")) {
                 user.togglePhone();

@@ -1,9 +1,12 @@
 package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +22,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
+import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.ProfileUser;
@@ -57,7 +61,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             }
         });
 
-        for (Endpoint e: devices) {
+        for (Endpoint e : devices) {
             mDevices.put(e, "UPDATE ME");
         }
     }
@@ -88,7 +92,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     }
 
 
-
     public void put(Endpoint e, ProfileUser profileUser) {
         if (profileUser.getName() == null || profileUser.getName().isEmpty()) {
             return;
@@ -100,7 +103,6 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
     public void clear() {
         mDevices.clear();
     }
-
 
 
     @Override
@@ -131,11 +133,20 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);
 
-        viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+        viewHolder.btnSend.revertAnimation();
+        viewHolder.btnSend.setBackground(mContext.getDrawable(R.drawable.pill_filled));
+        viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
                 ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
+                viewHolder.btnSend.startAnimation();
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        viewHolder.btnSend.doneLoadingAnimation(ContextCompat.getColor(mContext, R.color.green), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.checkmark));
+                    }
+                }, 2000);
             }
         });
     }
@@ -162,11 +173,14 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         private TextView mtvDeviceName;
         private ImageView mivProfilePic;
+        private CircularProgressButton btnSend;
 
         public ViewHolder(@NonNull View view) {
             super(view);
             mtvDeviceName = view.findViewById(R.id.tvName);
             mivProfilePic = view.findViewById(R.id.ivProfileImage);
+            btnSend = view.findViewById(R.id.btnSend);
         }
     }
+
 }
