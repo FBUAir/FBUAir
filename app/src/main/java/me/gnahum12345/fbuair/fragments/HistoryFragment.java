@@ -105,7 +105,6 @@ public class HistoryFragment extends Fragment implements UserListener,
         SearchManager searchManager = (SearchManager) this.activity.getSystemService(Context.SEARCH_SERVICE);
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         svSearch.setOnQueryTextListener(this);
-        svSearch.setSubmitButtonEnabled(false);
 
         svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
@@ -151,7 +150,6 @@ public class HistoryFragment extends Fragment implements UserListener,
     public void userRemoved(User user) {
         populateHistory();
     }
-
 
     /* implementations for searching through history */
     @Override
