@@ -125,18 +125,9 @@ public class MyUserManager {
                 if (notificationsEnabled) {
                     count = 0;
                     ((MainActivity) activity).bind.bottomNavigationView.setNotification("", 1);
-//                    seenAllUsers();
                 }
             }
         }, 1000);
-    }
-
-    //possibly delete
-    private void seenAllUsers() {
-        for (User u : currentUsers.values()) {
-            u.isSeen(true);
-        }
-        commit();
     }
 
 

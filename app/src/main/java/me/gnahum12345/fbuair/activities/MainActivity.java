@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     // The adapter used to display information for our bottom navigation view.
     private Adapter mPagerAdapter;
 
+    private boolean isDetailFragment = false;
     private boolean mBound = false;
     private boolean mListened = false;
     private Menu mMenu;
@@ -354,6 +355,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             fragments.remove(2);
             mPagerAdapter.notifyDataSetChanged();
         }
+        if (isDetailFragment) {
+            backDetailsPressed();
+        }
         if (mBound) {
             if (discoverFragment.rvAdapter != null) {
                 if (!discoverFragment.rvAdapter.isEmpty()) {
@@ -361,6 +365,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 }
             }
         }
+
         super.onBackPressed();
     }
 
@@ -402,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         // set transition(s)
         detailsFragment = ProfileFragment.newInstance(uid);
 
+        isDetailFragment = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         profileImage = view.findViewById(R.id.ivProfileImage);
@@ -425,13 +431,18 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     @Override
     public void onDetailsBackPressed() {
-        mUserManager.clearNotification();
-        bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
         getSupportFragmentManager().popBackStack();
-        setBottomNavigationVisible(true);
-        historyFragment.populateHistory();
+        backDetailsPressed();
     }
 
+    private void backDetailsPressed() {
+        isDetailFragment = false;
+        mUserManager.clearNotification();
+        bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
+        setBottomNavigationVisible(true);
+        historyFragment.populateHistory();
+
+    }
     @Override
     public void launchUrlView(String url) {
         Intent i = new Intent(Intent.ACTION_VIEW);
