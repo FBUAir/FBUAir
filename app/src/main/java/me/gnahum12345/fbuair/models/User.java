@@ -89,7 +89,7 @@ public class User implements Comparable {
         return uid;
     }
 
-    boolean setId() {
+    public boolean setId() {
         if (this.name == null) {
             return false;
         }

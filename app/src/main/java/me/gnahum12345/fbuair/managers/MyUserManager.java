@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -75,6 +76,24 @@ public class MyUserManager {
 
     public boolean addUser(User user) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        String title;
+        if (!currentUsers.containsKey(user.getId())) {
+            runBadgeNotification();
+            title = "New User has been added!";
+        } else {
+            title = "User has been updated!";
+        }
+        currentUsers.put(user.getId(), user);
+        if (commit()) {
+            notifyListeners(user, true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    // add user without changing date (for fake users)
+    public boolean addFakeUser(User user) {
         String title;
         if (!currentUsers.containsKey(user.getId())) {
             runBadgeNotification();
@@ -196,6 +215,7 @@ public class MyUserManager {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(CURRENT_USER_KEY, null);
+        editor.putString(HISTORY_KEY, null);
         editor.commit();
     }
 

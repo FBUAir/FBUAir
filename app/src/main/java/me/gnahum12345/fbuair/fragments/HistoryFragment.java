@@ -37,14 +37,11 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
 
     public HistoryAdapter historyAdapter;
     ArrayList<User> history = new ArrayList<>();
-    MyUserManager userManager = MyUserManager.getInstance();
     RecyclerView rvHistory;
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     SearchView svSearch;
     LinearLayoutManager linearLayoutManager;
-    //    SwipeController swipeController = null;
-    ContactUtils.AddContactResult addContactResult;
 
     OnRequestAddContact onAddContactClickedListener;
     OnFragmentChangeListener onFragmentChangeListener;
@@ -101,20 +98,6 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         SearchManager searchManager = (SearchManager) this.activity.getSystemService(Context.SEARCH_SERVICE);
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         svSearch.setOnQueryTextListener(this);
-
-        // add fake users to history
-        FakeUsers fakeUsers = new FakeUsers();
-        JSONObject[] fakeHistory;
-        fakeHistory = new JSONObject[]{
-                fakeUsers.jsonUser1, fakeUsers.jsonUser2, fakeUsers.jsonUser3,
-                fakeUsers.jsonUser4, fakeUsers.jsonUser5, fakeUsers.jsonUser6,
-                fakeUsers.jsonUser7, fakeUsers.jsonUser8};
-        User user = userManager.getCurrentUser();
-        user.setNumConnections(fakeHistory.length);
-        userManager.commitCurrentUser(user);
-        for (JSONObject jsonUser : fakeHistory) {
-            userManager.addUser(User.fromJson(jsonUser));
-        }
 
         // populate recycler view with history from shared preferences
         populateHistory();

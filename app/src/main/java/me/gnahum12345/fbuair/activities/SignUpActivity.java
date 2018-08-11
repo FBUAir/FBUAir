@@ -63,6 +63,7 @@ import me.gnahum12345.fbuair.interfaces.OnSignUpScreenChangeListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
+import me.gnahum12345.fbuair.utils.FakeUsers;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
@@ -199,10 +200,16 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     @Override
     // saves user profile and starts main activity when sign up is finished
     public void createAccount() {
+        // create account
         MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
         userManager.addUser(user);
 
+        // set fake history
+        FakeUsers fakeUsers = new FakeUsers(this);
+        fakeUsers.setFakeHistory();
+
+        // launch main activity
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
         finish();
@@ -271,7 +278,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
          **/
         mCallbackManager = CallbackManager.Factory.create();
 
-
         LoginManager.getInstance().registerCallback(mCallbackManager,
                 new FacebookCallback<LoginResult>() {
                     @Override
@@ -312,7 +318,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                         //                        socialMedia.setProfileUrl(uri.toString());
                         user.addSocialMedia(socialMedia);
                         signUpSocialMediaFragment.socialMediaAdapter.notifyDataSetChanged();
-
                     }
 
                     @Override
@@ -327,7 +332,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
                     }
                 });
         LoginManager.getInstance().logInWithReadPermissions(this, Arrays.asList("public_profile", "user_friends", "user_link"));
-
     }
 
     @Override

@@ -5,6 +5,8 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:background="@color/color_white"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     tools:context=".fragments.DiscoverFragment">
 
     <android.support.v7.widget.RecyclerView
@@ -78,6 +80,7 @@
             android:layout_alignParentEnd="true"
             android:layout_marginBottom="@dimen/side_margin"
             android:layout_marginEnd="@dimen/side_margin"
+            android:background="@android:color/transparent"
             android:src="@drawable/ic_profile_picker_btn"/>
 
     </RelativeLayout>

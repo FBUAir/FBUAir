@@ -199,12 +199,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 vhHeader.bind.ivBack.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
-                if (header.isAdded()) {
-                    vhHeader.bind.btAddContact.setEnabled(false);
-                    vhHeader.bind.btAddContact.setImageDrawable
-                            (context.getResources().getDrawable(R.drawable.ic_add_button_disabled,
-                                    null));
-                }
             }
             if (!isAvaliable(header.getUid()) || !isListener()) {
                 vhHeader.bind.btSendBack.setEnabled(false);
@@ -288,8 +282,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     onAddContactClickedListener.requestAddContact(header.getUid(), new OnContactAddedCallback() {
                         @Override
                         public void onSuccess() {
-                            header.setAdded(true);
-                            notifyItemChanged(0);
+                            bind.btAddContact.setEnabled(false);
+                            bind.btAddContact.setImageDrawable(context.getResources()
+                                    .getDrawable(R.drawable.ic_checked_button_blue, null));
                         }
                     });
                     break;
