@@ -35,7 +35,7 @@
         android:paddingTop="10dp"
         android:text="@string/app_motto"
         android:textColor="@color/color_white"
-        android:textSize="20skp" />
+        android:textSize="20sp"/>
 
     <android.support.percent.PercentRelativeLayout
         android:layout_width="match_parent"
