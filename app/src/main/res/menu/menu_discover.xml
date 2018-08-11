@@ -4,7 +4,7 @@
     <item
         android:id="@+id/btnSendAll"
         app:showAsAction="always"
-        android:icon="@drawable/app_launcher"
+        android:icon="@drawable/ic_launcher_app_v1"
         android:title="Send All" />
 
 </menu>

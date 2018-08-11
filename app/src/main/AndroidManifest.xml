@@ -33,9 +33,9 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/app_launcher"
+        android:icon="@drawable/ic_launcher_app_v1"
         android:label="@string/app_name"
-        android:roundIcon="@drawable/app_launcher"
+        android:roundIcon="@drawable/ic_launcher_app_v1"
         android:supportsRtl="true"
         android:name=".MyApplication"
         android:theme="@style/AppTheme">

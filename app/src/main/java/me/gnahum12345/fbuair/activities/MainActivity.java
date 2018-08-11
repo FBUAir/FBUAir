@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -60,7 +59,6 @@ import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.Utils;
 
-import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 
@@ -83,10 +81,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public ActivityMainBinding bind;
     //Connection Service.
     public ConnectionService mConnectService;
+    public ConnectionService connectService;
     ImageView profileImage;
     TextView name;
-    public ConnectionService connectService;
-
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
@@ -180,16 +177,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         bind.toolbarTitle.setText("Discover");
 
         Drawable d;
-        if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
-            d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
+        Bitmap profileImage = mUserManager.getCurrentUser().getProfileImage();
+        if (profileImage != null) {
+            d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
             bind.toolbarImage.setImageDrawable(d);
-        } else {
-            Bitmap profileImage = mUserManager.getCurrentUser().getProfileImage();
-            if (profileImage != null) {
-                d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
-                bind.toolbarImage.setImageDrawable(d);
-            }
         }
     }
 
