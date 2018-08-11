@@ -9,7 +9,6 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -35,7 +34,6 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,17 +73,14 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
     private final static int DETAILS_FRAGMENT = 4;
-
-    ImageView profileImage;
-    TextView name;
-
     private static final String TAG = "MainActivityTag";
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     public ActivityMainBinding bind;
     //Connection Service.
     public ConnectionService mConnectService;
-
+    ImageView profileImage;
+    TextView name;
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
@@ -374,7 +369,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
 
-
     @Override
     public List<ConnectionService.Endpoint> getCurrEndpoints() {
         List<ConnectionService.Endpoint> currEndpoints = new ArrayList<>();
@@ -397,8 +391,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
         if (flag) {
             mActionMode = startActionMode(callback);
-        }
-        else if (mActionMode != null) {
+        } else if (mActionMode != null) {
             mActionMode.finish();
             mActionMode = null;
         }
@@ -434,8 +427,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     }
 
 
-
-
     @Override
     public void onDetailsBackPressed() {
         getSupportFragmentManager().popBackStack();
@@ -450,6 +441,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         historyFragment.populateHistory();
 
     }
+
     @Override
     public void launchUrlView(String url) {
         Intent i = new Intent(Intent.ACTION_VIEW);
@@ -624,25 +616,29 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (item.getItemId() == R.id.btnSendAll) {
             String msg = String.format("Are you sure you want to send everyone the following configuration? \n( %s )", mUserManager.getCurrentUser().getConfiguration());
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                                .setTitle("Send All Confirmation!")
-                                .setMessage(msg)
-                                .setIcon(R.drawable.app_launcher)
-                                .setPositiveButton("Send!", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        if (mConnectService != null) {
-                                            mConnectService.sendToAll();
-                                        }
-                                    }
-                                })
-                                .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialogInterface, int i) {
-                                        String msg = "Sending Failed " + ("\ud83d\ude22");
-                                        Toast.makeText(MainActivity.this, ConnectionService.toColor(msg, getResources().getColor(R.color.log_error)), Toast.LENGTH_SHORT).show();
+                    .setTitle("Send All Confirmation!")
+                    .setMessage(msg)
+                    .setIcon(R.drawable.app_launcher);
 
-                                    }
-                                });
+            List<ConnectionService.Endpoint> endpoints = getCurrEndpoints();
+            if (endpoints != null && !endpoints.isEmpty()) {
+                builder.setPositiveButton(ConnectionService.toColor("Send!", getResources().getColor(R.color.log_error)), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        if (mConnectService != null) {
+                            mConnectService.sendToAll();
+                        }
+                    }
+                });
+            }
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    String msg = "Sending Failed " + ("\ud83d\ude22");
+                    Toast.makeText(MainActivity.this, ConnectionService.toColor(msg, getResources().getColor(R.color.log_error)), Toast.LENGTH_SHORT).show();
+
+                }
+            });
             builder.create().show();
         }
         return super.onOptionsItemSelected(item);
