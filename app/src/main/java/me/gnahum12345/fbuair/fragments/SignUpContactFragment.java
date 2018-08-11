@@ -84,9 +84,11 @@ public class SignUpContactFragment extends Fragment {
         onSignUpScreenChangeListener.setMenuVisible(true);
 
         // focus on name field
-        bind.etName.requestFocus();
+/*        bind.etName.requestFocus();
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.showSoftInput(bind.etName, InputMethodManager.SHOW_IMPLICIT);
+        if (imm != null) {
+            imm.showSoftInput(bind.etName, InputMethodManager.SHOW_IMPLICIT);
+        }*/
 
         // go to next sign up screen when user clicks on button
         bind.btNext.setOnClickListener(new View.OnClickListener() {

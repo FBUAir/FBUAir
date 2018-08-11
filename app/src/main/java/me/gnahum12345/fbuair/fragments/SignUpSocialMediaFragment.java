@@ -77,7 +77,7 @@ public class SignUpSocialMediaFragment extends Fragment{
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // hide keyboard
-        Utils.hideSoftKeyboard(activity);
+        //Utils.hideSoftKeyboard(activity);
 
         // set footer (buttons for skip and next) in grid view
         LayoutInflater layoutInflater = LayoutInflater.from(getContext());

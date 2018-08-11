@@ -47,7 +47,6 @@ public class WelcomeFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-
         return inflater.inflate(R.layout.fragment_welcome, container, false);
     }
 
@@ -58,7 +57,7 @@ public class WelcomeFragment extends Fragment {
         activity = (SignUpActivity) getActivity();
 
         // hide keyboard and menu
-        Utils.hideSoftKeyboard(activity);
+        //Utils.hideSoftKeyboard(activity);
         onSignUpScreenChangeListener.setMenuVisible(false);
 
         // go to signup if user presses 'get started'

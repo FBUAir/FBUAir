@@ -98,7 +98,7 @@ public class ProfileFragment extends Fragment {
         bind.rvRecyclerView.setAdapter(profileAdapter);
         bind.rvRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        hideSoftKeyboard(getActivity());
+        //hideSoftKeyboard(getActivity());
         onFragmentChangeListener.hideProgressBar();
 
         if (isCurrentUserProfile) {

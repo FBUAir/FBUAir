@@ -47,7 +47,6 @@
                     android:ems="10"
                     android:transitionName="input_one"
                     android:hint="Name"
-                    android:focusedByDefault="true"
                     android:inputType="textPersonName"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/black" />

@@ -50,8 +50,12 @@ public class Utils {
                 (InputMethodManager) activity.getSystemService(
                         Activity.INPUT_METHOD_SERVICE);
         if (activity.getCurrentFocus() != null && inputMethodManager != null) {
-            inputMethodManager.hideSoftInputFromWindow(
-                    activity.getCurrentFocus().getWindowToken(), 0);
+            try {
+                inputMethodManager.hideSoftInputFromWindow(
+                        activity.getCurrentFocus().getWindowToken(), 0);
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -154,7 +154,7 @@ public class HistoryFragment extends Fragment implements UserListener,
     /* implementations for searching through history */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        hideSoftKeyboard(activity);
+        //hideSoftKeyboard(activity);
         return true;
     }
 

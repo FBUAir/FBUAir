@@ -74,7 +74,7 @@ public class ValidateProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         activity = (SignUpActivity) getActivity();
-        Utils.hideSoftKeyboard(activity);
+        //Utils.hideSoftKeyboard(activity);
 
         // load users profile into webview
         String profileUrl = socialMedia.getProfileUrl();
