@@ -46,7 +46,6 @@ import java.util.List;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
-import me.gnahum12345.fbuair.fragments.ConfigureFragment;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
 import me.gnahum12345.fbuair.fragments.ProfileFragment;
@@ -74,8 +73,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int DISCOVER_FRAGMENT = 0;
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
-    private final static int CONFIGURE_FRAGMENT = 3;
-    private final static int DETAILS_FRAGMENT = 4;
 
     ImageView profileImage;
     TextView name;
@@ -102,8 +99,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
     ProfileFragment profileFragment;
-    ProfileFragment detailsFragment;
-    ConfigureFragment configureFragment;
     MyUserManager userManager;
     // menus
     RelativeLayout historyMenu;
@@ -194,15 +189,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         discoverFragment = new DiscoverFragment();
         historyFragment = new HistoryFragment();
         profileFragment = new ProfileFragment();
-//        detailsFragment = new ProfileFragment();
-//        configureFragment = new ConfigureFragment();
 
         // Create the fragments to be passed to the ViewPager
         fragments.add(discoverFragment);
         fragments.add(historyFragment);
         fragments.add(profileFragment);
-//        fragments.add(configureFragment);
-//        fragments.add(detailsFragment);
 
         // Instantiate our Adapter which we will use in our ViewPager
         pagerAdapter = new Adapter(getSupportFragmentManager(), fragments);
@@ -218,23 +209,23 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
             @Override
             public void onPageSelected(int position) {
-                getSupportActionBar().show();
                 switch (position) {
                     case DISCOVER_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(DISCOVER_FRAGMENT);
-                        discoverFragment.populateAdapter();
-                        bind.toolbarTitle.setText("Discover");
                         setActionModeVisible(false, null);
+                        bind.toolbarTitle.setText("Discover");
+                        setMenuVisible(true);
+                        discoverFragment.populateAdapter();
                         break;
                     case HISTORY_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT);
                         bind.toolbarTitle.setText("Recents");
+                        setMenuVisible(true);
                         break;
                     case PROFILE_FRAGMENT:
                         bind.bottomNavigationView.setCurrentItem(PROFILE_FRAGMENT);
-                        bind.toolbar.setVisibility(View.GONE);
                         setActionModeVisible(false, null);
-                        getSupportActionBar().hide();
+                        setMenuVisible(false);
                         break;
                 }
             }
@@ -348,11 +339,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public void onBackPressed() {
         // go back to history if currently in details
-        if (bind.viewPager.getCurrentItem() == DETAILS_FRAGMENT) {
-            bind.viewPager.setCurrentItem(HISTORY_FRAGMENT);
-            fragments.remove(2);
-            pagerAdapter.notifyDataSetChanged();
+        if (getSupportFragmentManager().findFragmentById(R.id.relative_view) != null) {
+            onDetailsBackPressed();
         }
+
         if (mBound) {
             if (debug) {
                 connectService.debug();
@@ -403,30 +393,22 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         }
     }
 
-    @Override
-    public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
-        if (flag) {
-            actionMode = startActionMode(callback);
-        }
-        else if (actionMode != null) {
-            actionMode.finish();
-            actionMode = null;
-        }
-    }
-
     /* implementation for switching fragments (OnFragmentChangeListener) */
     @Override
     // opens details screen for passed in user
     public void launchDetails(String uid, View view) {
         // set transition(s)
-        detailsFragment = ProfileFragment.newInstance(uid);
+        ProfileFragment detailsFragment = ProfileFragment.newInstance(uid);
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
         fragmentTransaction.setReorderingAllowed(true);
 
-        fragmentTransaction.setCustomAnimations(R.animator.enter_right, R.animator.exit_left);
-        fragmentTransaction.add(R.id.relative_view, detailsFragment, "detailsFragment").addToBackStack(null);
+        fragmentTransaction
+                .setCustomAnimations(R.animator.enter_right, R.animator.exit_left)
+                .add(R.id.relative_view, detailsFragment, "detailsFragment")
+                .addToBackStack("detailsFragment");
         fragmentTransaction.commit();
 
         setBottomNavigationVisible(false);
@@ -614,11 +596,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
-
-        /*if (item.getItemId() == R.id.miCompose) {
-            bind.bottomNavigationView.setCurrentItem(-1);
-            bind.viewPager.setCurrentItem(CONFIGURE_FRAGMENT, false);
-        }*/
         return super.onOptionsItemSelected(item);
     }
 
@@ -628,6 +605,17 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (supportActionBar != null) {
             if (flag) supportActionBar.show();
             else supportActionBar.hide();
+        }
+    }
+
+    @Override
+    public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
+        if (flag) {
+            actionMode = startActionMode(callback);
+        }
+        else if (actionMode != null) {
+            actionMode.finish();
+            actionMode = null;
         }
     }
 

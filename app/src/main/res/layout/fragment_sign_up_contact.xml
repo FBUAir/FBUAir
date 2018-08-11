@@ -46,8 +46,8 @@
                     android:layout_marginTop="20dp"
                     android:ems="10"
                     android:transitionName="input_one"
-                    android:focusedByDefault="true"
                     android:hint="Name"
+                    android:focusedByDefault="true"
                     android:inputType="textPersonName"
                     android:textAlignment="viewStart"
                     android:textColor="@android:color/black" />

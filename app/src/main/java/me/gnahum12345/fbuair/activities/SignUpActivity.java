@@ -155,16 +155,10 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         if (fragment == signUpContactFragmentTwo) {
-            tvTitle = signUpContactFragment.getView().findViewById(R.id.tvTitle);
             inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
             inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
-            errorOne = signUpContactFragment.getView().findViewById(R.id.tvNameError);
-            buttonNext = signUpContactFragment.getView().findViewById(R.id.btNext);
-            fragmentTransaction.addSharedElement(tvTitle, ViewCompat.getTransitionName(tvTitle));
             fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
             fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
-            fragmentTransaction.addSharedElement(errorOne, ViewCompat.getTransitionName(errorOne));
-            fragmentTransaction.addSharedElement(buttonNext, ViewCompat.getTransitionName(buttonNext));
         }
 
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);

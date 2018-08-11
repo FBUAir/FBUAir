@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -81,6 +82,11 @@ public class SignUpContactFragment extends Fragment {
 
         // show menu
         onSignUpScreenChangeListener.setMenuVisible(true);
+
+        // focus on name field
+        bind.etName.requestFocus();
+        InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(bind.etName, InputMethodManager.SHOW_IMPLICIT);
 
         // go to next sign up screen when user clicks on button
         bind.btNext.setOnClickListener(new View.OnClickListener() {

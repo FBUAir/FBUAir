@@ -1,25 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:paddingTop="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/side_margin"
         android:background="@drawable/dialog_rounded_big"
         tools:context=".fragments.ConfigureFragment">
 
-        <in.srain.cube.views.GridViewWithHeaderAndFooter
-            android:id="@+id/gvSocialMedias"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:horizontalSpacing="20dp"
+            android:text="Select the information and profiles you wish to send."
+            android:layout_marginTop="@dimen/configure_side_margin"
+            android:layout_marginStart="@dimen/configure_side_margin"
+            android:layout_marginEnd="@dimen/configure_side_margin"
+            android:textAlignment="center"
+            android:textColor="@color/color_black"
+            android:textSize="@dimen/configure_title_font_size"
+            android:textStyle="bold" />
+
+        <GridView
+            android:id="@+id/gvProfiles"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvTitle"
+            android:layout_margin="@dimen/configure_side_margin"
+            android:gravity="center"
+            android:horizontalSpacing="10dp"
             android:numColumns="3"
-            android:stretchMode="columnWidth"
             android:verticalSpacing="10dp" />
 
-    </FrameLayout>
+        <Button
+            android:id="@+id/btDone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/gvProfiles"
+            android:layout_marginBottom="@dimen/configure_side_margin"
+            android:layout_alignEnd="@id/tvTitle"
+            android:background="@drawable/pill_filled"
+            android:text="Done"
+            android:textColor="@color/color_white" />
+    </RelativeLayout>
 </layout>
