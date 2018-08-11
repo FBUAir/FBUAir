@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -73,7 +74,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
     private final static int DETAILS_FRAGMENT = 4;
+    private static final String KEY_CURRENT_POSITION = "com.google.samples.gridtopager.key.currentPosition";
+
     private static final String TAG = "MainActivityTag";
+
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     public ActivityMainBinding bind;
@@ -81,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public ConnectionService mConnectService;
     ImageView profileImage;
     TextView name;
+    public ConnectionService connectService;
+
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
@@ -135,6 +141,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         // set up ConnectionService
         setUpUserManager();
+        //deleteAccount();
 
         // set up ConnectionService
         setUpConnectionService();
