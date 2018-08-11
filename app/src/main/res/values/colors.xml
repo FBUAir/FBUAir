@@ -37,6 +37,7 @@
 
     <color name="gradient_purple">#b721ff</color>
     <color name="gradient_blue">#FF1589FD</color>
+    <color name="gradient_blue_light">#FF5da6f0</color>
     <color name="gradient_red">#FF3366</color>
     <color name="gradient_light_blue">#B3E5FC</color>
     <color name="gradient_extremely_light_blue">#E1F5FE</color>
@@ -64,6 +65,7 @@
     <color name="gradient_tiffany">#0CBABA</color>
     <color name="gradient_onyx">#3C3744</color>
     <color name="gradient_rose">#e1bbb4</color>
+    <color name = "gradient_green">#a4c639</color>
 
 
     <color name="light_grey">#f7f7f7</color>

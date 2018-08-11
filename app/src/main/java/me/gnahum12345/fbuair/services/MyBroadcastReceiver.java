@@ -29,7 +29,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         if (action != null && action.equals(context.getString(R.string.reply_label))) {
             replyIntent(context, intent);
         } else if (action != null && action.equals(context.getString(R.string.connection_service))) {
-            context.startService(new Intent(context, ConnectionService.class));
+//            context.startService(new Intent(context, ConnectionService.class));
         }
     }
 

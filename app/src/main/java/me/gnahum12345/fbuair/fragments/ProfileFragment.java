@@ -64,6 +64,7 @@ public class ProfileFragment extends Fragment {
         // if no arguments were passed in, assume current user profile
         if (getArguments() != null) {
             uid = getArguments().getString(ARG_UID);
+            MyUserManager.getInstance().seenUser(uid);
             user = MyUserManager.getInstance().getUser(getArguments().getString(ARG_UID));
             isCurrentUserProfile = (user.equals(MyUserManager.getInstance().getCurrentUser()));
         } else {

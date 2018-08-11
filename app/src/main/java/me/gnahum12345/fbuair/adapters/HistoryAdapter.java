@@ -9,7 +9,6 @@ import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
-import android.util.Pair;
 import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -98,6 +97,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
         // set profile image and bring it to front
+        viewHolder.ivCheck.setVisibility(View.INVISIBLE);
         setProfileImage(user, viewHolder.ivProfileImage);
         resetAfterAnimation(viewHolder.ivProfileImage);
         resetAfterAnimation(viewHolder.ivCheck);
@@ -140,6 +140,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
     // shows img change animation and adds selected user to selected list
     private void selectItem(User user, ViewHolder viewHolder) {
+        viewHolder.ivCheck.setVisibility(View.VISIBLE);
         if (selectedUsers.contains(user)) {
             animateSelection(false, viewHolder.ivProfileImage, viewHolder.ivCheck);
             viewHolder.itemView.setBackgroundColor(Color.WHITE);

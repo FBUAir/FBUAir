@@ -40,8 +40,8 @@ public class User implements Comparable {
     ArrayList<SocialMedia> socialMedias = new ArrayList<>();
     ArrayList<SocialMedia> sendingSocialMedias = new ArrayList<>();
     boolean seen = false;
-    private boolean sendingPhone = false;
-    private boolean sendingEmail = false;
+    boolean sendingPhone = false;
+    boolean sendingEmail = false;
 
     public static int NO_COLOR = Integer.MIN_VALUE;
 
@@ -53,7 +53,7 @@ public class User implements Comparable {
         return seen;
     }
 
-    public void hasSeen(boolean seen) {
+    public void isSeen(boolean seen) {
         this.seen = seen;
     }
 
@@ -121,7 +121,9 @@ public class User implements Comparable {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
-        this.sendingPhone = true;
+        if (phoneNumber != null && !phoneNumber.isEmpty()) {
+            this.sendingPhone = true;
+        }
     }
 
     public boolean isSendingPhone() {
@@ -146,9 +148,33 @@ public class User implements Comparable {
         }
     }
 
+    public String getConfiguration() {
+        ArrayList<SocialMedia> socialMedia = getSendingSocialMedias();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < socialMedia.size(); i++) {
+            stringBuilder.append(socialMedia.get(i).getName());
+            stringBuilder.append(", ");
+        }
+        if (isSendingEmail() || isSendingPhone()) {
+            if (isSendingPhone()) {
+                stringBuilder.append(getPhoneNumber());
+                if (isSendingEmail() && !getEmail().isEmpty()) {
+                    stringBuilder.append(", ");
+                    stringBuilder.append(getEmail());
+                }
+            } else if (isSendingEmail()) {
+                stringBuilder.append(getEmail());
+            }
+            return stringBuilder.toString();
+        } else {
+            return stringBuilder.substring(0, stringBuilder.length() - 2);
+        }
+    }
     public void setEmail(String email) {
         this.email = email;
-        this.sendingEmail = true;
+        if (email != null && !email.isEmpty()) {
+            this.sendingEmail = true;
+        }
     }
 
     public void setProfileImage(Bitmap profileImage) {

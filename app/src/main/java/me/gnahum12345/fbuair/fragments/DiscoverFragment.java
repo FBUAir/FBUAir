@@ -1,18 +1,12 @@
 package me.gnahum12345.fbuair.fragments;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
@@ -21,8 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -45,10 +37,10 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private final Handler mUiHandler = new Handler(Looper.getMainLooper());
+    public DiscoverAdapter rvAdapter;
     private Context mContext;
     private RecyclerView rvDevicesView;
     private HashSet<ConnectionService.Endpoint> deviceLst;
-    public DiscoverAdapter rvAdapter;
     //TODO: delete the listener.
     private DiscoverFragmentListener mListener;
     private TextView tvRVEmpty;
@@ -60,10 +52,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         // Required empty public constructor
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
     /**
      * TODO: put in activity.
      * Returns {@code true} if the app was granted all the permissions. Otherwise, returns {@code
@@ -78,6 +66,11 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             }
         }
         return true;
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
     }
 
     @Override
@@ -113,9 +106,12 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             public void onClick(View view) {
                 ConfigureFragment configureFragment = new ConfigureFragment();
                 configureFragment.show(getFragmentManager(), "");
+                populateAdapter();
             }
         });
-
+        ConnectionService.Endpoint e = new ConnectionService.Endpoint("Some id", "my name");
+        rvAdapter.put(e, new ProfileUser(getContext()));
+        rvAdapter.notifyDataSetChanged();
         mListener.addToListener(this);
         return view;
     }
@@ -125,7 +121,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         super.onAttach(context);
         mContext = context;
         if (context instanceof DiscoverFragmentListener) {
-            mListener =  (DiscoverFragmentListener) context;
+            mListener = (DiscoverFragmentListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
@@ -145,6 +141,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             }
         }
         rvAdapter.notifyDataSetChanged();
+
 
         if (!rvAdapter.isEmpty()) {
             tvRVEmpty.setVisibility(View.GONE);
@@ -205,35 +202,31 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         }
     }
 
-    public interface DiscoverFragmentListener {
-        List<ConnectionService.Endpoint> getCurrEndpoints();
-        void addToListener(ConnectionListener listener);
-    }
-
     private void permissionsNotGranted() {
         final String[] permissions = ConnectionService.getRequiredPermissions();
-        if (((MainActivity) mContext).connectService == null) {return; }
-        if (!((MainActivity) mContext).connectService.isDiscovering()) {
+
+        if (((MainActivity) mContext).mConnectService == null) {return; }
+
+        if (!((MainActivity) mContext).mConnectService.isDiscovering()) {
             //TODO: put dialog to agree to permissions in order to discover.
             AlertDialog.Builder builder = new AlertDialog.Builder(mContext)
-                                    .setTitle(R.string.permissions_explanation_title)
-                                    .setMessage(R.string.permissions_explanation_body)
-                                    .setPositiveButton("Let me see the permission!", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
-                                        }
-                                    })
-                                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                                        @Override
-                                        public void onClick(DialogInterface dialogInterface, int i) {
-                                            permissionsNotGranted();
-                                        }
-                                    });
+                    .setTitle(R.string.permissions_explanation_title)
+                    .setMessage(R.string.permissions_explanation_body)
+                    .setPositiveButton("Let me see the permission!", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            requestPermissions(permissions, REQUEST_CODE_REQUIRED_PERMISSIONS);
+                        }
+                    })
+                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            permissionsNotGranted();
+                        }
+                    });
             builder.create().show();
         }
     }
-
 
     //TODO possibly place inside the other fragment.
     @Override //TODO: put in Activity.
@@ -250,6 +243,13 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             ((MainActivity) mContext).recreate();
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+
+    public interface DiscoverFragmentListener {
+        List<ConnectionService.Endpoint> getCurrEndpoints();
+
+        void addToListener(ConnectionListener listener);
     }
 
     // todo - attribute vector authors: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
