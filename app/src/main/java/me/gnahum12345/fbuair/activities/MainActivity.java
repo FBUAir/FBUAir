@@ -9,6 +9,7 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
@@ -34,9 +35,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
@@ -60,7 +59,6 @@ import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.Utils;
 
-import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 
@@ -73,13 +71,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private final static int DISCOVER_FRAGMENT = 0;
     private final static int HISTORY_FRAGMENT = 1;
     private final static int PROFILE_FRAGMENT = 2;
-
-    ImageView profileImage;
-    TextView name;
-    public static int currentPosition;
     private static final String KEY_CURRENT_POSITION = "com.google.samples.gridtopager.key.currentPosition";
-
     private static final String TAG = "MainActivityTag";
+    public static int currentPosition;
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     public ActivityMainBinding bind;
@@ -95,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     connectService.sendToAll();
                 }
             };
+
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
@@ -147,8 +142,15 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         userManager = MyUserManager.getInstance();
         userManager.loadContacts();
         userManager.setNotificationAbility(true, this);
-
         //deleteAccount();
+
+
+        //TODO: DELETE!!! I MEAN DELETE DELETE
+        Bitmap icon = BitmapFactory.decodeResource(getResources(),
+                R.drawable.user_circle);
+
+        Log.d("bitmap",User.bitmapToString(icon));
+
 
         // set up ConnectionService
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);
@@ -173,16 +175,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
         Drawable d;
 
-        if (MyUserManager.getInstance().getCurrentUser().getColor() == NO_COLOR) {
-            Bitmap bitmapResized = Bitmap.createScaledBitmap(MyUserManager.getInstance().getCurrentUser().getProfileImage(), 45, 45, false);
-            d = new BitmapDrawable(getResources(), getCircularBitmap(bitmapResized));
+        Bitmap profileImage = userManager.getCurrentUser().getProfileImage();
+        if (profileImage != null) {
+            d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
             bind.toolbarImage.setImageDrawable(d);
-        } else {
-            Bitmap profileImage = userManager.getCurrentUser().getProfileImage();
-            if (profileImage != null) {
-                d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
-                bind.toolbarImage.setImageDrawable(d);
-            }
         }
 
         // instantiate fragments
@@ -612,8 +608,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback) {
         if (flag) {
             actionMode = startActionMode(callback);
-        }
-        else if (actionMode != null) {
+        } else if (actionMode != null) {
             actionMode.finish();
             actionMode = null;
         }
