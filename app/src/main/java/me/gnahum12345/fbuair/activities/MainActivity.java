@@ -545,7 +545,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                     }
                 })
                 .setCancelable(false);
-        builder.show();
+        Dialog dialog = builder.show();
+        dialog.getWindow().setBackgroundDrawable(getResources()
+                .getDrawable(R.drawable.dialog_rounded_big, null));
     }
 
     // result after user accepts/denies permission
@@ -638,7 +640,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
                 }
             });
-            builder.create().show();
+            Dialog dialog = builder.show();
+            dialog.getWindow().setBackgroundDrawable(getResources()
+                    .getDrawable(R.drawable.dialog_rounded_big, null));
         }
         return super.onOptionsItemSelected(item);
     }

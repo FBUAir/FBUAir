@@ -4,7 +4,6 @@
     <dimen name="profile_card_start_padding">20dp</dimen>
     <dimen name="profile_contact_card_padding">20dp</dimen>
     <dimen name="profile_SM_card_padding">16dp</dimen>
-    <dimen name="profile_header_padding">10dp</dimen>
     <dimen name="profile_header_side_margin">20dp</dimen>
     <dimen name="profile_header_button_top_margin">-32dp</dimen>
     <dimen name="profile_card_side_margin">20dp</dimen>
@@ -27,12 +26,9 @@
     <dimen name="menu_item_top_margin">10dp</dimen>
     <dimen name="edit_text_top_margin">30dp</dimen>
     <dimen name="title_bottom_margin">100dp</dimen>
-    <dimen name="title_top_margin">20dp</dimen>
-    <dimen name="title_font_size">32sp</dimen>
     <dimen name="error_side_margin">5dp</dimen>
     <dimen name="social_media_size">90dp</dimen>
     <dimen name="sign_up_instructions_margin_bottom">10dp</dimen>
-    <dimen name="discover_logo_image_size">30dp</dimen>
     <!-- CONFIGURE RESOURCES -->
     <dimen name="configure_side_margin">20dp</dimen>
     <dimen name="configure_title_font_size">18sp</dimen>

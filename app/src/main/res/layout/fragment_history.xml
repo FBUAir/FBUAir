@@ -22,7 +22,7 @@
         android:submitBackground="@android:color/transparent"
         android:queryHint="Search"
         android:iconifiedByDefault="false"
-        android:searchIcon="@drawable/ic_search2" />
+        android:searchIcon="@drawable/ic_search" />
 
     <android.support.v4.widget.SwipeRefreshLayout
         android:id="@+id/swipeContainer"

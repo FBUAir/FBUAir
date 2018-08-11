@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -115,6 +117,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 if (header.getColor() == NO_COLOR) {
                     coverPhotoBitmap = profileImage.copy(Bitmap.Config.ARGB_8888, true);
                     coverPhotoBitmap = getDarkenedBitmap(coverPhotoBitmap);
+                    //Drawable d = new BitmapDrawable(context.getResources(), coverPhotoBitmap);
                     vhHeader.bind.ivBackground.setImageBitmap(coverPhotoBitmap);
                 }
             }

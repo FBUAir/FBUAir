@@ -2,6 +2,7 @@ package me.gnahum12345.fbuair.utils;
 
 import android.content.Context;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -17,6 +18,7 @@ import me.gnahum12345.fbuair.models.User;
 
 import me.gnahum12345.fbuair.managers.MyUserManager;
 
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
@@ -89,7 +91,8 @@ public class FakeUsers {
         setProfileImage(raul, R.drawable.photo_raul);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(2018, 7, 28, 0, 0);
+        calendar.set(Calendar.DATE, 10);
+        Log.e("FAKEUSERS", "raul date is: " + calendar.getTime().toString());
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
 
         SocialMedia facebookRaul = new SocialMedia();
@@ -114,10 +117,95 @@ public class FakeUsers {
         soundcloudRaul.setProfileUrl("https://soundcloud.com/raul-gd");
         raul.addSocialMedia(soundcloudRaul);
         fakeUsersList.add(raul);
+
+        User sanura = new User();
+        sanura.setId();
+        sanura.setName("Sanura N’Jaka");
+        sanura.setPhoneNumber("4958273384");
+        sanura.setOrganization("Stanford");
+        sanura.setEmail("sanura_njaka@stanford.edu");
+        sanura.setNumConnections(102);
+        setProfileImage(sanura, R.drawable.photo_sanura);
+
+        sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(sanura);
+
+        User vanessa = new User();
+        vanessa.setId();
+        vanessa.setName("Vanessa Yan");
+        vanessa.setPhoneNumber("4972934833");
+        vanessa.setNumConnections(0);
+        setProfileImage(vanessa, R.drawable.photo_vanessa);
+
+        calendar.set(Calendar.DATE, 7);
+        vanessa.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(vanessa);
+
+        User gabriella = new User();
+        gabriella.setId();
+        gabriella.setName("Gabriella Garcia");
+        gabriella.setPhoneNumber("3948593304");
+        gabriella.setNumConnections(393);
+        setProfileImage(gabriella, R.drawable.photo_gabriella);
+
+        calendar.set(Calendar.MONTH, 8);
+        calendar.set(Calendar.DATE, 25);
+        gabriella.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(gabriella);
+
+        User martha = new User();
+        martha.setId();
+        martha.setName("Martha Gao");
+        martha.setNumConnections(49);
+        setProfileImage(martha);
+
+        addDefaultSM(martha, "Facebook", martha.getName());
+
+        martha.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(martha);
+
+        User emma = new User();
+        emma.setId();
+        emma.setName("Emma Rivera");
+        emma.setNumConnections(4);
+        setProfileImage(emma, R.drawable.photo_emma);
+
+        addDefaultSM(emma, "Instagram", "emma_r");
+        addDefaultSM(emma, "Facebook");
+        addDefaultSM(emma, "LinkedIn");
+
+        emma.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(emma);
+
+        User jacob = new User();
+        jacob.setId();
+        jacob.setName("Jacob Snyder");
+        jacob.setNumConnections(20);
+        setProfileImage(jacob);
+
+        addDefaultSM(jacob, "Snapchat", "jacobsnyder");
+
+        calendar.set(Calendar.DATE, 12);
+        jacob.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(jacob);
+
+        User david = new User();
+        david.setId();
+        david.setName("David Mindlin");
+        david.setPhoneNumber("3948573944");
+        david.setNumConnections(33);
+        setProfileImage(david);
+
+        addDefaultSM(david, "WhatsApp", "(584)345-1837");
+
+        calendar.set(Calendar.DATE, 10);
+        david.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeUsersList.add(david);
     }
 
     // sets profile image from resource drawable id
     void setProfileImage(User user, int drawableId) {
+        user.setColor(NO_COLOR);
         user.setProfileImage(BitmapFactory.decodeResource(context.getResources(), drawableId));
     }
 
@@ -130,5 +218,21 @@ public class FakeUsers {
                         color);
         user.setProfileImage(drawableToBitmap(drawable));
         user.setColor(color);
+    }
+
+    void addDefaultSM(User user, String socialMediaName, String username) {
+        SocialMedia socialMedia = new SocialMedia();
+        socialMedia.setName(socialMediaName);
+        socialMedia.setUsername(username);
+        socialMedia.setProfileUrl("https://www." + socialMediaName.toLowerCase() + ".com");
+        user.addSocialMedia(socialMedia);
+    }
+
+    void addDefaultSM(User user, String socialMediaName) {
+        SocialMedia socialMedia = new SocialMedia();
+        socialMedia.setName(socialMediaName);
+        socialMedia.setUsername(user.getName());
+        socialMedia.setProfileUrl("https://www." + socialMediaName.toLowerCase() + ".com");
+        user.addSocialMedia(socialMedia);
     }
 }

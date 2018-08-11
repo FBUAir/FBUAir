@@ -94,6 +94,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     Button buttonNext;
 
     private CallbackManager mCallbackManager;
+    private final static boolean ADD_FAKE_USERS = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -234,7 +235,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
 
         // set fake history
         FakeUsers fakeUsers = new FakeUsers(this);
-        userManager.commitFakeUsers(fakeUsers.getFakeUsersList());
+        if (ADD_FAKE_USERS) userManager.addFakeUsers(fakeUsers.getFakeUsersList());
 
         // launch main activity
         Intent intent = new Intent(this, MainActivity.class);

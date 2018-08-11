@@ -85,19 +85,14 @@ public class MyUserManager {
     }
 
     // add user without changing date (for fake users)
-    public void commitFakeUsers(List<User> fakeUsers) {
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        JSONArray history = new JSONArray();
+    public void addFakeUsers(List<User> fakeUsers) {
+        User currentUser = getCurrentUser();
+        currentUser.setNumConnections(currentUser.getNumConnections() + fakeUsers.size());
         for (User user : fakeUsers) {
-            try {
-                history.put(User.toJson(user));
-            } catch (JSONException e) {
-                Log.e("USERMANAGER", "commitFakeUsers JSON exception");
-            }
+            currentUsers.put(user.getId(), user);
         }
-        editor.putString(HISTORY_KEY, history.toString());
-        editor.commit();
+        commitHistory();
+        commitCurrentUser(currentUser);
     }
 
     public boolean addUser(User user, ConnectionService.Endpoint endpoint) {
@@ -115,6 +110,9 @@ public class MyUserManager {
         currentUsers.put(user.getId(), user);
         if (commitHistory()) {
             notifyListeners(user, true);
+            User currentUser = getCurrentUser();
+            currentUser.setNumConnections(currentUser.getNumConnections() + 1);
+            commitCurrentUser(currentUser);
             return true;
         } else {
             return false;

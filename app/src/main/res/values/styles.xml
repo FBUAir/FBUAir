@@ -25,19 +25,12 @@
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
 
-    <style name="ActionMode" parent="Widget.AppCompat.ActionMode">
-        <item name="background">@color/color_white</item>
-    </style>
     <!-- ActionBar title text -->
     <style name="MyActionBarTitleText" parent="TextAppearance.AppCompat.Widget.ActionBar.Title">
         <item name="android:textColor">@color/color_black</item>
         <item name="android:textSize">35sp</item>
         <item name="android:textStyle">bold</item>
 
-    </style>
-
-    <style name="PauseDialog" parent="@android:style/Theme.Dialog">
-        <item name="android:windowAnimationStyle">@style/PauseDialogAnimation</item>
     </style>
 
     <style name="PauseDialogAnimation">

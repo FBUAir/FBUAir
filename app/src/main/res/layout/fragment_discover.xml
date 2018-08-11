@@ -32,7 +32,6 @@
             app:rb_scale="6">
 
             <ImageView
-                android:id="@+id/centerImage"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:layout_centerInParent="true"
@@ -40,7 +39,6 @@
         </com.skyfishjy.library.RippleBackground>
 
         <LinearLayout
-            android:id="@+id/llMessage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"

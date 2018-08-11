@@ -144,7 +144,10 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        viewHolder.btnSend.doneLoadingAnimation(ContextCompat.getColor(mContext, R.color.green), BitmapFactory.decodeResource(mContext.getResources(), R.drawable.verify));
+                        viewHolder.btnSend.doneLoadingAnimation
+                                (ContextCompat.getColor(mContext, R.color.green),
+                                        BitmapFactory.decodeResource(mContext.getResources(),
+                                                R.drawable.ic_tick));
                     }
                 }, 2000);
             }

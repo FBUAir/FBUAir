@@ -3,14 +3,12 @@
     <string name="app_motto">All your profiles in one place.</string>
     <!-- used in adding social media sign up screens -->
     <string name="social_media_instructions">Add some social media platforms.</string>
-    <string name="request_platforms_message">Missing your favorite platform? Request it here.</string>
     <string name="remove_social_media_confirmation">Are you sure you want to remove</string>
 
     <!-- profile sign up error messages -->
     <string name="bad_email_error">Enter a valid email address.</string>
     <string name="bad_phone_error">Enter a valid phone number.</string>
     <string name="no_name_error">A name is required.</string>
-    <string name="no_phone_error">Phone number is required.</string>
 
     <!-- used in details screen -->
     <string name="contact_permissions_rationale">We need Contact permissions to easily add other users into your Contacts and check for duplicates. Are you sure you want to deny this permission?</string>
@@ -26,12 +24,6 @@
     <string name="toast_connected">Connected to %s</string>
     <string name="toast_disconnected">Disconnected from %s</string>
 
-    <string name="status_unknown">Please wait</string>
-    <string name="status_connected">Connected\nHold any of the volume keys to talk</string>
-    <string name="status_advertising">Advertising</string>
-    <string name="status_discovering">Have one person shake their device. Everyone else, stand still.</string>
-    <string name="status_searching">Looking for a device to connect to</string>
-
     <!--TODO: If change divider then change DiscoverAdapter.parseName(String name)-->
     <string name="divider">$$$$$$$$</string>
     <!--TODO: write something deep and impactful so the user can give me their permissions..-->
@@ -39,9 +31,6 @@
     <string name="permissions_explanation_title">Oh oh… we need permissions</string>
 
     <!--BottomNavigation Titles-->
-    <string name="bottom_navigation_menu_1_discovery">Discover</string>
-    <string name="bottom_navigation_menu_2_history">History</string>
-    <string name="bottom_navigation_menu_3_profile">Profile</string>
 
     <!--Notification Services. -->
     <string name="channel_name">AirNotification</string>
@@ -51,10 +40,6 @@
     <string name="connection_service">ConnectionService</string>
 
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="configure_menu_bar">Configure</string>
-    <string name="missing_something">Are you missing a platform? Click here to add!</string>
-    <string name="add_social_media">Add</string>
 
 
     <string name="discover_add_friends">Don\'t see who you\'re looking for? <b>Invite them!</b></string>
