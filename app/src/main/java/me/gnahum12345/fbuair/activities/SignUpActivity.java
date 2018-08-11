@@ -87,13 +87,8 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     LinkedInClient linkedInClient;
     GithubClient githubClient;
 
-    TextView tvTitle;
-    TextView errorOne;
-    EditText inputOne;
-    EditText inputTwo;
-    Button buttonNext;
-
     private CallbackManager mCallbackManager;
+
     private final static boolean ADD_FAKE_USERS = true;
 
     @Override
@@ -234,8 +229,10 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         userManager.commitCurrentUser(user);
 
         // set fake history
-        FakeUsers fakeUsers = new FakeUsers(this);
-        if (ADD_FAKE_USERS) userManager.addFakeUsers(fakeUsers.getFakeUsersList());
+        if (ADD_FAKE_USERS) {
+            FakeUsers fakeUsers = new FakeUsers(this);
+            userManager.addFakeUsers(fakeUsers.getFakeUsersList());
+        }
 
         // launch main activity
         Intent intent = new Intent(this, MainActivity.class);

@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import org.json.JSONObject;
 
@@ -32,8 +33,11 @@ import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.utils.ContactUtils;
 import me.gnahum12345.fbuair.utils.FakeUsers;
 
+import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
-public class HistoryFragment extends Fragment implements UserListener,SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener{
+
+public class HistoryFragment extends Fragment implements UserListener,
+        SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener {
 
     public HistoryAdapter historyAdapter;
     ArrayList<User> history = new ArrayList<>();
@@ -41,6 +45,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
     Activity activity;
     SwipeRefreshLayout swipeContainer;
     SearchView svSearch;
+    TextView tvMessage;
     LinearLayoutManager linearLayoutManager;
 
     OnRequestAddContact onAddContactClickedListener;
@@ -68,6 +73,7 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         super.onViewCreated(view, savedInstanceState);
 
         svSearch = view.findViewById(R.id.svSearch);
+        tvMessage = view.findViewById(R.id.tvMessage);
 
         // configure swipe container
         swipeContainer = view.findViewById(R.id.swipeContainer);
@@ -99,10 +105,20 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
         SearchManager searchManager = (SearchManager) this.activity.getSystemService(Context.SEARCH_SERVICE);
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         svSearch.setOnQueryTextListener(this);
+        svSearch.setSubmitButtonEnabled(false);
+
+        svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View view, boolean hasFocus) {
+                if (hasFocus && historyAdapter.getItemCount() != 0) {
+                    tvMessage.setText("No results found.");
+                }
+                else tvMessage.setText("Nothing new yet.");
+            }
+        });
 
         // populate recycler view with history from shared preferences
         populateHistory();
-
     }
 
     @Override
@@ -140,7 +156,8 @@ public class HistoryFragment extends Fragment implements UserListener,SearchView
     /* implementations for searching through history */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        return false;
+        hideSoftKeyboard(activity);
+        return true;
     }
 
     @Override

@@ -90,7 +90,7 @@ public class AirNotificationManager {
                 .setStyle(new NotificationCompat.BigTextStyle().bigText(body))
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(replyPendingIntent)
-                .addAction(R.drawable.home_icon, mContext.getString(R.string.reply_label), replyPendingIntent);
+                .addAction(R.drawable.ic_launcher_app_v1, mContext.getString(R.string.reply_label), replyPendingIntent);
 
         //TODO: Change the id.
 

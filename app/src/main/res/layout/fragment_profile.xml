@@ -16,5 +16,23 @@
             android:layout_alignParentTop="true"
             android:paddingBottom="30dp"
             android:clipToPadding="false"/>
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="@dimen/menu_item_size"
+            android:layout_height="@dimen/menu_item_size"
+            android:layout_marginTop="@dimen/menu_item_top_margin"
+            android:layout_marginStart="@dimen/menu_item_side_margin"
+            android:tint="@color/color_white"
+            android:src="@drawable/ic_back" />
+
+        <ImageView
+            android:id="@+id/btDeleteProfile"
+            android:layout_width="@dimen/menu_item_size"
+            android:layout_height="@dimen/menu_item_size"
+            android:layout_marginTop="@dimen/menu_item_top_margin"
+            android:layout_marginEnd="@dimen/menu_item_side_margin"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/ic_more_vert_black_24dp" />
     </RelativeLayout>
 </layout>

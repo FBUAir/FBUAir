@@ -35,8 +35,6 @@ import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.aurelhubert.ahbottomnavigation.AHBottomNavigation;
@@ -82,9 +80,6 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     public ActivityMainBinding bind;
     //Connection Service.
     public ConnectionService mConnectService;
-    public ConnectionService connectService;
-    ImageView profileImage;
-    TextView name;
     // fragments
     DiscoverFragment discoverFragment;
     HistoryFragment historyFragment;
@@ -104,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     private boolean mBound = false;
     private boolean mListened = false;
     private Menu mMenu;
+
+    public static final boolean SHOW_TOASTS = false;
 
     private ServiceConnection mConnection = new ServiceConnection() {
         // Called when the connection with the service is established
@@ -177,7 +174,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         bind.toolbarTitle.setText("Discover");
 
         Drawable d;
-        Bitmap profileImage = mUserManager.getCurrentUser().getProfileImage();
+        // separate declaration and usage to check for null user and start sign up activity if necessary
+        User user = mUserManager.tryToGetCurrentUser();
+        Bitmap profileImage = user.getProfileImage();
         if (profileImage != null) {
             d = new BitmapDrawable(getResources(), getCircularBitmap(profileImage));
             bind.toolbarImage.setImageDrawable(d);
@@ -398,14 +397,12 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
     @Override
     // opens details screen for passed in user
     public void launchDetails(String uid, View view) {
-        // set transition(s)
+        bind.pbProgress.setVisibility(View.VISIBLE);
         ProfileFragment detailsFragment = ProfileFragment.newInstance(uid);
 
         isDetailFragment = true;
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        profileImage = view.findViewById(R.id.ivProfileImage);
-        name = view.findViewById(R.id.tvName);
 
         fragmentTransaction.setReorderingAllowed(true);
 
@@ -418,6 +415,10 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         setBottomNavigationVisible(false);
     }
 
+    @Override
+    public void hideProgressBar() {
+        bind.pbProgress.setVisibility(View.GONE);
+    }
 
     @Override
     public void launchEditProfile() {
@@ -470,19 +471,25 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
 
     // adds contact to phone and shows snackbar
     void addContact(User user) {
-        String contactId = ContactUtils.addContact(this, user)[0];
-        mOnContactAddedCallback.onSuccess();
-        showContactAddedDialog(contactId);
+        String contactId = ContactUtils.addContact(this, user);
+        if (contactId != null) {
+            mOnContactAddedCallback.onSuccess();
+            showContactAddedSnackbar(contactId);
+        } else  {
+            Log.e("MAINACTIVITY", "Contact adding error");
+            Toast.makeText(this, "Error adding to contacts. Please re-try soon.",
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
     // shows options to undo and/or view as fake snackbar at bottom
-    void showContactAddedDialog(String contactId) {
+    void showContactAddedSnackbar(String contactId) {
         Snackbar snackbar = Snackbar.make(bind.getRoot(),
                 R.string.contact_added_message, Snackbar.LENGTH_LONG);
         snackbar.setAction("View", new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ContactUtils.viewContact(getBaseContext(), contactId);
+                ContactUtils.viewContact(MainActivity.this, contactId);
             }
         });
         snackbar.show();
@@ -504,7 +511,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 .setNegativeButton("View existing", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
-                        ContactUtils.viewContact(getBaseContext(), addContactResult.getContactId());
+                        ContactUtils.viewContact(MainActivity.this, addContactResult.getContactId());
                     }
                 });
         Dialog dialog = builder.show();
@@ -615,11 +622,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         Log.d(TAG, "onOptionsItemSelected: item selected" + item.getItemId());
 
         if (item.getItemId() == R.id.btnSendAll) {
-            String msg = String.format("Are you sure you want to send everyone the following configuration? \n( %s )", mUserManager.getCurrentUser().getConfiguration());
+            String msg = String.format("Are you sure you want to send everyone the following configuration? \n( %s )", mUserManager.tryToGetCurrentUser().getConfiguration());
             AlertDialog.Builder builder = new AlertDialog.Builder(this)
                     .setTitle("Send All Confirmation!")
                     .setMessage(msg)
-                    .setIcon(R.drawable.app_launcher);
+                    .setIcon(R.drawable.ic_launcher_app_v1);
 
             List<ConnectionService.Endpoint> endpoints = getCurrEndpoints();
             if (endpoints != null && !endpoints.isEmpty()) {
@@ -636,8 +643,11 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String msg = "Sending Failed " + ("\ud83d\ude22");
-                    Toast.makeText(MainActivity.this, ConnectionService.toColor(msg, getResources().getColor(R.color.log_error)), Toast.LENGTH_SHORT).show();
-
+                    ConnectionService.QualifiedToast.makeText
+                            (MainActivity.this,
+                                    ConnectionService.toColor(msg, getResources()
+                                            .getColor(R.color.log_error)), Toast.LENGTH_SHORT)
+                            .show();
                 }
             });
             Dialog dialog = builder.show();

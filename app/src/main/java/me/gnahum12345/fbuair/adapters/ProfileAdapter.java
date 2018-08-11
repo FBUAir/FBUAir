@@ -100,7 +100,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             } else {
                 vhHeader.bind.tvOrganization.setText(header.getOrganization());
             }
-            vhHeader.bind.tvConnections.setText(String.valueOf(header.getConnections()) + " connections");
+            String ending = header.getConnections() == 1 ? " profile received" : " profiles received";
+            vhHeader.bind.tvConnections.setText
+                    (String.valueOf(header.getConnections()) + ending);
 
             // set profile image for fake users (real ones should never be null)
             Bitmap profileImage = header.getProfileImage();
@@ -196,10 +198,15 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 });
             }
 
+            if (header.getPhone().isEmpty() && header.getEmail().isEmpty()) {
+                vhHeader.bind.btAddContact.setEnabled(false);
+                vhHeader.bind.btAddContact.setImageDrawable(context.getResources()
+                        .getDrawable(R.drawable.ic_add_button_disabled, null));
+            }
+
             // set buttons visibility and click listeners
             if (isCurrentUserProfile) {
                 vhHeader.bind.llDetailsOptions.setVisibility(View.GONE);
-                vhHeader.bind.ivBack.setVisibility(View.GONE);
             } else {
                 vhHeader.bind.btEditProfile.setVisibility(View.GONE);
             }
@@ -271,9 +278,7 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         VHHeader(ItemProfileHeaderBinding bind) {
             super(bind.getRoot());
             this.bind = bind;
-            bind.ivBack.setOnClickListener(this);
             bind.btEditProfile.setOnClickListener(this);
-            bind.btDeleteProfile.setOnClickListener(this);
             bind.btAddContact.setOnClickListener(this);
             bind.btSendBack.setOnClickListener(this);
         }
@@ -293,12 +298,6 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     break;
                 case R.id.btEditProfile:
                     onFragmentChangeListener.launchEditProfile();
-                    break;
-                case R.id.btDeleteProfile:
-                    onFragmentChangeListener.deleteAccount();
-                    break;
-                case R.id.ivBack:
-                    onFragmentChangeListener.onDetailsBackPressed();
                     break;
             }
         }

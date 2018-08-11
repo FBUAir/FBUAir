@@ -20,6 +20,7 @@ import java.util.TreeMap;
 
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
+import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
@@ -37,6 +38,7 @@ public class MyUserManager {
     ArrayList<UserListener> userListeners;
     int count = 0;
     private Context mContext;
+    private OnFragmentChangeListener onFragmentChangeListener;
     private Handler handler = new Handler();
     private boolean notificationsEnabled = false;
     private Activity activity;
@@ -59,8 +61,7 @@ public class MyUserManager {
     }
 
     public User getUser(String id) {
-        //TODO: get user given the id.
-        User currUser = getCurrentUser();
+        User currUser = tryToGetCurrentUser();
         return currUser.getId().equals(id) ? currUser : currentUsers.get(id);
     }
 
@@ -86,7 +87,7 @@ public class MyUserManager {
 
     // add user without changing date (for fake users)
     public void addFakeUsers(List<User> fakeUsers) {
-        User currentUser = getCurrentUser();
+        User currentUser = tryToGetCurrentUser();
         currentUser.setNumConnections(currentUser.getNumConnections() + fakeUsers.size());
         for (User user : fakeUsers) {
             currentUsers.put(user.getId(), user);
@@ -110,7 +111,7 @@ public class MyUserManager {
         currentUsers.put(user.getId(), user);
         if (commitHistory()) {
             notifyListeners(user, true);
-            User currentUser = getCurrentUser();
+            User currentUser = tryToGetCurrentUser();
             currentUser.setNumConnections(currentUser.getNumConnections() + 1);
             commitCurrentUser(currentUser);
             return true;
@@ -173,6 +174,7 @@ public class MyUserManager {
     public void setNotificationAbility(boolean enabled, Activity activity) {
         notificationsEnabled = enabled;
         this.activity = activity;
+        onFragmentChangeListener = (OnFragmentChangeListener) activity;
     }
 
     public void removeUser(User user) {
@@ -211,6 +213,7 @@ public class MyUserManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(CURRENT_USER_KEY, null);
         editor.putString(HISTORY_KEY, null);
+        currentUsers.clear();
         editor.commit();
     }
 
@@ -264,19 +267,19 @@ public class MyUserManager {
         return users;
     }
 
-    public User getCurrentUser() {
+    public User tryToGetCurrentUser() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         String currentUser = sharedPreferences.getString(CURRENT_USER_KEY, null);
-        User user = new User();
         if (currentUser != null) {
             try {
-                JSONObject userJson = new JSONObject(currentUser);
-                user = User.fromJson(userJson);
+                User user = User.fromJson(new JSONObject(currentUser));
+                if (user.getId() != null && !user.getName().isEmpty()) return user;
             } catch (JSONException e) {
                 e.printStackTrace();
             }
         }
-        return user;
+        onFragmentChangeListener.deleteAccount();
+        return null;
     }
 
     public ConnectionService.Endpoint avaliableEndpoint(String uid) {

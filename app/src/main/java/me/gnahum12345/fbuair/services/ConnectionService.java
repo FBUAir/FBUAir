@@ -62,6 +62,7 @@ import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.models.User;
 
 import static me.gnahum12345.fbuair.models.ProfileUser.MyPREFERENCES;
+import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
 
 
 public class ConnectionService extends Service {
@@ -627,7 +628,7 @@ public class ConnectionService extends Service {
      * Called when someone has connected to us. Override this method to act on the event.
      */
     protected void onEndpointConnected(Endpoint endpoint) {
-        Toast.makeText(this, this.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        QualifiedToast.makeText(this, this.getString(R.string.toast_connected, endpoint.getName()), QualifiedToast.LENGTH_SHORT).show();
         sendProfileUser(endpoint);
         updateListenersEndpoint(endpoint, true);
     }
@@ -654,7 +655,7 @@ public class ConnectionService extends Service {
      * Called when someone has disconnected. Override this method to act on the event.
      */
     protected void onEndpointDisconnected(Endpoint endpoint) {
-        Toast.makeText(mContext, mContext.getString(R.string.toast_disconnected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        QualifiedToast.makeText(mContext, mContext.getString(R.string.toast_disconnected, endpoint.getName()), QualifiedToast.LENGTH_SHORT).show();
         //TODO update listeners.
         updateListenersEndpoint(endpoint, false);
         if (getConnectedEndpoints().isEmpty()) {
@@ -716,18 +717,18 @@ public class ConnectionService extends Service {
      * @param payload  The data.
      */
     protected void onReceive(Endpoint endpoint, Payload payload) {
-        Toast.makeText(this, "I am on the received side", Toast.LENGTH_SHORT).show();
+        QualifiedToast.makeText(this, "I am on the received side", QualifiedToast.LENGTH_SHORT).show();
 
         if (payload.getType() == Payload.Type.FILE) {
             incomingPayloads.put(endpoint.id, payload);
-            Toast.makeText(this, "I received a file...", Toast.LENGTH_SHORT).show();
+            QualifiedToast.makeText(this, "I received a file...", QualifiedToast.LENGTH_SHORT).show();
         }
 
         if (payload.getType() == Payload.Type.BYTES) {
             byte[] b = payload.asBytes();
             String content = new String(b);
             logD(content);
-            Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
+            QualifiedToast.makeText(this, content, QualifiedToast.LENGTH_SHORT).show();
         }
     }
 
@@ -867,7 +868,7 @@ public class ConnectionService extends Service {
                                                     "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
                                                     endpointId, info.getServiceId(), info.getEndpointName()));
 
-                                    Toast.makeText(ConnectionService.this, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
+                                    QualifiedToast.makeText(ConnectionService.this, "This is a toast when i found a user", QualifiedToast.LENGTH_SHORT).show();
 
                                     if (getServiceId().equals(info.getServiceId())) {
                                         Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
@@ -958,7 +959,7 @@ public class ConnectionService extends Service {
 
     // TODO: make a way for the listeners to use this function.
     public void sendToEndpoint(Endpoint endpoint) {
-        User u = MyUserManager.getInstance().getCurrentUser();
+        User u = MyUserManager.getInstance().tryToGetCurrentUser();
         try {
             File file = u.toFile(this);
             send(Payload.fromFile(file), endpoint);
@@ -966,8 +967,6 @@ public class ConnectionService extends Service {
             e.printStackTrace();
         }
     }
-
-
 
     public void debug() {
         logD("is Connecting: " + mIsConnecting);
@@ -1010,9 +1009,9 @@ public class ConnectionService extends Service {
         user.setEmail("GNAHUM@Gmail.com");
         user.setOrganization("SOME ORGANIZATION");
         user.setProfileImage(BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.default_profile));
+                R.drawable.ic_user));
         try {
-            editor.putString("current_user", user.toJson(user).toString());
+            editor.putString(CURRENT_USER_KEY, user.toJson(user).toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -1087,7 +1086,9 @@ public class ConnectionService extends Service {
     }
 
     private void appendToLogs(CharSequence msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        if (MainActivity.SHOW_TOASTS) {
+            QualifiedToast.makeText(this, msg, QualifiedToast.LENGTH_SHORT).show();
+        }
     }
 
     /**
@@ -1193,6 +1194,17 @@ public class ConnectionService extends Service {
                                 });
                         //TODO: change my name.
             }
+        }
+    }
+
+    public class QualifiedToast extends Toast {
+        @Override
+        public void show() {
+            if (MainActivity.SHOW_TOASTS) super.show();
+        }
+
+        public QualifiedToast(Context context) {
+            super(context);
         }
     }
 

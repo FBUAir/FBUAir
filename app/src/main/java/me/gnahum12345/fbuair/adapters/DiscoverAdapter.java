@@ -117,17 +117,12 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         }
         if (profileUser != null) {
             viewHolder.mivProfilePic.setVisibility(View.VISIBLE);
-            if (profileUser.getIvProfileImage() == null) {
-                Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
-                viewHolder.mivProfilePic.setImageDrawable(drawable);
-            } else {
-                viewHolder.mivProfilePic.setImageBitmap(getCircularBitmap(profileUser.getIvProfileImage()));
-            }
+            viewHolder.mivProfilePic.setImageBitmap(getCircularBitmap(profileUser.getIvProfileImage()));
             viewHolder.mtvDeviceName.setText(profileUser.getName());
         } else {
             String deviceName = parseName(device.getName());
             viewHolder.mtvDeviceName.setText(deviceName);
-            Drawable drawable = mContext.getDrawable(R.drawable.default_profile);
+            Drawable drawable = mContext.getDrawable(R.drawable.ic_user);
             viewHolder.mivProfilePic.setImageDrawable(drawable);
         }
 

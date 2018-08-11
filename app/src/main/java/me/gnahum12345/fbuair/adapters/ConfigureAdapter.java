@@ -26,7 +26,7 @@ public class ConfigureAdapter extends BaseAdapter {
     // pass the profiles list in the constructor
     public ConfigureAdapter(Context context) {
         this.context = context;
-        this.user = MyUserManager.getInstance().getCurrentUser();
+        this.user = MyUserManager.getInstance().tryToGetCurrentUser();
         this.profiles = new ArrayList<>(user.getSocialMedias());
 
         if (!user.getPhoneNumber().isEmpty()) {

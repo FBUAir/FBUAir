@@ -66,11 +66,12 @@ public class ProfileFragment extends Fragment {
             uid = getArguments().getString(ARG_UID);
             MyUserManager.getInstance().seenUser(uid);
             user = MyUserManager.getInstance().getUser(getArguments().getString(ARG_UID));
-            isCurrentUserProfile = (user.equals(MyUserManager.getInstance().getCurrentUser()));
+            isCurrentUserProfile = (user.equals(MyUserManager.getInstance().tryToGetCurrentUser()));
         } else {
-            user = MyUserManager.getInstance().getCurrentUser();
+            user = MyUserManager.getInstance().tryToGetCurrentUser();
             isCurrentUserProfile = true;
         }
+
         socialMedias = user.getSocialMedias();
         Header header = new Header(user.getId());
         profileAdapter = new ProfileAdapter(getContext(), header, socialMedias,
@@ -78,8 +79,6 @@ public class ProfileFragment extends Fragment {
         if (mListener != null) {
             profileAdapter.setListener(mListener);
         }
-
-
     }
 
 
@@ -100,8 +99,26 @@ public class ProfileFragment extends Fragment {
         bind.rvRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         hideSoftKeyboard(getActivity());
+        onFragmentChangeListener.hideProgressBar();
 
-        if (isCurrentUserProfile) ActivityCompat.startPostponedEnterTransition(getActivity());
+        if (isCurrentUserProfile) {
+            ActivityCompat.startPostponedEnterTransition(getActivity());
+            bind.ivBack.setVisibility(View.GONE);
+        }
+
+        bind.ivBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFragmentChangeListener.onDetailsBackPressed();
+            }
+        });
+
+        bind.btDeleteProfile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onFragmentChangeListener.deleteAccount();
+            }
+        });
     }
 
     @Override

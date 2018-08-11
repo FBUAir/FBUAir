@@ -24,22 +24,6 @@ import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 public class FakeUsers {
 
-    // placeholder users to add
-/*    public User katherine = new User();
-    public User raul = new User();
-    public User sanura = new User();
-    public User vanessa = new User();
-    public User gabriella = new User();
-    public User emma = new User();
-    public User martha = new User();
-    public User jacob = new User();
-    public User david = new User();
-    public User girum = new User();
-    public User nneka = new User();
-    public User natalie = new User();
-    public User mackenzie = new User();
-    public User leonardo = new User();*/
-
     public List<User> fakeUsersList = new ArrayList<>();
 
     Context context;
@@ -61,7 +45,7 @@ public class FakeUsers {
         katherine.setPhoneNumber("2328394839");
         katherine.setEmail("katherinelazar@gmail.com");
         katherine.setNumConnections(38);
-        setProfileImage(katherine, R.drawable.photo_katherine);
+        setProfileImage(katherine);
         katherine.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
 
         SocialMedia facebookKatherine = new SocialMedia();
@@ -88,11 +72,10 @@ public class FakeUsers {
         raul.setPhoneNumber("2328394839");
         raul.setEmail("raul234@gmail.com");
         raul.setNumConnections(76);
-        setProfileImage(raul, R.drawable.photo_raul);
+        setProfileImage(raul);
 
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, 10);
-        Log.e("FAKEUSERS", "raul date is: " + calendar.getTime().toString());
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
 
         SocialMedia facebookRaul = new SocialMedia();
@@ -125,7 +108,7 @@ public class FakeUsers {
         sanura.setOrganization("Stanford");
         sanura.setEmail("sanura_njaka@stanford.edu");
         sanura.setNumConnections(102);
-        setProfileImage(sanura, R.drawable.photo_sanura);
+        setProfileImage(sanura);
 
         sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(sanura);
@@ -135,7 +118,7 @@ public class FakeUsers {
         vanessa.setName("Vanessa Yan");
         vanessa.setPhoneNumber("4972934833");
         vanessa.setNumConnections(0);
-        setProfileImage(vanessa, R.drawable.photo_vanessa);
+        setProfileImage(vanessa);
 
         calendar.set(Calendar.DATE, 7);
         vanessa.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
@@ -146,7 +129,7 @@ public class FakeUsers {
         gabriella.setName("Gabriella Garcia");
         gabriella.setPhoneNumber("3948593304");
         gabriella.setNumConnections(393);
-        setProfileImage(gabriella, R.drawable.photo_gabriella);
+        setProfileImage(gabriella);
 
         calendar.set(Calendar.MONTH, 8);
         calendar.set(Calendar.DATE, 25);
@@ -168,7 +151,7 @@ public class FakeUsers {
         emma.setId();
         emma.setName("Emma Rivera");
         emma.setNumConnections(4);
-        setProfileImage(emma, R.drawable.photo_emma);
+        setProfileImage(emma);
 
         addDefaultSM(emma, "Instagram", "emma_r");
         addDefaultSM(emma, "Facebook");
@@ -203,11 +186,11 @@ public class FakeUsers {
         fakeUsersList.add(david);
     }
 
-    // sets profile image from resource drawable id
+/*    // sets profile image from resource drawable id
     void setProfileImage(User user, int drawableId) {
         user.setColor(NO_COLOR);
         user.setProfileImage(BitmapFactory.decodeResource(context.getResources(), drawableId));
-    }
+    }*/
 
     // sets default profile image
     void setProfileImage(User user) {

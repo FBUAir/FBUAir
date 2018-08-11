@@ -1,5 +1,6 @@
 package me.gnahum12345.fbuair.utils;
 
+import android.app.Activity;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentUris;
@@ -13,12 +14,15 @@ import android.net.Uri;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.CommonDataKinds;
+import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.User;
+
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 
 public class ContactUtils {
 
@@ -49,17 +53,9 @@ public class ContactUtils {
         }
     }
 
-    /** adds given user to contacts and returns contact id and raw contact id */
-    public static String[] addContact(Context context, User user) {
-        String contactId = "";
-        String rawContactId = "";
-
-        // fake image
-        Bitmap profileImageBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.happy_face);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        profileImageBitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] profileImageBytes = stream.toByteArray();
-        profileImageBitmap.recycle();
+    /** adds given user to contacts and returns contact id */
+    public static String addContact(Context context, User user) {
+        String contactId = null;
 
         // start adding contact
         ArrayList<ContentProviderOperation> ops = new ArrayList<>();
@@ -75,13 +71,7 @@ public class ContactUtils {
                 .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
                 .withValue(CommonDataKinds.StructuredName.DISPLAY_NAME, user.getName())
                 .build());
-        // add photo
-        ops.add(ContentProviderOperation
-                .newInsert(ContactsContract.Data.CONTENT_URI)
-                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
-                .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
-                .withValue(CommonDataKinds.Photo.PHOTO, profileImageBytes)
-                .build());
+
         // add organization
         ops.add(ContentProviderOperation
                 .newInsert(ContactsContract.Data.CONTENT_URI)
@@ -108,12 +98,25 @@ public class ContactUtils {
                 .withValue(CommonDataKinds.Email.TYPE, CommonDataKinds.Email.TYPE_HOME)
                 .build());
 
+        // add user's profile image if it's not the default
+        if (user.getColor() == NO_COLOR) {
+            Bitmap profileImageBitmap = user.getProfileImage();
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            profileImageBitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+            byte[] profileImageBytes = stream.toByteArray();
+
+            ops.add(ContentProviderOperation
+                    .newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                    .withValue(ContactsContract.Data.MIMETYPE, CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                    .withValue(CommonDataKinds.Photo.PHOTO, profileImageBytes)
+                    .build());
+        }
+
         try {
             // create the new contact
             ContentProviderResult[] results = context.getContentResolver()
                     .applyBatch(ContactsContract.AUTHORITY, ops);
-            // get created raw contact ID (for undoing)
-            rawContactId = String.valueOf(ContentUris.parseId(results[0].uri));
             // get created contact ID (for viewing)
             final String[] projection = new String[]{ContactsContract.RawContacts.CONTACT_ID};
             final Cursor cursor = context.getContentResolver().query(results[0].uri, projection, null, null, null);
@@ -122,10 +125,9 @@ public class ContactUtils {
                 cursor.close();
             }
         } catch (RemoteException | OperationApplicationException e) {
-            e.printStackTrace();
-            return new String[]{};
+            Log.e("CONTACT_UTILS", e.getLocalizedMessage());
         }
-        return new String[]{contactId, rawContactId};
+        return contactId;
     }
 
     /** undoes raw contact operation */
@@ -144,27 +146,29 @@ public class ContactUtils {
     }
 
     /** creates intent to view given contact */
-    public static void viewContact(Context context, String contactId) {
+    public static void viewContact(Activity activity, String contactId) {
         Uri contactUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_URI, contactId);
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(contactUri);
-        context.startActivity(intent);
+        activity.startActivity(intent);
     }
 
     /** returns ID of contact matching phone number. if doesn't exist, returns null */
     public static String getPhoneConflictId(Context context, String phone) {
-        // get URI path for given phone number
-        Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
-        // set columns to retrieve
-        String[] phoneNumberProjection = {ContactsContract.PhoneLookup._ID};
-        // lookup phone number
-        Cursor cursor = context.getContentResolver().query(lookupUri, phoneNumberProjection,
-                null, null, null);
-        // if there is a result, return ID of matching contact
-        if (cursor != null && cursor.moveToFirst()) {
-            String id = String.valueOf(cursor.getLong(0));
-            cursor.close();
-            return id;
+        if (!phone.isEmpty()) {
+            // get URI path for given phone number
+            Uri lookupUri = Uri.withAppendedPath(ContactsContract.PhoneLookup.CONTENT_FILTER_URI, Uri.encode(phone));
+            // set columns to retrieve
+            String[] phoneNumberProjection = {ContactsContract.PhoneLookup._ID};
+            // lookup phone number
+            Cursor cursor = context.getContentResolver().query(lookupUri, phoneNumberProjection,
+                    null, null, null);
+            // if there is a result, return ID of matching contact
+            if (cursor != null && cursor.moveToFirst()) {
+                String id = String.valueOf(cursor.getLong(0));
+                cursor.close();
+                return id;
+            }
         }
         // return null if no matching contacts
         return null;
@@ -172,18 +176,20 @@ public class ContactUtils {
 
     /** returns ID of contact matching email address. returns null if no conflict/match */
     public static String getEmailConflictId(Context context, String email) {
-        // get URI path for given email
-        Uri lookupUri = Uri.withAppendedPath(CommonDataKinds.Email.CONTENT_LOOKUP_URI, Uri.encode(email));
-        // set columns to retrieve
-        String[] emailProjection = {CommonDataKinds.Email.CONTACT_ID};
-        // lookup email
-        Cursor cursor = context.getContentResolver().query(lookupUri, emailProjection,
-                null, null, null);
-        // if there is a result, return ID of matching contact
-        if (cursor != null && cursor.moveToFirst()) {
-            String id = String.valueOf(cursor.getLong(0));
-            cursor.close();
-            return id;
+        if (!email.isEmpty()) {
+            // get URI path for given email
+            Uri lookupUri = Uri.withAppendedPath(CommonDataKinds.Email.CONTENT_LOOKUP_URI, Uri.encode(email));
+            // set columns to retrieve
+            String[] emailProjection = {CommonDataKinds.Email.CONTACT_ID};
+            // lookup email
+            Cursor cursor = context.getContentResolver().query(lookupUri, emailProjection,
+                    null, null, null);
+            // if there is a result, return ID of matching contact
+            if (cursor != null && cursor.moveToFirst()) {
+                String id = String.valueOf(cursor.getLong(0));
+                cursor.close();
+                return id;
+            }
         }
         // return null if no matching contacts
         return null;
