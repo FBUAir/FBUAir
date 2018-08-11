@@ -17,6 +17,9 @@ import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -155,16 +158,45 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         if (fragment == signUpContactFragmentTwo) {
-            inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
-            inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
-            fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
-            fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
+            //TODO: alpha out the button and then do the following...
+            fadeOutAnimation(fragment, tag, signUpContactFragment.getView().findViewById(R.id.ivProfileImage), 500, fragmentTransaction);
+//            transition(fragmentTransaction);
+            return;
         }
 
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
     }
 
+    private void transition(FragmentTransaction fragmentTransaction, Fragment fragment, String tag) {
+        inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
+        inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
+        fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
+        fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
+        fragmentTransaction.commit();
+    }
+    private void fadeOutAnimation(Fragment fragment, String tag, final View view, long animationDuration, FragmentTransaction fragmentTransaction) {
+        Animation fadeOut = new AlphaAnimation(1, 0);
+        fadeOut.setInterpolator(new AccelerateInterpolator());
+        fadeOut.setStartOffset(animationDuration);
+        fadeOut.setDuration(animationDuration);
+        fadeOut.setAnimationListener(new Animation.AnimationListener() {
+            @Override
+            public void onAnimationStart(Animation animation) {
+            }
+            @Override
+            public void onAnimationEnd(Animation animation) {
+//                view.setVisibility(View.INVISIBLE);
+               transition(fragmentTransaction, fragment, tag);
+            }
+            @Override
+            public void onAnimationRepeat(Animation animation) {
+            }
+        });
+
+        view.startAnimation(fadeOut);
+    }
     // sets large sign-up menu's visibility
     @Override
     public void setMenuVisible(boolean flag) {
@@ -201,7 +233,6 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     public void createAccount() {
         MyUserManager userManager = MyUserManager.getInstance();
         userManager.commitCurrentUser(user);
-//        userManager.addUser(user);
 
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
