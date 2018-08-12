@@ -260,8 +260,8 @@ public class MyUserManager {
         ArrayList<User> users = new ArrayList<>(currentUsers.values());
         users.sort(new Comparator<User>() {
             @Override
-            public int compare(User user, User t1) {
-                return user.getTimeAddedToHistory().compareTo(t1.getTimeAddedToHistory());
+            public int compare(User user1, User user2) {
+                return -1 * user1.getTimeAddedToHistory().compareTo(user2.getTimeAddedToHistory());
             }
         });
         return users;

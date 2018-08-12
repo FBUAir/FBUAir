@@ -78,7 +78,7 @@ public class Utils {
         try {
             Date date = dateFormatter.parse(dateString);
             Date beginningOfDay;
-            Date beginningOfWeek;
+            Date sixDaysAgo;
 
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.HOUR_OF_DAY, 0);
@@ -87,13 +87,13 @@ public class Utils {
             cal.clear(Calendar.MILLISECOND);
             beginningOfDay = cal.getTime();
 
-            cal.set(Calendar.DAY_OF_WEEK, cal.getFirstDayOfWeek());
-            beginningOfWeek = cal.getTime();
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE - 6));
+            sixDaysAgo = cal.getTime();
 
             if (date.after(beginningOfDay)) {
                 DateFormat format = new SimpleDateFormat("h:mm a", Locale.US);
                 formattedDate = format.format(date);
-            } else if (date.after(beginningOfWeek)) {
+            } else if (date.after(sixDaysAgo)) {
                 DateFormat format = new SimpleDateFormat("EEE", Locale.US);
                 formattedDate = format.format(date);
             } else {

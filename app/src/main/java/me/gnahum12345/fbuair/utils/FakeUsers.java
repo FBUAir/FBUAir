@@ -7,6 +7,7 @@ import android.util.Log;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
+import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -120,7 +121,7 @@ public class FakeUsers {
         vanessa.setNumConnections(0);
         setProfileImage(vanessa);
 
-        calendar.set(Calendar.DATE, 7);
+        calendar.set(Calendar.DATE, 8);
         vanessa.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(vanessa);
 
@@ -131,8 +132,9 @@ public class FakeUsers {
         gabriella.setNumConnections(393);
         setProfileImage(gabriella);
 
-        calendar.set(Calendar.MONTH, 8);
-        calendar.set(Calendar.DATE, 25);
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
+        calendar.set(Calendar.DATE, 27);
+        Log.e("FAKEUSERS", "Gabriella time: " + calendar.getTime().toString());
         gabriella.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(gabriella);
 
