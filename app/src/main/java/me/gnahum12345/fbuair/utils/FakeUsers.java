@@ -76,7 +76,7 @@ public class FakeUsers {
         setProfileImage(raul);
 
         Calendar calendar = Calendar.getInstance();
-        calendar.set(Calendar.DATE, 10);
+        calendar.set(Calendar.DATE, 11);
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
 
         SocialMedia facebookRaul = new SocialMedia();
@@ -111,15 +111,18 @@ public class FakeUsers {
         sanura.setNumConnections(102);
         setProfileImage(sanura);
 
+        calendar.set(Calendar.DATE, 9);
         sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(sanura);
 
         User vanessa = new User();
         vanessa.setId();
         vanessa.setName("Vanessa Yan");
-        vanessa.setPhoneNumber("4972934833");
         vanessa.setNumConnections(0);
         setProfileImage(vanessa);
+
+        addDefaultSM(vanessa, "LinkedIn");
+        addDefaultSM(vanessa, "Github", "vanessa78");
 
         calendar.set(Calendar.DATE, 8);
         vanessa.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
@@ -134,7 +137,6 @@ public class FakeUsers {
 
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
         calendar.set(Calendar.DATE, 27);
-        Log.e("FAKEUSERS", "Gabriella time: " + calendar.getTime().toString());
         gabriella.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(gabriella);
 
@@ -144,7 +146,7 @@ public class FakeUsers {
         martha.setNumConnections(49);
         setProfileImage(martha);
 
-        addDefaultSM(martha, "Facebook", martha.getName());
+        addDefaultSM(martha, "Facebook");
 
         martha.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(martha);
@@ -159,6 +161,7 @@ public class FakeUsers {
         addDefaultSM(emma, "Facebook");
         addDefaultSM(emma, "LinkedIn");
 
+        calendar.set(Calendar.DATE, 21);
         emma.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeUsersList.add(emma);
 

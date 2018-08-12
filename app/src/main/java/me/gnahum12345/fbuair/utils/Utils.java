@@ -87,7 +87,7 @@ public class Utils {
             cal.clear(Calendar.MILLISECOND);
             beginningOfDay = cal.getTime();
 
-            cal.set(Calendar.DATE, cal.get(Calendar.DATE - 6));
+            cal.set(Calendar.DATE, cal.get(Calendar.DATE) - 6);
             sixDaysAgo = cal.getTime();
 
             if (date.after(beginningOfDay)) {
