@@ -98,16 +98,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvSummary.setText(getSummary(user, isReceivedHistory, SUMMARY_LIMIT));
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
-        // set arrow based on sent/received history
-        int drawableId = isReceivedHistory ? R.drawable.ic_received_arrow : R.drawable.ic_sent_arrow;
-        viewHolder.ivArrow.setImageDrawable(context.getResources()
-                .getDrawable(drawableId, null));
-
         // set profile image and bring it to front
         viewHolder.ivCheck.setVisibility(View.INVISIBLE);
         viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(user.getProfileImage()));
         viewHolder.ivProfileImage.bringToFront();
-        viewHolder.ivArrow.bringToFront();
 
         resetAfterAnimation(viewHolder.ivProfileImage);
         resetAfterAnimation(viewHolder.ivCheck);
@@ -196,7 +190,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ImageView ivProfileImage;
         public TextView tvSummary;
         public ImageView ivCheck;
-        public ImageView ivArrow;
 
         ViewHolder(@NonNull View view) {
             super(view);
@@ -205,7 +198,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
             tvSummary = view.findViewById(R.id.tvSummary);
             ivCheck = view.findViewById(R.id.ivCheck);
-            ivArrow = view.findViewById(R.id.ivArrow);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

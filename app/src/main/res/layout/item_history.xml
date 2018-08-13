@@ -33,16 +33,6 @@
                 android:layout_width="@dimen/history_profile_image_size"
                 android:layout_height="@dimen/history_profile_image_size" />
 
-            <ImageView
-                android:id="@+id/ivArrow"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_marginStart="32dp"
-                android:layout_marginTop="32dp"
-                app:srcCompat="@drawable/ic_received_arrow" />
-
         </RelativeLayout>
 
         <LinearLayout
