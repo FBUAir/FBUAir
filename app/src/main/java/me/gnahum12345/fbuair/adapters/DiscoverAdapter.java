@@ -1,7 +1,6 @@
 package me.gnahum12345.fbuair.adapters;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
@@ -27,7 +26,6 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnProfileSentListener;
 import me.gnahum12345.fbuair.models.ProfileUser;
-import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getBitmapFromVectorDrawable;
@@ -138,7 +136,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onProfileSentListener.onProfileSent(finalProfileUser);
+                if (finalProfileUser != null) onProfileSentListener.onProfileSent(finalProfileUser);
                 if (MainActivity.SHOW_TOASTS) Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
                 ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
                 viewHolder.btnSend.startAnimation();

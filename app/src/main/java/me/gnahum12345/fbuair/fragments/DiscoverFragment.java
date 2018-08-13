@@ -114,9 +114,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener, On
                 populateAdapter();
             }
         });
-        ConnectionService.Endpoint e = new ConnectionService.Endpoint("Some id", "my name");
-        rvAdapter.put(e, new ProfileUser(getContext()));
-        rvAdapter.notifyDataSetChanged();
         mListener.addToListener(this);
         return view;
     }
@@ -267,7 +264,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener, On
             if (currentUser.isSendingEmail() || currentUser.isSendingPhone()) {
                 sentToUser.setPhoneNumber("1");
             }
-            for (SocialMedia socialMedia : currentUser.getSocialMedias()) {
+            for (SocialMedia socialMedia : currentUser.getSendingSocialMedias()) {
                 sentToUser.addSocialMedia(socialMedia);
             }
             MyUserManager.getInstance().addSentToUser(sentToUser);

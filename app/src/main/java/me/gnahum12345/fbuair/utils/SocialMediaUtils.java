@@ -86,8 +86,12 @@ public class SocialMediaUtils {
     }
 
     private static int getIndex(String target, String[] list) {
+        target = target.replaceAll("\\P{Print}","");
         for (int i = 0; i < list.length; i++) {
-            if (list[i] == target) return i;
+            String socialMediaName = list[i].replaceAll("\\P{Print}","");;
+            if (socialMediaName.equals(target)) {
+                return i;
+            }
         }
         throw new RuntimeException("SocialMediaUtils - Using getIndex on element not in list");
     }
