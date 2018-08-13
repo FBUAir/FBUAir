@@ -38,7 +38,7 @@ public class HistoryListFragment extends Fragment {
     OnRequestAddContact onAddContactClickedListener;
     OnFragmentChangeListener onFragmentChangeListener;
 
-    final static String ARG_IS_RECEIVED = "isReceivedHistory";
+    final static String ARG_IS_RECEIVED_HISTORY = "isReceivedHistory";
     boolean isReceivedHistory;
 
     public HistoryListFragment() {
@@ -51,7 +51,7 @@ public class HistoryListFragment extends Fragment {
         activity = getActivity();
 
         if (getArguments() != null) {
-            isReceivedHistory = getArguments().getBoolean(ARG_IS_RECEIVED);
+            isReceivedHistory = getArguments().getBoolean(ARG_IS_RECEIVED_HISTORY);
         }
 
         // initialize adapter, dataset, and linear manager
@@ -62,10 +62,10 @@ public class HistoryListFragment extends Fragment {
         onFragmentChangeListener = (OnFragmentChangeListener) context;
     }
 
-    public static HistoryListFragment newInstance(boolean isReceived) {
+    public static HistoryListFragment newInstance(boolean isReceivedHistory) {
         Bundle args = new Bundle();
         HistoryListFragment fragment = new HistoryListFragment();
-        args.putBoolean(ARG_IS_RECEIVED, isReceived);
+        args.putBoolean(ARG_IS_RECEIVED_HISTORY, isReceivedHistory);
         fragment.setArguments(args);
         return fragment;
     }

@@ -76,17 +76,6 @@ public class MyUserManager {
         userListeners.remove(listener);
     }
 
-    // add user without changing date (for fake users)
-    public void addFakeUsers(List<User> fakeUsers) {
-        User currentUser = tryToGetCurrentUser();
-        currentUser.setNumConnections(currentUser.getNumConnections() + fakeUsers.size());
-        for (User user : fakeUsers) {
-            currentUsers.put(user.getId(), user);
-        }
-        commitHistory();
-        commitCurrentUser(currentUser);
-    }
-
     public boolean addUser(User user, ConnectionService.Endpoint endpoint) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         String title;
@@ -111,10 +100,20 @@ public class MyUserManager {
         }
     }
 
+    public void addFakeUsers(List<User> fakeUsers) {
+        User currentUser = tryToGetCurrentUser();
+        currentUser.setNumConnections(currentUser.getNumConnections() + fakeUsers.size());
+        for (User user : fakeUsers) {
+            currentUsers.put(user.getId(), user);
+        }
+        commitHistory();
+        commitCurrentUser(currentUser);
+    }
+
     // adds user who you sent info to
-    public void addSentToUser(User user, boolean setTime) {
+    public void addSentToUser(User user) {
         // add to list
-        if (setTime) user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         sentToUsers.add(0, user);
 
         // convert sent-to users to json
@@ -130,7 +129,29 @@ public class MyUserManager {
         // commit to shared preferences
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(HISTORY_KEY, sentHistoryJSON.toString());
+        editor.putString(SENT_HISTORY_KEY, sentHistoryJSON.toString());
+        editor.apply();
+    }
+
+    // adds user who you sent info to
+    public void addFakeSentToUsers(List<User> users) {
+        // add to list
+        sentToUsers = users;
+
+        // convert sent-to users to json
+        JSONArray sentHistoryJSON = new JSONArray();
+        for (User sentToUser : sentToUsers) {
+            try {
+                sentHistoryJSON.put(User.toJson(sentToUser));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // commit to shared preferences
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SENT_HISTORY_KEY, sentHistoryJSON.toString());
         editor.apply();
     }
 

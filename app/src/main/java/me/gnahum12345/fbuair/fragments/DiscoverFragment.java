@@ -266,7 +266,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener, On
             for (SocialMedia socialMedia : currentUser.getSocialMedias()) {
                 sentToUser.addSocialMedia(socialMedia);
             }
-            MyUserManager.getInstance().addSentToUser(sentToUser, true);
+            MyUserManager.getInstance().addSentToUser(sentToUser);
         }
     }
 

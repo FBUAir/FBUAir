@@ -7,6 +7,7 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import me.gnahum12345.fbuair.models.SocialMedia;
@@ -17,8 +18,9 @@ import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 public class FakeUsers {
 
-    public List<User> fakeHistory = new ArrayList<>();
-    public List<User> fakeSentToHistory = new ArrayList<>();
+    List<User> fakeHistory = new ArrayList<>();
+    List<User> fakeSentToHistory = new ArrayList<>();
+    HashMap<String, Integer> userColorHashMap = new HashMap<String, Integer>();
 
     Context context;
 
@@ -219,7 +221,7 @@ public class FakeUsers {
         fakeSentToHistory.add(raul);
 
         User girum = new User();
-        raul.setName("Girum");
+        girum.setName("Girum");
         setProfileImage(girum);
 
         calendar.set(Calendar.DATE, 11);
@@ -288,17 +290,20 @@ public class FakeUsers {
     }*/
 
     // sets default profile image
-    void setProfileImage(User user) {
-        ColorGenerator generator = ColorGenerator.MATERIAL;
-        int color = generator.getRandomColor();
+    private void setProfileImage(User user) {
+        int color;
+        String name = user.getName();
+        if (userColorHashMap.containsKey(name)) color = userColorHashMap.get(name);
+        else color = ColorGenerator.MATERIAL.getRandomColor();
         TextDrawable drawable = TextDrawable.builder()
                 .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
                         color);
         user.setProfileImage(drawableToBitmap(drawable));
         user.setColor(color);
+        userColorHashMap.put(name, color);
     }
 
-    void addDefaultSM(User user, String socialMediaName, String username) {
+    private void addDefaultSM(User user, String socialMediaName, String username) {
         SocialMedia socialMedia = new SocialMedia();
         socialMedia.setName(socialMediaName);
         socialMedia.setUsername(username);
@@ -306,7 +311,7 @@ public class FakeUsers {
         user.addSocialMedia(socialMedia);
     }
 
-    void addDefaultSM(User user, String socialMediaName) {
+    private void addDefaultSM(User user, String socialMediaName) {
         SocialMedia socialMedia = new SocialMedia();
         socialMedia.setName(socialMediaName);
         socialMedia.setUsername(user.getName());

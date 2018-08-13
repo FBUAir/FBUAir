@@ -7,6 +7,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.ActionMode;
@@ -97,9 +98,17 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         viewHolder.tvSummary.setText(getSummary(user, isReceivedHistory, SUMMARY_LIMIT));
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
+        // set arrow based on sent/received history
+        int drawableId = isReceivedHistory ? R.drawable.ic_received_arrow : R.drawable.ic_sent_arrow;
+        viewHolder.ivArrow.setImageDrawable(context.getResources()
+                .getDrawable(drawableId, null));
+
         // set profile image and bring it to front
         viewHolder.ivCheck.setVisibility(View.INVISIBLE);
-        setProfileImage(user, viewHolder.ivProfileImage);
+        viewHolder.ivProfileImage.setImageBitmap(getCircularBitmap(user.getProfileImage()));
+        viewHolder.ivProfileImage.bringToFront();
+        viewHolder.ivArrow.bringToFront();
+
         resetAfterAnimation(viewHolder.ivProfileImage);
         resetAfterAnimation(viewHolder.ivCheck);
 
@@ -116,22 +125,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         if (multiSelectMode && position == firstSelectedPosition) {
             selectItem(user, viewHolder);
         }
-    }
-
-    // sets ivProfileImage to user's profile image and make it visible
-    private void setProfileImage(User user, ImageView iv) {
-        Bitmap bitmap = user.getProfileImage();
-        // generate fake profile images (real users should never have null)
-        if (bitmap == null) {
-            ColorGenerator generator = ColorGenerator.MATERIAL;
-            TextDrawable drawable = TextDrawable.builder()
-                    .buildRound(Character.toString(user.getName().toCharArray()[0]).toUpperCase(),
-                            generator.getRandomColor());
-            iv.setImageDrawable(drawable);
-        } else {
-            iv.setImageBitmap(getCircularBitmap(bitmap));
-        }
-        iv.bringToFront();
     }
 
     void resetAfterAnimation(View view) {
@@ -199,6 +192,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public ImageView ivProfileImage;
         public TextView tvSummary;
         public ImageView ivCheck;
+        public ImageView ivArrow;
 
         ViewHolder(@NonNull View view) {
             super(view);
@@ -207,6 +201,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             ivProfileImage = view.findViewById(R.id.ivProfileImage);
             tvSummary = view.findViewById(R.id.tvSummary);
             ivCheck = view.findViewById(R.id.ivCheck);
+            ivArrow = view.findViewById(R.id.ivArrow);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }

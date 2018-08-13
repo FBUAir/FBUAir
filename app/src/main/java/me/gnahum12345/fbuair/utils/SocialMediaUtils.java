@@ -97,7 +97,9 @@ public class SocialMediaUtils {
         StringBuilder stringBuilder = new StringBuilder();
 
         // calculate total number of sent over profiles/contact fields
-        boolean hasContactInfo = !user.getPhoneNumber().isEmpty() || !user.getPhoneNumber().isEmpty();
+        boolean hasContactInfo = false;
+        if (user.getPhoneNumber() != null) hasContactInfo = !user.getPhoneNumber().isEmpty();
+        if (!hasContactInfo && user.getEmail() != null) hasContactInfo = !user.getEmail().isEmpty();
         int total = 0;
         if (hasContactInfo) total++;
         total += user.getSocialMedias().size();
@@ -135,7 +137,7 @@ public class SocialMediaUtils {
             if (difference > 1) stringBuilder.append("s");
         }
 
-        String startString = isReceivedHistory ? "Sent you their " : "You sent your";
+        String startString = isReceivedHistory ? "Sent you their " : "You sent your ";
         stringBuilder.insert(0, startString).append(".");
         return stringBuilder.toString();
     }

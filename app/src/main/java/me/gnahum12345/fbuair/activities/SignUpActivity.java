@@ -228,6 +228,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         if (ADD_FAKE_USERS) {
             FakeUsers fakeUsers = new FakeUsers(this);
             userManager.addFakeUsers(fakeUsers.getFakeHistory());
+            userManager.addFakeSentToUsers(fakeUsers.getFakeSentToHistory());
         }
 
         // launch main activity

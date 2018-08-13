@@ -10,13 +10,9 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.transition.TransitionInflater;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +28,6 @@ import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
 import me.gnahum12345.fbuair.models.User;
-
-import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
 
 public class HistoryFragment extends Fragment implements UserListener,
@@ -54,8 +48,8 @@ public class HistoryFragment extends Fragment implements UserListener,
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     // fragments
-    HistoryListFragment outgoingFragment;
-    HistoryListFragment incomingFragment;
+    HistoryListFragment sentHistoryFragment;
+    HistoryListFragment receivedHistoryFragment;
     // adapter for viewpager
     PagerAdapter pagerAdapter;
 
@@ -71,10 +65,10 @@ public class HistoryFragment extends Fragment implements UserListener,
         onAddContactClickedListener = (OnRequestAddContact) context;
         onFragmentChangeListener = (OnFragmentChangeListener) context;
         // instantiate fragments and adapter
-        incomingFragment = HistoryListFragment.newInstance(true);
-        outgoingFragment = HistoryListFragment.newInstance(false);
-        fragments.add(incomingFragment);
-        fragments.add(outgoingFragment);
+        receivedHistoryFragment = HistoryListFragment.newInstance(true);
+        sentHistoryFragment = HistoryListFragment.newInstance(false);
+        fragments.add(receivedHistoryFragment);
+        fragments.add(sentHistoryFragment);
         pagerAdapter = new Adapter(getChildFragmentManager(), fragments);
     }
 
@@ -136,12 +130,12 @@ public class HistoryFragment extends Fragment implements UserListener,
 
     @Override
     public void userAdded(User user) {
-        outgoingFragment.populateHistory();
+        sentHistoryFragment.populateHistory();
     }
 
     @Override
     public void userRemoved(User user) {
-        incomingFragment.populateHistory();
+        receivedHistoryFragment.populateHistory();
     }
 
     class Adapter extends FragmentStatePagerAdapter {
