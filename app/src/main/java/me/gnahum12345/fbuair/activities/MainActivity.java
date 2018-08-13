@@ -694,4 +694,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             return fragments.size();
         }
     }
+
+    @Override
+    public void onProfileSent() {
+        historyFragment.profileSent();
+    }
 }

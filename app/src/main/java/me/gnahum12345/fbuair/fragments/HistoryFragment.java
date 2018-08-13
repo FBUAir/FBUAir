@@ -129,12 +129,17 @@ public class HistoryFragment extends Fragment implements UserListener,
 
     @Override
     public void userAdded(User user) {
-        sentHistoryFragment.populateHistory();
+        receivedHistoryFragment.populateHistory();
     }
 
     @Override
     public void userRemoved(User user) {
         receivedHistoryFragment.populateHistory();
+    }
+
+    @Override
+    public void profileSent() {
+        sentHistoryFragment.populateHistory();
     }
 
     class Adapter extends FragmentStatePagerAdapter {

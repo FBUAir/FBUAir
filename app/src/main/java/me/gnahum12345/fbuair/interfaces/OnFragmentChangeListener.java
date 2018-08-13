@@ -15,4 +15,5 @@ public interface OnFragmentChangeListener {
     void setBottomNavigationVisible(boolean flag);
     void setActionModeVisible(boolean flag, @Nullable ActionMode.Callback callback);
     void hideProgressBar();
+    void onProfileSent();
 }

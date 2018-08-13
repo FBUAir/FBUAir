@@ -15,4 +15,9 @@ public interface UserListener {
      * This method will be used if a user has been deleted.
      */
     void userRemoved(User user);
+
+    /**
+     * This method will be used when the current user sends their profile to someone.
+     */
+    void profileSent();
 }
