@@ -643,7 +643,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     String msg = "Sending Failed " + ("\ud83d\ude22");
-                    ConnectionService.QualifiedToast.makeText
+                    if (SHOW_TOASTS) Toast.makeText
                             (MainActivity.this,
                                     ConnectionService.toColor(msg, getResources()
                                             .getColor(R.color.log_error)), Toast.LENGTH_SHORT)

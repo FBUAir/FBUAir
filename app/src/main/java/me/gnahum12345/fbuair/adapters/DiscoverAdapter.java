@@ -30,6 +30,7 @@ import me.gnahum12345.fbuair.models.ProfileUser;
 import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
+import static me.gnahum12345.fbuair.utils.ImageUtils.getBitmapFromVectorDrawable;
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {
@@ -138,7 +139,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
             @Override
             public void onClick(View view) {
                 onProfileSentListener.onProfileSent(finalProfileUser);
-                ConnectionService.QualifiedToast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
+                if (MainActivity.SHOW_TOASTS) Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
                 ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
                 viewHolder.btnSend.startAnimation();
                 new Handler().postDelayed(new Runnable() {
@@ -146,8 +147,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                     public void run() {
                         viewHolder.btnSend.doneLoadingAnimation
                                 (ContextCompat.getColor(mContext, R.color.green),
-                                        BitmapFactory.decodeResource(mContext.getResources(),
-                                                R.drawable.ic_tick));
+                                        getBitmapFromVectorDrawable(mContext, R.drawable.ic_tick));
                     }
                 }, 2000);
             }

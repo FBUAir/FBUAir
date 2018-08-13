@@ -628,7 +628,9 @@ public class ConnectionService extends Service {
      * Called when someone has connected to us. Override this method to act on the event.
      */
     protected void onEndpointConnected(Endpoint endpoint) {
-        QualifiedToast.makeText(this, this.getString(R.string.toast_connected, endpoint.getName()), QualifiedToast.LENGTH_SHORT).show();
+        if (MainActivity.SHOW_TOASTS) {
+            if (MainActivity.SHOW_TOASTS) Toast.makeText(this, this.getString(R.string.toast_connected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        }
         sendProfileUser(endpoint);
         updateListenersEndpoint(endpoint, true);
     }
@@ -655,7 +657,9 @@ public class ConnectionService extends Service {
      * Called when someone has disconnected. Override this method to act on the event.
      */
     protected void onEndpointDisconnected(Endpoint endpoint) {
-        QualifiedToast.makeText(mContext, mContext.getString(R.string.toast_disconnected, endpoint.getName()), QualifiedToast.LENGTH_SHORT).show();
+        if (MainActivity.SHOW_TOASTS){
+            if (MainActivity.SHOW_TOASTS) Toast.makeText(mContext, mContext.getString(R.string.toast_disconnected, endpoint.getName()), Toast.LENGTH_SHORT).show();
+        }
         //TODO update listeners.
         updateListenersEndpoint(endpoint, false);
         if (getConnectedEndpoints().isEmpty()) {
@@ -717,18 +721,18 @@ public class ConnectionService extends Service {
      * @param payload  The data.
      */
     protected void onReceive(Endpoint endpoint, Payload payload) {
-        QualifiedToast.makeText(this, "I am on the received side", QualifiedToast.LENGTH_SHORT).show();
+        if (MainActivity.SHOW_TOASTS) Toast.makeText(this, "I am on the received side", Toast.LENGTH_SHORT).show();
 
         if (payload.getType() == Payload.Type.FILE) {
             incomingPayloads.put(endpoint.id, payload);
-            QualifiedToast.makeText(this, "I received a file...", QualifiedToast.LENGTH_SHORT).show();
+            if (MainActivity.SHOW_TOASTS) Toast.makeText(this, "I received a file...", Toast.LENGTH_SHORT).show();
         }
 
         if (payload.getType() == Payload.Type.BYTES) {
             byte[] b = payload.asBytes();
             String content = new String(b);
             logD(content);
-            QualifiedToast.makeText(this, content, QualifiedToast.LENGTH_SHORT).show();
+            if (MainActivity.SHOW_TOASTS) Toast.makeText(this, content, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -868,7 +872,7 @@ public class ConnectionService extends Service {
                                                     "onEndpointFound(endpointId=%s, serviceId=%s, endpointName=%s)",
                                                     endpointId, info.getServiceId(), info.getEndpointName()));
 
-                                    QualifiedToast.makeText(ConnectionService.this, "This is a toast when i found a user", QualifiedToast.LENGTH_SHORT).show();
+                                    if (MainActivity.SHOW_TOASTS) Toast.makeText(ConnectionService.this, "This is a toast when i found a user", Toast.LENGTH_SHORT).show();
 
                                     if (getServiceId().equals(info.getServiceId())) {
                                         Endpoint endpoint = new Endpoint(endpointId, info.getEndpointName());
@@ -1087,7 +1091,7 @@ public class ConnectionService extends Service {
 
     private void appendToLogs(CharSequence msg) {
         if (MainActivity.SHOW_TOASTS) {
-            QualifiedToast.makeText(this, msg, QualifiedToast.LENGTH_SHORT).show();
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -1196,16 +1200,4 @@ public class ConnectionService extends Service {
             }
         }
     }
-
-    public class QualifiedToast extends Toast {
-        @Override
-        public void show() {
-            if (MainActivity.SHOW_TOASTS) super.show();
-        }
-
-        public QualifiedToast(Context context) {
-            super(context);
-        }
-    }
-
 }
