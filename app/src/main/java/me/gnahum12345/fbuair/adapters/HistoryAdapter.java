@@ -121,7 +121,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-    void resetAfterAnimation(View view) {
+    private void resetAfterAnimation(View view) {
         view.setAlpha(1.0f);
         view.setRotationY(0.0f);
     }
@@ -179,10 +179,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         return historyFilter;
     }
 
-    public void clearFilter() {
-
-    }
-
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
 
         public TextView tvName;
@@ -191,13 +187,13 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         public TextView tvSummary;
         public ImageView ivCheck;
 
-        ViewHolder(@NonNull View view) {
-            super(view);
-            tvName = view.findViewById(R.id.tvName);
-            tvTime = view.findViewById(R.id.tvTime);
-            ivProfileImage = view.findViewById(R.id.ivProfileImage);
-            tvSummary = view.findViewById(R.id.tvSummary);
-            ivCheck = view.findViewById(R.id.ivCheck);
+        ViewHolder(@NonNull View itemView) {
+            super(itemView);
+            tvName = itemView.findViewById(R.id.tvName);
+            tvTime = itemView.findViewById(R.id.tvTime);
+            ivProfileImage = itemView.findViewById(R.id.ivProfileImage);
+            tvSummary = itemView.findViewById(R.id.tvSummary);
+            ivCheck = itemView.findViewById(R.id.ivCheck);
             itemView.setOnClickListener(this);
             itemView.setOnLongClickListener(this);
         }
