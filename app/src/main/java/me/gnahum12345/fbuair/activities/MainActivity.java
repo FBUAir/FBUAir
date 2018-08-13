@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.databinding.ActivityMainBinding;
 import me.gnahum12345.fbuair.fragments.DiscoverFragment;
 import me.gnahum12345.fbuair.fragments.HistoryFragment;
@@ -182,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
             bind.toolbarImage.setImageDrawable(d);
         }
     }
+
 
     private void setUpConnectionService() {
         Intent intent = new Intent(MainActivity.this, ConnectionService.class);

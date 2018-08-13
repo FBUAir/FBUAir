@@ -14,6 +14,7 @@ import android.view.Window;
 
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.adapters.ConfigureAdapter;
+import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.databinding.FragmentConfigureBinding;
 
 public class ConfigureFragment extends DialogFragment {
@@ -48,8 +49,12 @@ public class ConfigureFragment extends DialogFragment {
         bind.gvProfiles.setAdapter(adapter);
 
         // set dismiss listeners to submit and cancel buttons
-        View.OnClickListener dismissListener = view -> dismiss();
-        bind.btDone.setOnClickListener(dismissListener);
+        bind.btDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dismiss();
+            }
+        });
 
         return bind.getRoot();
     }
