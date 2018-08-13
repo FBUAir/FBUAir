@@ -47,6 +47,7 @@ public class HistoryFragment extends Fragment implements UserListener,
     // fragments
     HistoryListFragment sentHistoryFragment;
     HistoryListFragment receivedHistoryFragment;
+    boolean searchEdited = false;
     // adapter for viewpager
     PagerAdapter pagerAdapter;
 
@@ -88,28 +89,10 @@ public class HistoryFragment extends Fragment implements UserListener,
         svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus) {
+                if (hasFocus || !svSearch.getQuery().toString().isEmpty()) {
                     tvMessage.setText("No results found.");
                 }
                 else tvMessage.setText("Nothing new yet.");
-            }
-        });
-
-        // end search if tab is changed
-        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-                svSearch.setQuery("", true);
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                svSearch.setQuery("", true);
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-                svSearch.setQuery("", true);
             }
         });
     }
@@ -124,20 +107,18 @@ public class HistoryFragment extends Fragment implements UserListener,
     /* implementations for searching through history */
     @Override
     public boolean onQueryTextSubmit(String query) {
+        svSearch.clearFocus();
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
-        if (getCurrentFragment().historyAdapter == null) {
+        if (receivedHistoryFragment.historyAdapter == null || sentHistoryFragment.historyAdapter == null) {
             return false;
         }
-        getCurrentFragment().historyAdapter.getFilter().filter(query);
+        receivedHistoryFragment.historyAdapter.getFilter().filter(query);
+        sentHistoryFragment.historyAdapter.getFilter().filter(query);
         return true;
-    }
-
-    HistoryListFragment getCurrentFragment() {
-        return (HistoryListFragment)fragments.get(viewPager.getCurrentItem());
     }
 
     @Override
