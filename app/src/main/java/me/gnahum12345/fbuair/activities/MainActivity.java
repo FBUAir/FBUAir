@@ -436,7 +436,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         mUserManager.clearNotification();
         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
         setBottomNavigationVisible(true);
-        historyFragment.populateHistory();
+        //historyFragment.populateHistory();
 
     }
 

@@ -308,7 +308,6 @@ public class User implements Comparable {
         }
     }
 
-
     public static User fromJson(JSONObject json){
         User user = new User();
         try {

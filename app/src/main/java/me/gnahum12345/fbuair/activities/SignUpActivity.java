@@ -69,7 +69,6 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
-    //TODO - HANDLE NOT HAVING SMS PERMISSIONS, FACEBOOK LOGIN NOT WORKING FOR NON-TEST PEOPLE
 
     // user signing up
     public User user;

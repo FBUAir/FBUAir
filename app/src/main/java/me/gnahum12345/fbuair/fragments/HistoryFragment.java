@@ -7,7 +7,13 @@ import android.databinding.adapters.SearchViewBindingAdapter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,20 +24,14 @@ import android.view.ViewGroup;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import me.gnahum12345.fbuair.R;
-import me.gnahum12345.fbuair.adapters.HistoryAdapter;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.OnRequestAddContact;
 import me.gnahum12345.fbuair.interfaces.UserListener;
-import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.User;
-import me.gnahum12345.fbuair.utils.ContactUtils;
-import me.gnahum12345.fbuair.utils.FakeUsers;
 
 import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 
@@ -39,18 +39,25 @@ import static me.gnahum12345.fbuair.utils.Utils.hideSoftKeyboard;
 public class HistoryFragment extends Fragment implements UserListener,
         SearchViewBindingAdapter.OnQueryTextSubmit, SearchView.OnQueryTextListener {
 
-    public HistoryAdapter historyAdapter;
-    ArrayList<User> history = new ArrayList<>();
-    RecyclerView rvHistory;
     Activity activity;
-    SwipeRefreshLayout swipeContainer;
     SearchView svSearch;
     TextView tvMessage;
-    LinearLayoutManager linearLayoutManager;
+    TabLayout tabLayout;
+    ViewPager viewPager;
 
     OnRequestAddContact onAddContactClickedListener;
     OnFragmentChangeListener onFragmentChangeListener;
 
+    // fragment position aliases
+    private final static int INCOMING_HISTORY = 0;
+    private final static int OUTGOING_HISTORY = 1;
+    // The list of fragments used in the view pager
+    private final List<Fragment> fragments = new ArrayList<>();
+    // fragments
+    HistoryListFragment outgoingFragment;
+    HistoryListFragment incomingFragment;
+    // adapter for viewpager
+    PagerAdapter pagerAdapter;
 
     public HistoryFragment() {
         // Required empty public constructor
@@ -60,12 +67,15 @@ public class HistoryFragment extends Fragment implements UserListener,
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = getActivity();
-        // initialize adapter, dataset, and linear manager
-        history = new ArrayList<>();
-        historyAdapter = new HistoryAdapter(activity, history);
-        linearLayoutManager = new LinearLayoutManager(activity);
+        //get listeners
         onAddContactClickedListener = (OnRequestAddContact) context;
         onFragmentChangeListener = (OnFragmentChangeListener) context;
+        // instantiate fragments and adapter
+        incomingFragment = HistoryListFragment.newInstance(true);
+        outgoingFragment = HistoryListFragment.newInstance(false);
+        fragments.add(incomingFragment);
+        fragments.add(outgoingFragment);
+        pagerAdapter = new Adapter(getChildFragmentManager(), fragments);
     }
 
     @Override
@@ -74,39 +84,17 @@ public class HistoryFragment extends Fragment implements UserListener,
 
         svSearch = view.findViewById(R.id.svSearch);
         tvMessage = view.findViewById(R.id.tvMessage);
+        tabLayout = view.findViewById(R.id.tabLayout);
+        viewPager = view.findViewById(R.id.viewPager);
 
-        // configure swipe container
-        swipeContainer = view.findViewById(R.id.swipeContainer);
-        swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                if (historyAdapter.multiSelectMode) {
-                    swipeContainer.setRefreshing(false);
-                    return;
-                }
-                history.clear();
-                historyAdapter.clear();
-                populateHistory();
-                swipeContainer.setRefreshing(false);
-            }
-        });
-
-        // Configure the refreshing colors
-        swipeContainer.setColorSchemeResources(android.R.color.holo_blue_bright,
-                android.R.color.holo_green_light,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-
-        // attach adapter and layout manager
-        rvHistory = view.findViewById(R.id.rvHistory);
-        rvHistory.setAdapter(historyAdapter);
-        rvHistory.setLayoutManager(new LinearLayoutManager(activity));
+        viewPager.setAdapter(pagerAdapter);
+        tabLayout.setupWithViewPager(viewPager);
 
         SearchManager searchManager = (SearchManager) this.activity.getSystemService(Context.SEARCH_SERVICE);
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         svSearch.setOnQueryTextListener(this);
 
-        svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+/*        svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
                 if (hasFocus && historyAdapter.getItemCount() != 0) {
@@ -114,10 +102,7 @@ public class HistoryFragment extends Fragment implements UserListener,
                 }
                 else tvMessage.setText("Nothing new yet.");
             }
-        });
-
-        // populate recycler view with history from shared preferences
-        populateHistory();
+        });*/
     }
 
     @Override
@@ -125,30 +110,6 @@ public class HistoryFragment extends Fragment implements UserListener,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_history, container, false);
-    }
-
-    // populates recycler view with history from shared preferences
-    public void populateHistory() {
-        clearHistoryList();
-        List<User> users = MyUserManager.getInstance().getCurrHistory();
-        history.addAll(users);
-        if (historyAdapter != null) {
-            historyAdapter.notifyDataSetChanged();
-        }
-    }
-
-    private void clearHistoryList() {
-        history.clear();
-    }
-
-    @Override
-    public void userAdded(User user) {
-        populateHistory();
-    }
-
-    @Override
-    public void userRemoved(User user) {
-        populateHistory();
     }
 
     /* implementations for searching through history */
@@ -160,10 +121,10 @@ public class HistoryFragment extends Fragment implements UserListener,
 
     @Override
     public boolean onQueryTextChange(String query) {
-        if (historyAdapter == null) {
+ /*       if (historyAdapter == null) {
             return false;
         }
-        historyAdapter.getFilter().filter(query);
+        historyAdapter.getFilter().filter(query);*/
         return true;
     }
 
@@ -173,4 +134,41 @@ public class HistoryFragment extends Fragment implements UserListener,
         setSharedElementEnterTransition(TransitionInflater.from(getContext()).inflateTransition(android.R.transition.move));
     }
 
+    @Override
+    public void userAdded(User user) {
+        outgoingFragment.populateHistory();
+    }
+
+    @Override
+    public void userRemoved(User user) {
+        incomingFragment.populateHistory();
+    }
+
+    class Adapter extends FragmentStatePagerAdapter {
+
+        // Title of the tabs
+        private String title[] = {"Received", "Sent"};
+        // The list of fragments which we are going to be displaying in the view pager.
+        private final List<Fragment> fragments;
+
+        public Adapter(FragmentManager fm, List<Fragment> fragments) {
+            super(fm);
+            this.fragments = fragments;
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return fragments.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return title.length;
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return title[position];
+        }
+    }
 }

@@ -35,6 +35,7 @@ public class Utils {
     public static final String PREFERENCES_FILE_NAME_KEY = "MyPrefs";
     public static final String CURRENT_USER_KEY = "current_user";
     public static final String HISTORY_KEY = "history";
+    public static final String SENT_HISTORY_KEY = "historyIncoming";
 
     // validity checkers for sign up
     public static boolean isValidEmail(CharSequence email) {

@@ -22,10 +22,13 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.UserListener;
+import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.models.SentToUser;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
 import static me.gnahum12345.fbuair.utils.Utils.CURRENT_USER_KEY;
+import static me.gnahum12345.fbuair.utils.Utils.SENT_HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.HISTORY_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
@@ -35,6 +38,7 @@ public class MyUserManager {
     private static final MyUserManager ourInstance = new MyUserManager();
     private static final String TAG = "UserManagerTAG";
     Map<String, User> currentUsers;
+    List<SentToUser> sentToUsers;
     ArrayList<UserListener> userListeners;
     int count = 0;
     private Context mContext;
@@ -45,6 +49,7 @@ public class MyUserManager {
 
     private MyUserManager() {
         currentUsers = new TreeMap<>();
+        sentToUsers = new ArrayList<>();
         userListeners = new ArrayList<UserListener>();
     }
 
@@ -71,18 +76,6 @@ public class MyUserManager {
 
     public void removeListener(UserListener listener) {
         userListeners.remove(listener);
-    }
-
-    public boolean addUser(User user) {
-        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
-        runBadgeNotification();
-        currentUsers.put(user.getId(), user);
-        if (commitHistory()) {
-            notifyListeners(user, true);
-            return true;
-        } else {
-            return false;
-        }
     }
 
     // add user without changing date (for fake users)
@@ -119,6 +112,25 @@ public class MyUserManager {
             return false;
         }
     }
+
+    // adds user who you sent info to
+    public void addSentToUser(SentToUser user) {
+        // add to list
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        sentToUsers.add(0, user);
+
+        // convert to json
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        JSONArray newHistoryArray = new JSONArray();
+
+        // commit to shared preferences
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(HISTORY_KEY, newHistoryArray.toString());
+        editor.commit();
+
+    }
+
+    // adds user who you sent info to without changing date (for adding fake users)
 
 
     private void runBadgeNotification() {
@@ -188,11 +200,6 @@ public class MyUserManager {
         }
     }
 
-    public void clearHistory() {
-        currentUsers.clear();
-        commitHistory();
-    }
-
     public boolean commitHistory() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
@@ -213,13 +220,13 @@ public class MyUserManager {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(CURRENT_USER_KEY, null);
         editor.putString(HISTORY_KEY, null);
+        editor.putString(SENT_HISTORY_KEY, null);
         currentUsers.clear();
         editor.commit();
     }
 
     private JSONArray getJSONArray() {
         JSONArray jArr = new JSONArray();
-
         for (User u : currentUsers.values()) {
             try {
                 jArr.put(User.toJson(u));
@@ -228,15 +235,15 @@ public class MyUserManager {
                 Log.e(TAG, String.format("getJSONArray: User {%s} failed to convert to JSON", u.toString()), e);
             }
         }
-
         return jArr;
     }
 
     public void loadContacts() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
+        // load history of received users
         String historyArrayString = sharedPreferences.getString(HISTORY_KEY, null);
         if (historyArrayString != null) {
-            JSONArray jsonArr = new JSONArray();
+            JSONArray jsonArr;
             try {
                 jsonArr = new JSONArray(historyArrayString);
             } catch (JSONException e) {
@@ -253,8 +260,27 @@ public class MyUserManager {
                 }
             }
         }
+        // load history of sent to users
+        String historySentArrayString = sharedPreferences.getString(SENT_HISTORY_KEY, null);
+        if (historySentArrayString != null) {
+            JSONArray jsonArr;
+            try {
+                jsonArr = new JSONArray(historySentArrayString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+                return;
+            }
+            for (int i = 0; i < jsonArr.length(); i++) {
+                try {
+                    JSONObject poUser = jsonArr.getJSONObject(i);
+                    SentToUser user = SentToUser.fromJson(poUser);
+                    sentToUsers.add(user);
+                } catch (JSONException e) {
+                    Log.e(TAG, String.format("loadContacts: SENTTOUSER={%d} cannot be created.", i), e);
+                }
+            }
+        }
     }
-
 
     public List<User> getCurrHistory() {
         ArrayList<User> users = new ArrayList<>(currentUsers.values());

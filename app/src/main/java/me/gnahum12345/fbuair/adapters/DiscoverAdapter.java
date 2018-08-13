@@ -26,6 +26,7 @@ import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
@@ -133,7 +134,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
+                ConnectionService.QualifiedToast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
                 ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
                 viewHolder.btnSend.startAnimation();
                 new Handler().postDelayed(new Runnable() {
