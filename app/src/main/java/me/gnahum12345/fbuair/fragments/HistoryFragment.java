@@ -42,9 +42,6 @@ public class HistoryFragment extends Fragment implements UserListener,
     OnRequestAddContact onAddContactClickedListener;
     OnFragmentChangeListener onFragmentChangeListener;
 
-    // fragment position aliases
-    private final static int INCOMING_HISTORY = 0;
-    private final static int OUTGOING_HISTORY = 1;
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     // fragments
@@ -88,15 +85,33 @@ public class HistoryFragment extends Fragment implements UserListener,
         svSearch.setSearchableInfo(searchManager.getSearchableInfo(activity.getComponentName()));
         svSearch.setOnQueryTextListener(this);
 
-/*        svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
+        svSearch.setOnQueryTextFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
             public void onFocusChange(View view, boolean hasFocus) {
-                if (hasFocus && historyAdapter.getItemCount() != 0) {
+                if (hasFocus) {
                     tvMessage.setText("No results found.");
                 }
                 else tvMessage.setText("Nothing new yet.");
             }
-        });*/
+        });
+
+        // end search if tab is changed
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+                svSearch.setQuery("", true);
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                svSearch.setQuery("", true);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+                svSearch.setQuery("", true);
+            }
+        });
     }
 
     @Override
@@ -109,17 +124,20 @@ public class HistoryFragment extends Fragment implements UserListener,
     /* implementations for searching through history */
     @Override
     public boolean onQueryTextSubmit(String query) {
-        //hideSoftKeyboard(activity);
         return true;
     }
 
     @Override
     public boolean onQueryTextChange(String query) {
- /*       if (historyAdapter == null) {
+        if (getCurrentFragment().historyAdapter == null) {
             return false;
         }
-        historyAdapter.getFilter().filter(query);*/
+        getCurrentFragment().historyAdapter.getFilter().filter(query);
         return true;
+    }
+
+    HistoryListFragment getCurrentFragment() {
+        return (HistoryListFragment)fragments.get(viewPager.getCurrentItem());
     }
 
     @Override
