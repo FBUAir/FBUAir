@@ -22,8 +22,6 @@ import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.callbacks.MyLifecycleHandler;
 import me.gnahum12345.fbuair.interfaces.OnFragmentChangeListener;
 import me.gnahum12345.fbuair.interfaces.UserListener;
-import me.gnahum12345.fbuair.models.ProfileUser;
-import me.gnahum12345.fbuair.models.SentToUser;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
@@ -38,7 +36,7 @@ public class MyUserManager {
     private static final MyUserManager ourInstance = new MyUserManager();
     private static final String TAG = "UserManagerTAG";
     Map<String, User> currentUsers;
-    List<SentToUser> sentToUsers;
+    List<User> sentToUsers;
     ArrayList<UserListener> userListeners;
     int count = 0;
     private Context mContext;
@@ -114,16 +112,16 @@ public class MyUserManager {
     }
 
     // adds user who you sent info to
-    public void addSentToUser(SentToUser user, boolean setTime) {
+    public void addSentToUser(User user, boolean setTime) {
         // add to list
         if (setTime) user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         sentToUsers.add(0, user);
 
         // convert sent-to users to json
         JSONArray sentHistoryJSON = new JSONArray();
-        for (SentToUser sentToUser : sentToUsers) {
+        for (User sentToUser : sentToUsers) {
             try {
-                sentHistoryJSON.put(SentToUser.toJson(sentToUser));
+                sentHistoryJSON.put(User.toJson(sentToUser));
             } catch (JSONException e) {
                 e.printStackTrace();
             }
@@ -275,7 +273,7 @@ public class MyUserManager {
             for (int i = 0; i < jsonArr.length(); i++) {
                 try {
                     JSONObject poUser = jsonArr.getJSONObject(i);
-                    SentToUser user = SentToUser.fromJson(poUser);
+                    User user = User.fromJson(poUser);
                     sentToUsers.add(user);
                 } catch (JSONException e) {
                     Log.e(TAG, String.format("loadContacts: SENTTOUSER={%d} cannot be created.", i), e);
@@ -296,11 +294,7 @@ public class MyUserManager {
     }
 
     public List<User> getSentToHistory() {
-        List<User> users = new ArrayList<>();
-        for (SentToUser sentToUser : sentToUsers) {
-            users.add(SentToUser.toUser(sentToUser));
-        }
-        return users;
+        return sentToUsers;
     }
 
     public User tryToGetCurrentUser() {

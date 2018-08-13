@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
-import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -27,9 +26,7 @@ import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.interfaces.OnProfileSentListener;
-import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
-import me.gnahum12345.fbuair.models.SentToUser;
 import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 

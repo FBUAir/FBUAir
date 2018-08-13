@@ -61,7 +61,6 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         }
     }
 
-
     public HistoryAdapter(Context context, List<User> history, boolean isReceivedHistory) {
         this.history = history;
         this.filteredHistory = history;
@@ -218,7 +217,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
             User user = filteredHistory.get(getAdapterPosition());
             if (multiSelectMode) {
                 selectItem(user, this);
-            } else {
+            } else if (isReceivedHistory) {
                 onFragmentChangeListener.launchDetails(user.getId(),view);
             }
         }

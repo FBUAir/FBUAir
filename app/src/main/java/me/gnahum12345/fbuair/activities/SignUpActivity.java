@@ -16,9 +16,6 @@ import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -230,7 +227,7 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
         // set fake history
         if (ADD_FAKE_USERS) {
             FakeUsers fakeUsers = new FakeUsers(this);
-            userManager.addFakeUsers(fakeUsers.getFakeUsersList());
+            userManager.addFakeUsers(fakeUsers.getFakeHistory());
         }
 
         // launch main activity

@@ -1,44 +1,42 @@
 package me.gnahum12345.fbuair.utils;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
-import android.util.Log;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
-import java.time.DayOfWeek;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
-import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
-import me.gnahum12345.fbuair.managers.MyUserManager;
-
-import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
 public class FakeUsers {
 
-    public List<User> fakeUsersList = new ArrayList<>();
+    public List<User> fakeHistory = new ArrayList<>();
+    public List<User> fakeSentToHistory = new ArrayList<>();
 
     Context context;
 
     public FakeUsers(Context context) {
         this.context = context;
-        setUserInfo();
+        setFakeHistory();
+        setFakeSentToHistory();
     }
 
-    public List<User> getFakeUsersList() {
-        return fakeUsersList;
+    public List<User> getFakeHistory() {
+        return fakeHistory;
     }
 
-    private void setUserInfo() {
+    public List<User> getFakeSentToHistory() {
+        return fakeSentToHistory;
+    }
+
+    private void setFakeHistory() {
         User katherine = new User();
         katherine.setId();
         katherine.setName("Katherine Lazar");
@@ -47,7 +45,9 @@ public class FakeUsers {
         katherine.setEmail("katherinelazar@gmail.com");
         katherine.setNumConnections(38);
         setProfileImage(katherine);
-        katherine.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+
+        Calendar calendar = Calendar.getInstance();
+        katherine.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
 
         SocialMedia facebookKatherine = new SocialMedia();
         facebookKatherine.setName("Facebook");
@@ -65,7 +65,7 @@ public class FakeUsers {
         linkedInKatherine.setUsername(katherine.getName());
         linkedInKatherine.setProfileUrl("https://www.linkedin.com/in/katherineelenalazar/");
         katherine.addSocialMedia(linkedInKatherine);
-        fakeUsersList.add(katherine);
+        fakeHistory.add(katherine);
 
         User raul = new User();
         raul.setId();
@@ -75,7 +75,6 @@ public class FakeUsers {
         raul.setNumConnections(76);
         setProfileImage(raul);
 
-        Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.DATE, 11);
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
 
@@ -100,7 +99,7 @@ public class FakeUsers {
         soundcloudRaul.setUsername("Raul GD");
         soundcloudRaul.setProfileUrl("https://soundcloud.com/raul-gd");
         raul.addSocialMedia(soundcloudRaul);
-        fakeUsersList.add(raul);
+        fakeHistory.add(raul);
 
         User sanura = new User();
         sanura.setId();
@@ -113,7 +112,7 @@ public class FakeUsers {
 
         calendar.set(Calendar.DATE, 9);
         sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(sanura);
+        fakeHistory.add(sanura);
 
         User vanessa = new User();
         vanessa.setId();
@@ -126,7 +125,7 @@ public class FakeUsers {
 
         calendar.set(Calendar.DATE, 8);
         vanessa.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(vanessa);
+        fakeHistory.add(vanessa);
 
         User gabriella = new User();
         gabriella.setId();
@@ -138,7 +137,7 @@ public class FakeUsers {
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
         calendar.set(Calendar.DATE, 27);
         gabriella.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(gabriella);
+        fakeHistory.add(gabriella);
 
         User martha = new User();
         martha.setId();
@@ -149,7 +148,7 @@ public class FakeUsers {
         addDefaultSM(martha, "Facebook");
 
         martha.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(martha);
+        fakeHistory.add(martha);
 
         User emma = new User();
         emma.setId();
@@ -163,7 +162,7 @@ public class FakeUsers {
 
         calendar.set(Calendar.DATE, 21);
         emma.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(emma);
+        fakeHistory.add(emma);
 
         User jacob = new User();
         jacob.setId();
@@ -175,7 +174,7 @@ public class FakeUsers {
 
         calendar.set(Calendar.DATE, 12);
         jacob.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(jacob);
+        fakeHistory.add(jacob);
 
         User david = new User();
         david.setId();
@@ -188,7 +187,98 @@ public class FakeUsers {
 
         calendar.set(Calendar.DATE, 10);
         david.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
-        fakeUsersList.add(david);
+        fakeHistory.add(david);
+    }
+
+    // (doesn't actually matter what's in the social media or phone numbers)
+    private void setFakeSentToHistory() {
+        User katherine = new User();
+        katherine.setName("Katherine Lazar");
+        katherine.setPhoneNumber("1");
+        setProfileImage(katherine);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE) - 5);
+        katherine.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+
+        addDefaultSM(katherine, "LinkedIn");
+        addDefaultSM(katherine, "Facebook");
+        addDefaultSM(katherine, "Github");
+        fakeSentToHistory.add(katherine);
+
+        User raul = new User();
+        raul.setName("Raul Dagir");
+        raul.setPhoneNumber("1");
+        setProfileImage(raul);
+
+        calendar.set(Calendar.DATE, 11);
+        raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+
+        addDefaultSM(raul, "Facebook");
+        addDefaultSM(raul, "Instagram");
+        fakeSentToHistory.add(raul);
+
+        User girum = new User();
+        raul.setName("Girum");
+        setProfileImage(girum);
+
+        calendar.set(Calendar.DATE, 11);
+        girum.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+
+        addDefaultSM(girum, "Twitter");
+        fakeSentToHistory.add(girum);
+
+        User sanura = new User();
+        sanura.setName("Sanura N’Jaka");
+        sanura.setPhoneNumber("1");
+        setProfileImage(sanura);
+
+        calendar.set(Calendar.DATE, 9);
+        sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeSentToHistory.add(sanura);
+
+        User nneka = new User();
+        nneka.setName("Nneka Okolo");
+        nneka.setPhoneNumber("1");
+        setProfileImage(nneka);
+
+        addDefaultSM(nneka, "Twitter");
+        addDefaultSM(nneka, "Instagram");
+
+        calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
+        calendar.set(Calendar.DATE, 24);
+        nneka.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeSentToHistory.add(nneka);
+
+        User leonardo = new User();
+        leonardo.setName("Leonardo");
+        setProfileImage(leonardo);
+
+        addDefaultSM(leonardo, "Instagram");
+
+        calendar.set(Calendar.DATE, 18);
+        leonardo.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeSentToHistory.add(leonardo);
+
+        User jacob = new User();
+        jacob.setName("Jacob Snyder");
+        setProfileImage(jacob);
+
+        addDefaultSM(jacob, "Snapchat");
+
+        calendar.set(Calendar.DATE, 12);
+        jacob.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeSentToHistory.add(jacob);
+
+        User david = new User();
+        david.setName("David Mindlin");
+        setProfileImage(david);
+
+        addDefaultSM(david, "WhatsApp");
+
+        calendar.set(Calendar.DATE, 10);
+        david.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
+        fakeSentToHistory.add(david);
     }
 
 /*    // sets profile image from resource drawable id

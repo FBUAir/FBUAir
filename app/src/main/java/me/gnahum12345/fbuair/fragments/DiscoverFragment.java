@@ -31,7 +31,7 @@ import me.gnahum12345.fbuair.interfaces.ConnectionListener;
 import me.gnahum12345.fbuair.interfaces.OnProfileSentListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
-import me.gnahum12345.fbuair.models.SentToUser;
+import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
@@ -250,7 +250,6 @@ public class DiscoverFragment extends Fragment implements ConnectionListener, On
 
     public interface DiscoverFragmentListener {
         List<ConnectionService.Endpoint> getCurrEndpoints();
-
         void addToListener(ConnectionListener listener);
     }
 
@@ -258,11 +257,15 @@ public class DiscoverFragment extends Fragment implements ConnectionListener, On
     public void onProfileSent(ProfileUser profileUser) {
         User currentUser = MyUserManager.getInstance().tryToGetCurrentUser();
         if (currentUser != null) {
-            SentToUser sentToUser = new SentToUser();
+            User sentToUser = new User();
             sentToUser.setName(profileUser.getName());
             sentToUser.setProfileImage(profileUser.getIvProfileImage());
-            sentToUser.setContactSent(currentUser.isSendingEmail() || currentUser.isSendingPhone());
-            sentToUser.setSocialMedias(currentUser.getSendingSocialMedias());
+            if (currentUser.isSendingEmail() || currentUser.isSendingPhone()) {
+                sentToUser.setPhoneNumber("1");
+            }
+            for (SocialMedia socialMedia : currentUser.getSocialMedias()) {
+                sentToUser.addSocialMedia(socialMedia);
+            }
             MyUserManager.getInstance().addSentToUser(sentToUser, true);
         }
     }
