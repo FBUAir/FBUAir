@@ -114,24 +114,27 @@ public class MyUserManager {
     }
 
     // adds user who you sent info to
-    public void addSentToUser(SentToUser user) {
+    public void addSentToUser(SentToUser user, boolean setTime) {
         // add to list
-        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        if (setTime) user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         sentToUsers.add(0, user);
 
-        // convert to json
-        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
-        JSONArray newHistoryArray = new JSONArray();
+        // convert sent-to users to json
+        JSONArray sentHistoryJSON = new JSONArray();
+        for (SentToUser sentToUser : sentToUsers) {
+            try {
+                sentHistoryJSON.put(SentToUser.toJson(sentToUser));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
 
         // commit to shared preferences
+        SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(HISTORY_KEY, newHistoryArray.toString());
-        editor.commit();
-
+        editor.putString(HISTORY_KEY, sentHistoryJSON.toString());
+        editor.apply();
     }
-
-    // adds user who you sent info to without changing date (for adding fake users)
-
 
     private void runBadgeNotification() {
         handler.postDelayed(new Runnable() {
@@ -156,7 +159,6 @@ public class MyUserManager {
             }
         }, 1000);
     }
-
 
     public void seenUser(String uid) {
         User u = getUser(uid);

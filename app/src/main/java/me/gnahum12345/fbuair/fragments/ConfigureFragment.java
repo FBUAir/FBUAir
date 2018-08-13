@@ -44,9 +44,6 @@ public class ConfigureFragment extends DialogFragment {
                 inflater, R.layout.fragment_configure, container, false);
         this.container = container;
 
-        // set footer (buttons for skip and next) in grid view
-        LayoutInflater layoutInflater = LayoutInflater.from(getContext());
-
         // attach adapter
         bind.gvProfiles.setAdapter(adapter);
 

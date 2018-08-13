@@ -28,12 +28,14 @@ import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
 import me.gnahum12345.fbuair.adapters.DiscoverAdapter;
 import me.gnahum12345.fbuair.interfaces.ConnectionListener;
+import me.gnahum12345.fbuair.interfaces.OnProfileSentListener;
 import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.models.SentToUser;
 import me.gnahum12345.fbuair.models.User;
 import me.gnahum12345.fbuair.services.ConnectionService;
 
-public class DiscoverFragment extends Fragment implements ConnectionListener {
+public class DiscoverFragment extends Fragment implements ConnectionListener, OnProfileSentListener {
 
     private static final int REQUEST_CODE_REQUIRED_PERMISSIONS = 1;
     private final Handler mUiHandler = new Handler(Looper.getMainLooper());
@@ -126,7 +128,7 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
-        rvAdapter = new DiscoverAdapter(mContext);
+        rvAdapter = new DiscoverAdapter(mContext, this);
         populateAdapter();
     }
 
@@ -250,6 +252,19 @@ public class DiscoverFragment extends Fragment implements ConnectionListener {
         List<ConnectionService.Endpoint> getCurrEndpoints();
 
         void addToListener(ConnectionListener listener);
+    }
+
+    @Override
+    public void onProfileSent(ProfileUser profileUser) {
+        User currentUser = MyUserManager.getInstance().tryToGetCurrentUser();
+        if (currentUser != null) {
+            SentToUser sentToUser = new SentToUser();
+            sentToUser.setName(profileUser.getName());
+            sentToUser.setProfileImage(profileUser.getIvProfileImage());
+            sentToUser.setContactSent(currentUser.isSendingEmail() || currentUser.isSendingPhone());
+            sentToUser.setSocialMedias(currentUser.getSendingSocialMedias());
+            MyUserManager.getInstance().addSentToUser(sentToUser, true);
+        }
     }
 
     // todo - attribute vector authors: <div>Icons made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>

@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.os.UserManager;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -25,20 +26,22 @@ import java.util.regex.Pattern;
 import br.com.simplepass.loading_button_lib.customViews.CircularProgressButton;
 import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.activities.MainActivity;
+import me.gnahum12345.fbuair.interfaces.OnProfileSentListener;
+import me.gnahum12345.fbuair.managers.MyUserManager;
 import me.gnahum12345.fbuair.models.ProfileUser;
+import me.gnahum12345.fbuair.models.SentToUser;
 import me.gnahum12345.fbuair.services.ConnectionService;
 import me.gnahum12345.fbuair.services.ConnectionService.Endpoint;
 
 import static me.gnahum12345.fbuair.utils.ImageUtils.getCircularBitmap;
 
-
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHolder> {
     //TODO: possibly add this to sharedPreferences.
     private TreeMap<Endpoint, String> mDevices;
     private Context mContext;
+    private OnProfileSentListener onProfileSentListener;
 
-
-    public DiscoverAdapter(Context context) {
+    public DiscoverAdapter(Context context, OnProfileSentListener onProfileSentListener) {
         mContext = context;
         // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E ALPHABETICALLY).
         // TODO: initialize mContext somehow here.
@@ -48,11 +51,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
                 return parseName(endpoint.getName()).compareTo(parseName(t1.getName()));
             }
         });
+        this.onProfileSentListener = onProfileSentListener;
 
     }
 
-
-    public DiscoverAdapter(Set<Endpoint> devices, Context context) {
+    public DiscoverAdapter(Set<Endpoint> devices, Context context, OnProfileSentListener onProfileSentListener) {
         mContext = context;
         // NEED THIS COMPARATOR SO ORDER IS BY NAME NOT ID (I.E RANDOM).
         mDevices = new TreeMap<>(new Comparator<Endpoint>() {
@@ -65,6 +68,8 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
         for (Endpoint e : devices) {
             mDevices.put(e, "UPDATE ME");
         }
+
+        this.onProfileSentListener = onProfileSentListener;
     }
 
     @NonNull
@@ -131,9 +136,11 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         viewHolder.btnSend.revertAnimation();
         viewHolder.btnSend.setBackground(mContext.getDrawable(R.drawable.pill_filled));
+        ProfileUser finalProfileUser = profileUser;
         viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                onProfileSentListener.onProfileSent(finalProfileUser);
                 ConnectionService.QualifiedToast.makeText(mContext, viewHolder.mtvDeviceName.getText(), Toast.LENGTH_SHORT).show();
                 ((MainActivity) mContext).mConnectService.sendToEndpoint(device);
                 viewHolder.btnSend.startAnimation();
