@@ -107,7 +107,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
         resetAfterAnimation(viewHolder.ivCheck);
 
         // set seen/unseen tint. make white if in multiselect mode
-        if ((multiSelectMode || user.isSeen())) {
+        if ((multiSelectMode || user.isSeen() || !isReceivedHistory)) {
             viewHolder.itemView.setBackgroundColor(context.getColor(R.color.color_white));
             viewHolder.itemView.setBackgroundTintMode(PorterDuff.Mode.CLEAR);
         } else {

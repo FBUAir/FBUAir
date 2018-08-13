@@ -352,7 +352,9 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         if (isDetailFragment) {
             backDetailsPressed();
         }
-
+        if (SHOW_TOASTS) {
+            mConnectService.debug();
+        }
         if (mBound) {
             if (discoverFragment.rvAdapter != null) {
                 if (!discoverFragment.rvAdapter.isEmpty()) {
@@ -436,7 +438,7 @@ public class MainActivity extends AppCompatActivity implements DiscoverFragment.
         mUserManager.clearNotification();
         bind.bottomNavigationView.setCurrentItem(HISTORY_FRAGMENT, false);
         setBottomNavigationVisible(true);
-        //historyFragment.populateHistory();
+        historyFragment.receivedHistoryFragment.populateHistory();
 
     }
 

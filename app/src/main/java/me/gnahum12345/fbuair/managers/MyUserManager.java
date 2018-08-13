@@ -76,6 +76,18 @@ public class MyUserManager {
         userListeners.remove(listener);
     }
 
+    public boolean addUser(User user) {
+        user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
+        runBadgeNotification();
+        currentUsers.put(user.getId(), user);
+        if (commitHistory()) {
+            notifyListeners(user, true);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public boolean addUser(User user, ConnectionService.Endpoint endpoint) {
         user.setTimeAddedToHistory(dateFormatter.format(Calendar.getInstance().getTime()));
         String title;

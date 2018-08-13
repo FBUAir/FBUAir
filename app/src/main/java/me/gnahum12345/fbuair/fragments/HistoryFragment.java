@@ -45,8 +45,8 @@ public class HistoryFragment extends Fragment implements UserListener,
     // The list of fragments used in the view pager
     private final List<Fragment> fragments = new ArrayList<>();
     // fragments
-    HistoryListFragment sentHistoryFragment;
-    HistoryListFragment receivedHistoryFragment;
+    public HistoryListFragment sentHistoryFragment;
+    public HistoryListFragment receivedHistoryFragment;
     boolean searchEdited = false;
     // adapter for viewpager
     PagerAdapter pagerAdapter;
