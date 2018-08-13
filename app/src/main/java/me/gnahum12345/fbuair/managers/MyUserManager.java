@@ -295,6 +295,14 @@ public class MyUserManager {
         return users;
     }
 
+    public List<User> getSentToHistory() {
+        List<User> users = new ArrayList<>();
+        for (SentToUser sentToUser : sentToUsers) {
+            users.add(SentToUser.toUser(sentToUser));
+        }
+        return users;
+    }
+
     public User tryToGetCurrentUser() {
         SharedPreferences sharedPreferences = mContext.getSharedPreferences(PREFERENCES_FILE_NAME_KEY, Context.MODE_PRIVATE);
         String currentUser = sharedPreferences.getString(CURRENT_USER_KEY, null);

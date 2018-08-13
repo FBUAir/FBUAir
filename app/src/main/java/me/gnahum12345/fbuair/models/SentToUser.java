@@ -88,4 +88,16 @@ public class SentToUser {
         return json;
 
     }
+
+     public static User toUser(SentToUser sentToUser) {
+        User user = new User();
+        user.setName(sentToUser.getName());
+        user.setProfileImage(sentToUser.getProfileImage());
+        user.setTimeAddedToHistory(sentToUser.getTimeAddedToHistory());
+        user.setPhoneNumber("1");
+        for (SocialMedia socialMedia : sentToUser.getSocialMedias()) {
+            user.addSocialMedia(socialMedia);
+        }
+        return user;
+     }
 }

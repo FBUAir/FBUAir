@@ -94,7 +94,7 @@ public class SocialMediaUtils {
     }
 
     // get summary string of received profiles/contact info for history
-    public static String getSummary(User user, int limit) {
+    public static String getSummary(User user, boolean isReceivedHistory,  int limit) {
         StringBuilder stringBuilder = new StringBuilder();
 
         // calculate total number of sent over profiles/contact fields
@@ -136,53 +136,8 @@ public class SocialMediaUtils {
             if (difference > 1) stringBuilder.append("s");
         }
 
-        stringBuilder.insert(0, "Sent you their ").append(".");
-        return stringBuilder.toString();
-    }
-
-    // get summary string of sent out profiles/contact info for history
-    public static String get(SentToUser user, int limit) {
-        StringBuilder stringBuilder = new StringBuilder();
-
-        // calculate total number of sent over profiles/contact fields
-        int total = 0;
-        if (user.isContactSent()) total++;
-        total += user.getSocialMedias().size();
-        if (total == 0 || limit < 1) return stringBuilder.toString();
-
-        // put together summary string up to limit
-        int counter = limit;
-        if (user.isContactSent()) {
-            stringBuilder.append("contact info");
-            counter--;
-        }
-
-        List<SocialMedia> socialMedias = user.getSocialMedias();
-        for (SocialMedia socialMedia : socialMedias ) {
-            if (counter == 0) {
-                break;
-            }
-            // check if on last element
-            if (total == limit - counter + 1) {
-                if (!stringBuilder.toString().isEmpty()) {
-                    if (total > 2) stringBuilder.append(",");
-                    stringBuilder.append(" and ");
-                }
-                stringBuilder.append(socialMedia.getName());
-                break;
-            }
-            if (!stringBuilder.toString().isEmpty()) stringBuilder.append(", ");
-            stringBuilder.append(socialMedia.getName());
-            counter--;
-        }
-
-        int difference = total - limit;
-        if (difference > 0) {
-            stringBuilder.append(" and ").append(difference).append(" other");
-            if (difference > 1) stringBuilder.append("s");
-        }
-
-        stringBuilder.insert(0, "You sent your ").append(".");
+        String startString = isReceivedHistory ? "Sent you their " : "You sent your";
+        stringBuilder.insert(0, startString).append(".");
         return stringBuilder.toString();
     }
 

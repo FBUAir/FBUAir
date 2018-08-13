@@ -38,8 +38,8 @@ public class HistoryListFragment extends Fragment {
     OnRequestAddContact onAddContactClickedListener;
     OnFragmentChangeListener onFragmentChangeListener;
 
-    final static String ARG_IS_INCOMING = "isIncoming";
-    boolean isIncoming;
+    final static String ARG_IS_RECEIVED = "isReceivedHistory";
+    boolean isReceivedHistory;
 
     public HistoryListFragment() {
         // Required empty public constructor
@@ -49,18 +49,23 @@ public class HistoryListFragment extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         activity = getActivity();
+
+        if (getArguments() != null) {
+            isReceivedHistory = getArguments().getBoolean(ARG_IS_RECEIVED);
+        }
+
         // initialize adapter, dataset, and linear manager
         history = new ArrayList<>();
-        historyAdapter = new HistoryAdapter(activity, history);
+        historyAdapter = new HistoryAdapter(activity, history, isReceivedHistory);
         linearLayoutManager = new LinearLayoutManager(activity);
         onAddContactClickedListener = (OnRequestAddContact) context;
         onFragmentChangeListener = (OnFragmentChangeListener) context;
     }
 
-    public static HistoryListFragment newInstance(boolean isIncoming) {
+    public static HistoryListFragment newInstance(boolean isReceived) {
         Bundle args = new Bundle();
         HistoryListFragment fragment = new HistoryListFragment();
-        args.putBoolean(ARG_IS_INCOMING, isIncoming);
+        args.putBoolean(ARG_IS_RECEIVED, isReceived);
         fragment.setArguments(args);
         return fragment;
     }
@@ -68,10 +73,6 @@ public class HistoryListFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        if (getArguments() != null) {
-            isIncoming = getArguments().getBoolean(ARG_IS_INCOMING);
-        }
 
         // configure swipe container
         swipeContainer = view.findViewById(R.id.swipeContainer);
@@ -114,7 +115,8 @@ public class HistoryListFragment extends Fragment {
     // populates recycler view with history from shared preferences
     public void populateHistory() {
         clearHistoryList();
-        List<User> users = MyUserManager.getInstance().getCurrHistory();
+        List<User> users = isReceivedHistory ? MyUserManager.getInstance().getCurrHistory() :
+                MyUserManager.getInstance().getSentToHistory();
         history.addAll(users);
         if (historyAdapter != null) {
             historyAdapter.notifyDataSetChanged();

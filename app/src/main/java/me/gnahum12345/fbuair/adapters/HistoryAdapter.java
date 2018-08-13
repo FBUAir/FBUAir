@@ -43,6 +43,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     private List<User> history;
     private List<User> filteredHistory;
     private HistoryFilter historyFilter;
+    private boolean isReceivedHistory;
     private Context context;
     private OnFragmentChangeListener onFragmentChangeListener;
     public boolean multiSelectMode = false;
@@ -61,9 +62,10 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
     }
 
 
-    public HistoryAdapter(Context context, List<User> history) {
+    public HistoryAdapter(Context context, List<User> history, boolean isReceivedHistory) {
         this.history = history;
         this.filteredHistory = history;
+        this.isReceivedHistory = isReceivedHistory;
         getFilter();
         // load animations
         mSetRightOut = (AnimatorSet) AnimatorInflater.loadAnimator(context, R.animator.out_animation);
@@ -93,7 +95,7 @@ public class HistoryAdapter extends RecyclerView.Adapter<HistoryAdapter.ViewHold
 
         // set user info
         viewHolder.tvName.setText(user.getName());
-        viewHolder.tvSummary.setText(getSummary(user, SUMMARY_LIMIT));
+        viewHolder.tvSummary.setText(getSummary(user, isReceivedHistory, SUMMARY_LIMIT));
         viewHolder.tvTime.setText(getHistoryDate(user.getTimeAddedToHistory()));
 
         // set profile image and bring it to front
