@@ -130,7 +130,7 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.ViewHo
 
         viewHolder.mtvDeviceName.setTextColor(Color.BLACK);
 
-        //viewHolder.btnSend.revertAnimation();
+        viewHolder.btnSend.revertAnimation();
         viewHolder.btnSend.setBackground(mContext.getDrawable(R.drawable.pill_filled));
         ProfileUser finalProfileUser = profileUser;
         viewHolder.btnSend.setOnClickListener(new View.OnClickListener() {

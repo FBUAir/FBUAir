@@ -221,6 +221,9 @@ public class ProfileAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 @Override
                 public void onClick(View view) {
                     mListener.sendBack(header.getUid());
+                    vhHeader.bind.btSendBack.setEnabled(false);
+                    vhHeader.bind.btSendBack.setImageDrawable(context.getResources()
+                            .getDrawable(R.drawable.ic_share_button_disabled, null));
                 }
             });
 

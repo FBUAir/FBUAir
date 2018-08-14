@@ -254,6 +254,7 @@ public class MyUserManager {
         editor.putString(CURRENT_USER_KEY, null);
         editor.putString(HISTORY_KEY, null);
         editor.putString(SENT_HISTORY_KEY, null);
+        sentToUsers.clear();
         currentUsers.clear();
         editor.commit();
     }

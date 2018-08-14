@@ -11,11 +11,16 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.android.volley.Response;
@@ -67,6 +72,7 @@ import static me.gnahum12345.fbuair.utils.Utils.PREFERENCES_FILE_NAME_KEY;
 public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenChangeListener,
         OnRequestOAuthListener {
 
+    private final static boolean ADD_FAKE_USERS = true;
     // user signing up
     public User user;
     // fragments to be used
@@ -75,17 +81,15 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     SignUpSocialMediaFragment signUpSocialMediaFragment;
     WelcomeFragment welcomeFragment;
     FragmentManager fragmentManager;
-
+    EditText inputOne;
+    EditText inputTwo;
     // data binding
     ActivitySignUpBinding bind;
     // api clients
     TwitterClient twitterClient;
     LinkedInClient linkedInClient;
     GithubClient githubClient;
-
     private CallbackManager mCallbackManager;
-
-    private final static boolean ADD_FAKE_USERS = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,26 +146,25 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
     void startFragment(Fragment fragment, String tag) {
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-/*        if (fragment == signUpContactFragmentTwo) {
-            //TODO: alpha out the button and then do the following...
-            //fadeOutAnimation(fragment, tag, signUpContactFragment.getView().findViewById(R.id.ivProfileImage), 500, fragmentTransaction);
-//            transition(fragmentTransaction);
+        if (fragment == signUpContactFragmentTwo) {
+            fadeOutAnimation(fragment, tag, signUpContactFragment.getView().findViewById(R.id.ivProfileImage), 500, fragmentTransaction);
             return;
-        }*/
+        }
 
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
         fragmentTransaction.commit();
     }
 
-/*    private void transition(FragmentTransaction fragmentTransaction, Fragment fragment, String tag) {
+    private void transition(FragmentTransaction fragmentTransaction, Fragment fragment, String tag) {
         inputOne = signUpContactFragment.getView().findViewById(R.id.etName);
         inputTwo = signUpContactFragment.getView().findViewById(R.id.etOrganization);
         fragmentTransaction.addSharedElement(inputOne, ViewCompat.getTransitionName(inputOne));
         fragmentTransaction.addSharedElement(inputTwo, ViewCompat.getTransitionName(inputTwo));
         fragmentTransaction.replace(R.id.fragmentContainer, fragment, tag).addToBackStack(tag);
-        fragmentTransaction.commitHistory();
-    }*/
-    /*private void fadeOutAnimation(Fragment fragment, String tag, final View view, long animationDuration, FragmentTransaction fragmentTransaction) {
+        fragmentTransaction.commit();
+    }
+
+    private void fadeOutAnimation(Fragment fragment, String tag, final View view, long animationDuration, FragmentTransaction fragmentTransaction) {
         Animation fadeOut = new AlphaAnimation(1, 0);
         fadeOut.setInterpolator(new AccelerateInterpolator());
         fadeOut.setStartOffset(animationDuration);
@@ -170,18 +173,20 @@ public class SignUpActivity extends AppCompatActivity implements OnSignUpScreenC
             @Override
             public void onAnimationStart(Animation animation) {
             }
+
             @Override
             public void onAnimationEnd(Animation animation) {
-//                view.setVisibility(View.INVISIBLE);
-               transition(fragmentTransaction, fragment, tag);
+                view.setVisibility(View.INVISIBLE);
+                transition(fragmentTransaction, fragment, tag);
             }
+
             @Override
             public void onAnimationRepeat(Animation animation) {
             }
         });
 
         view.startAnimation(fadeOut);
-    }*/
+    }
 
     // sets large sign-up menu's visibility
     @Override
