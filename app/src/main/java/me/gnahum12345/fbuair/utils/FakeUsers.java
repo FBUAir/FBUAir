@@ -1,6 +1,7 @@
 package me.gnahum12345.fbuair.utils;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
@@ -10,9 +11,11 @@ import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 
+import me.gnahum12345.fbuair.R;
 import me.gnahum12345.fbuair.models.SocialMedia;
 import me.gnahum12345.fbuair.models.User;
 
+import static me.gnahum12345.fbuair.models.User.NO_COLOR;
 import static me.gnahum12345.fbuair.utils.ImageUtils.drawableToBitmap;
 import static me.gnahum12345.fbuair.utils.Utils.dateFormatter;
 
@@ -211,7 +214,7 @@ public class FakeUsers {
         User raul = new User();
         raul.setName("Raul Dagir");
         raul.setPhoneNumber("1");
-        setProfileImage(raul);
+        setProfileImage(raul, R.drawable.photo_raul);
 
         calendar.set(Calendar.DATE, 11);
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
@@ -234,7 +237,6 @@ public class FakeUsers {
         sanura.setName("Sanura N’Jaka");
         sanura.setPhoneNumber("1");
         setProfileImage(sanura);
-
         calendar.set(Calendar.DATE, 9);
         sanura.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
         fakeSentToHistory.add(sanura);
@@ -283,11 +285,11 @@ public class FakeUsers {
         fakeSentToHistory.add(david);
     }
 
-/*    // sets profile image from resource drawable id
+    // sets profile image from resource drawable id
     void setProfileImage(User user, int drawableId) {
         user.setColor(NO_COLOR);
         user.setProfileImage(BitmapFactory.decodeResource(context.getResources(), drawableId));
-    }*/
+    }
 
     // sets default profile image
     private void setProfileImage(User user) {
