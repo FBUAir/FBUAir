@@ -78,7 +78,7 @@ public class FakeUsers {
         raul.setPhoneNumber("2328394839");
         raul.setEmail("raul234@gmail.com");
         raul.setNumConnections(76);
-        setProfileImage(raul);
+        setProfileImage(raul, R.drawable.photo_raul);
 
         calendar.set(Calendar.DATE, 11);
         raul.setTimeAddedToHistory(dateFormatter.format(calendar.getTime()));
